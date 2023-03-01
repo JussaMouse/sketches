@@ -1,0 +1,2613 @@
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js"></script>
+    <script>
+      let tokenData = {
+        tokenId: "172000000",
+        hash: "0x11c8826b5702810154da57d090165b3022c6d61718089b1226c3969b9f0b81b5",
+      }
+    </script>
+    <style type="text/css">
+      html {
+        height: 100%;
+      }
+      body {
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        padding: 0;
+        margin: auto;
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+      function hti(e) {
+        let n = []
+        for (let e = 0; e < 32; e++)
+          n.push(tokenData.hash.slice(2 + 2 * e, 4 + 2 * e))
+        return n.map((e) => parseInt(e, 16))
+      }
+      function get_seed(e) {
+        return parseInt(tokenData.hash.slice(0, 16), 16)
+      }
+      function map_v(e, n = 0, a = 1) {
+        return map_r(hash_ints[e], 0, 255, n, a)
+      }
+      function map_v_str(e, n = 0, a = 1) {
+        return map_v(e, n, a).toFixed(6).toString()
+      }
+      function map_r(e, n, a, t, i) {
+        return ((e - n) / (a - n)) * (i - t) + t
+      }
+      function rr() {
+        return Math.random()
+      }
+      function rd() {
+        return (
+          (seed ^= seed << 13),
+          (seed ^= seed >> 17),
+          (seed ^= seed << 5),
+          (((seed < 0 ? 1 + ~seed : seed) % 1e3) / 1e3).toFixed(5)
+        )
+      }
+      function rb(e, n) {
+        return (e + (n - e) * rd()).toFixed(5)
+      }
+      function rc(e) {
+        return e[Math.floor(rb(0, 0.99 * e.length))]
+      }
+      function rco(e) {
+        return (
+          (a = []),
+          e.forEach((e, n) => {
+            for (i = 0; i < e.w; i++) a.push(e)
+          }),
+          rc(a)
+        )
+      }
+      function shn(e) {
+        return e.toFixed(5)
+      }
+      function lerp_hex(e, n, a) {
+        var t = +e.replace("#", "0x"),
+          i = t >> 16,
+          e = (t >> 8) & 255,
+          t = 255 & t,
+          n = +n.replace("#", "0x")
+        return (
+          "#" +
+          (
+            ((1 << 24) +
+              ((i + a * ((n >> 16) - i)) << 16) +
+              ((e + a * (((n >> 8) & 255) - e)) << 8) +
+              (t + a * ((255 & n) - t))) |
+            0
+          )
+            .toString(16)
+            .slice(1)
+        )
+      }
+      function get_obj(e, n, a = !1) {
+        let t = e.filter(({ n: e }) => e == n)
+        return a ? ((t = t.map(({ v: e }) => e)), [...t]) : t[0]
+      }
+      function shuffle(n) {
+        for (let e = n.length - 1; 0 < e; e--) {
+          var a = Math.floor(rd() * (e + 1))
+          ;[n[e], n[a]] = [n[a], n[e]]
+        }
+      }
+      ;(cv = document.querySelector("canvas")),
+        (document.body.style.backgroundColor = "#000"),
+        (gl = cv.getContext("webgl")),
+        (st = new Date().getTime()),
+        (tok_id = parseInt(tokenData.tokenId.slice(-4)).toFixed(5)),
+        (MEQLOW = FC = fc = 0),
+        (NDO = ["32n", "16n", "8n", "4n", "2n", "1n"]),
+        (synth_flaga = 0),
+        (synth_flagb = 0),
+        (synth_list = [])
+      let seed = get_seed(tokenData.hash),
+        hash_ints = hti(tokenData.hash),
+        hns = hash_ints.map((e, n) => map_v_str(n, 0.1, 1)),
+        hnss = hash_ints.map((e, n) => map_v_str(n, 1, 10))
+      function expandClusterScale(a, e) {
+        let t = []
+        for (let n = 0; n < e; n++)
+          t = [
+            ...t,
+            ...a.map((e) =>
+              e < a[0] && "C" <= e ? `${e}${n + 1}` : `${e}${n}`
+            ),
+          ]
+        return (t = [...t, `${a[0]}${e}`]), t
+      }
+      function generateCluster(n, a, e, t, i, l, p, s = null) {
+        let r = []
+        var o = NDO.indexOf(e),
+          c = Math.max(o, NDO.indexOf(t))
+        let u = Math.floor(rb(0, n.length)),
+          F = 0
+        var x = Math.round(rb(i, l))
+        for (let e = 0; e < x; e++) {
+          var v = NDO[Math.round(rb(o, c))]
+          if (
+            (r.push({
+              t: F,
+              note: n[u],
+              duration: Tone.getTransport().toSeconds(v),
+            }),
+            s && e === x - 2)
+          ) {
+            let e =
+              a.indexOf(s.replace(/\d+/, "")) -
+              a.indexOf(n[u].replace(/\d+/, ""))
+            e < -a.length / 2 && (e += a.length),
+              e > a.length / 2 && (e -= a.length),
+              u + e >= n.length && (e -= a.length),
+              u + e < 0 && (e += a.length),
+              (u += e)
+          } else {
+            var m = Math.ceil(rr() * p)
+            let e = Math.sign(rr() - 0.5)
+            0 === u && e < 0 && (e = 1),
+              u === n.length - 1 && 0 < e && (e = -1),
+              (u = Math.max(0, Math.min(n.length - 1, u + m * e)))
+          }
+          F += Tone.getTransport().toSeconds(v)
+        }
+        return r
+      }
+      function shiftClusterNote(e, n) {
+        let a = n.indexOf(e)
+        return rr() < 0.5 && 0 < a ? a-- : a < n.length - 1 && a++, n[a]
+      }
+      function n2f(n, a) {
+        if ("just" !== a.tuning?.type)
+          return new Tone.Frequency(n).toFrequency()
+        {
+          var [, t, n] = /([^\d]+)(\d+)/.exec(n),
+            a = a.scale.indexOf(t)
+          let e = n - 4
+          return (
+            t < "E" && "C" <= t && --e,
+            329.628 * [1, 1.125, 1.265625, 1.5, 1.6875][a] * Math.pow(2, e)
+          )
+        }
+      }
+      pho = 90
+      let ae = {
+          init: (s, e = "interactive") => {
+            ;(ae.SScale = expandClusterScale(s.scale, 1)),
+              Tone.setContext(new Tone.Context({ latencyHint: e })),
+              (Tone.getTransport().bpm.value = 60),
+              (ae.M = new Tone.Gain(0).toDestination()),
+              (ae.MEQ = new Tone.EQ3(s.M.eq).connect(ae.M)),
+              (ae.MEnv = new Tone.Gain(0).connect(ae.MEQ)),
+              (ae.MEnvLFO = new Tone.LFO({
+                frequency: s.M.envelope.baseFrequency,
+                partials: s.M.envelope.partials,
+                phase: s.M.envelope.phase,
+                min: s.M.envelope.minGain,
+                max: s.M.envelope.maxGain,
+                amplitude: 1,
+              }).connect(ae.MEnv.gain)),
+              (ae.comp = new Tone.Compressor(s.M.compressor).connect(ae.MEnv)),
+              (ae.reverb = new Tone.Reverb({
+                decay: 10,
+                preDelay: s.returns.reverb.pre / 1e3,
+              }).connect(ae.MEnv)),
+              ae.reverb.generate(),
+              (ae.BDirectOut = new Tone.Gain(s.binauralSends.direct).connect(
+                ae.MEQ
+              )),
+              (ae.BReverbOut = new Tone.Gain(s.binauralSends.reverb).connect(
+                ae.reverb
+              )),
+              (ae.BEQ = new Tone.EQ3(s.binauralEq)
+                .connect(ae.BDirectOut)
+                .connect(ae.BReverbOut)),
+              (ae.B1Volume = new Tone.Gain(0).connect(ae.BEQ)),
+              (ae.B1VolLFO = new Tone.LFO({
+                min: s.B1.volMin,
+                max: s.B1.volMax,
+                frequency: s.B1.volLFORate,
+                amplitude: 1,
+              }).connect(ae.B1Volume.gain)),
+              (ae.B1Filter = new Tone.Filter({
+                frequency: s.B1.filterFrequency,
+                Q: s.B1.filterResonance,
+                type: "lowpass",
+                rolloff: "-24",
+              }).connect(ae.B1Volume))
+            e = new Tone.Merge().connect(ae.B1Filter)
+            ;(ae.B1OscLeft = new Tone.Oscillator({
+              frequency: new Tone.Frequency(s.B1.note).toFrequency(),
+              volume: -15,
+              channelCount: 1,
+            }).connect(e, 0, 0)),
+              (ae.B1OscRight = new Tone.Oscillator({
+                frequency:
+                  new Tone.Frequency(s.B1.note).toFrequency() + s.B1.difference,
+                volume: -15,
+                channelCount: 1,
+              }).connect(e, 0, 1)),
+              (ae.B2Volume = new Tone.Gain(0).connect(ae.BEQ)),
+              (ae.B2VolLFO = new Tone.LFO({
+                min: s.B2.volMin,
+                max: s.B2.volMax,
+                frequency: s.B2.volLFORate,
+                amplitude: 1,
+              }).connect(ae.B2Volume.gain)),
+              (ae.B2Filter = new Tone.Filter({
+                frequency: s.B2.filterFrequency,
+                Q: s.B2.filterResonance,
+                type: "lowpass",
+                rolloff: "-24",
+              }).connect(ae.B2Volume))
+            e = new Tone.Merge().connect(ae.B2Filter)
+            ;(ae.B2OscLeft = new Tone.Oscillator({
+              frequency: new Tone.Frequency(s.B2.note).toFrequency(),
+              volume: -15,
+              channelCount: 1,
+            }).connect(e, 0, 0)),
+              (ae.B2OscRight = new Tone.Oscillator({
+                frequency:
+                  new Tone.Frequency(s.B2.note).toFrequency() + s.B2.difference,
+                volume: -15,
+                channelCount: 1,
+              }).connect(e, 0, 1)),
+              (ae.DDirectOut = new Tone.Gain(s.D.sends.direct).connect(
+                ae.comp
+              )),
+              (ae.DReverbOut = new Tone.Gain(s.D.sends.reverb).connect(
+                ae.reverb
+              )),
+              (ae.DGain = new Tone.Gain(0)
+                .connect(ae.DReverbOut)
+                .connect(ae.DDirectOut)),
+              (ae.DGainLFO = new Tone.LFO({
+                min: s.D.gainLFOMin ?? 1,
+                max: s.D.gainLFOMax ?? 1,
+                frequency: s.D.gainLFORate,
+                amplitude: 1,
+              }).connect(ae.DGain.gain)),
+              (ae.DVolume = new Tone.Volume(s.D.vol).connect(ae.DGain)),
+              (ae.DEQ = new Tone.EQ3(s.D.eq).connect(ae.DVolume)),
+              (ae.DAP = new Tone.AutoPanner(s.D.autoPan).connect(ae.DEQ)),
+              (ae.DF = new Tone.AutoFilter({
+                frequency: s.D.filterRate,
+                octaves: s.D.filterDepth,
+                baseFrequency: s.D.filterFrequency,
+                filter: {
+                  type: "lowpass",
+                  rolloff: "-12",
+                  Q: s.D.filterResonance,
+                },
+              }).connect(ae.DAP)),
+              (ae.DSynths = Array.from({ length: 3 }, (e, p) =>
+                s.D.oscillators.map(({ coarse: e, fine: n, vol: a }) => {
+                  n = 1200 * Math.log2(e) + n
+                  let t = new Tone.Oscillator({
+                      type: "sawtooth",
+                      frequency: n2f(s.D.chord[p] ?? "E2", s),
+                      detune: n,
+                      volume: a,
+                    }).connect(ae.DF),
+                    i = !1,
+                    l
+                  return {
+                    triggerAttack: () => {
+                      clearTimeout(l), i || (t.start(), (i = !0))
+                    },
+                    triggerRelease: () => {
+                      i &&
+                        ((i = !1),
+                        (l = setTimeout(() => {
+                          t.stop()
+                        }, 1e3 * s.M.fadeIn)))
+                    },
+                    setFrequency: (e) => {
+                      e
+                        ? ((t.frequency.value = e), i && t.start())
+                        : i && t.stop()
+                    },
+                    osc: t,
+                  }
+                })
+              )),
+              (ae.SDirectOut = new Tone.Gain(s.S.sends.direct).connect(
+                ae.comp
+              )),
+              (ae.SReverbOut = new Tone.Gain(s.S.sends.reverb).connect(
+                ae.reverb
+              )),
+              (ae.SVolume = new Tone.Volume(s.S.vol)
+                .connect(ae.SReverbOut)
+                .connect(ae.SDirectOut)),
+              (ae.SEQ = new Tone.EQ3(s.S.eq).connect(ae.SVolume)),
+              (ae.SAP = new Tone.AutoPanner(s.S.autoPan).connect(ae.SEQ)),
+              (ae.SChorus = new Tone.Chorus(s.S.chorus).connect(ae.SAP)),
+              (ae.SF = new Tone.Filter({
+                type: "lowpass",
+                rolloff: s.S.filterRolloff ?? "-24",
+                Q: s.S.filterResonance,
+              }).connect(ae.SChorus)),
+              (ae.SFEnv = new Tone.FrequencyEnvelope({
+                baseFrequency: s.S.filterFrequency,
+                ...s.S.filterEnvelope,
+              }).connect(ae.SF.frequency)),
+              (ae.SSynth = new Tone.Synth({
+                oscillator: { type: s.S.oscillatorType },
+                envelope: s.S.amplitudeEnvelope,
+              }).connect(ae.SF)),
+              (ae.PDirectOut = new Tone.Gain(s.padSends.direct).connect(
+                ae.comp
+              )),
+              (ae.PReverbOut = new Tone.Gain(s.padSends.reverb).connect(
+                ae.reverb
+              )),
+              (ae.PVolume = new Tone.Volume(s.padVol)
+                .connect(ae.PDirectOut)
+                .connect(ae.PReverbOut)),
+              (ae.PEQ = new Tone.EQ3(s.padEq).connect(ae.PVolume)),
+              (ae.PChorus = new Tone.Chorus(s.padChorus).connect(ae.PEQ)),
+              (ae.Ps = Array.from({ length: 2 }, (e, n) => {
+                let a = s[`P${n + 1}`],
+                  t = {}
+                return (
+                  (t.gain = new Tone.Gain(0).connect(ae.PChorus)),
+                  (t.gainLFO = new Tone.LFO({
+                    min: a.gainLFOMin ?? 1,
+                    max: a.gainLFOMax ?? 1,
+                    frequency: a.gainLFORate,
+                    amplitude: 1,
+                  }).connect(t.gain.gain)),
+                  (t.autoPan = new Tone.AutoPanner(a.autoPan).connect(t.gain)),
+                  (t.pan = new Tone.Panner(a.pan).connect(t.autoPan)),
+                  (t.filter = new Tone.Filter({
+                    type: "lowpass",
+                    rolloff: a.filterRolloff ?? "-12",
+                    Q: a.filterResonance,
+                  }).connect(t.pan)),
+                  (t.filterEnv = new Tone.FrequencyEnvelope({
+                    baseFrequency: a.filterFrequency,
+                    ...a.filterEnvelope,
+                  }).connect(t.filter.frequency)),
+                  (t.synths = Array.from({ length: a.polyphony }, () =>
+                    new Tone.Synth({
+                      oscillator: { type: a.oscillatorType, detune: a.detune },
+                      envelope: a.amplitudeEnvelope,
+                    }).connect(t.filter)
+                  )),
+                  t
+                )
+              }))
+          },
+          started: !(pz = {
+            B1: [rd() * pho, rr() * pho],
+            B2: [rd() * pho, rr() * pho],
+            Dp: [rd() * pho, rr() * pho],
+            Df: [rd() * pho, rr() * pho],
+            D: [rd() * pho, rr() * pho],
+            M: [rd() * pho, rr() * pho],
+            P1p: [rd() * pho, rr() * pho],
+            P1: [rd() * pho, rr() * pho],
+            P2p: [rd() * pho, rr() * pho],
+            P2: [rd() * pho, rr() * pho],
+            S: [90, 90],
+            Sp: [rd() * pho, rr() * pho],
+            Q1: [rd() * pho, rr() * pho],
+            Q2: [rd() * pho, rr() * pho],
+            Q4: [rd() * pho, rr() * pho],
+            Q8: [rd() * pho, rr() * pho],
+            Q14: [rd() * pho, rr() * pho],
+            Q20: [rd() * pho, rr() * pho],
+          }),
+          start: async (t, e) => {
+            if (!ae.started) {
+              await Tone.start(),
+                Tone.getTransport().start(),
+                clearTimeout(ae.lastBinauralStopper),
+                t.B1.note && (ae.B1OscLeft.start(), ae.B1OscRight.start()),
+                t.B2.note && (ae.B2OscLeft.start(), ae.B2OscRight.start()),
+                ae.DSynths.forEach((e, n) =>
+                  e.forEach((e) => t.D.chord[n] && e.triggerAttack())
+                ),
+                (ae.SCluster = generateCluster(
+                  ae.SScale,
+                  t.scale,
+                  t.S.minNoteDuration,
+                  t.S.maxNoteDuration,
+                  1,
+                  t.S.maxClusterSize,
+                  2,
+                  t.B1.note
+                )),
+                (ae.SPattern = new Tone.Pattern({
+                  callback: (e) => {
+                    rr() < t.S.clusterProbability && ae._playSynth(e, t)
+                  },
+                  values: [!0],
+                  interval: t.S.clusterInterval,
+                }).start()),
+                (ae.PPatterns = ae.Ps.map((e, n) => {
+                  let a = t[`P${n + 1}`]
+                  return new Tone.Pattern({
+                    callback: (e) => {
+                      rr() < a.repeatProbability && ae._playPad(n, e, t)
+                    },
+                    values: [!0],
+                    interval: a.repeatInterval,
+                  }).start()
+                })),
+                (ae.MEnvLFO.phase = pz.M[1]),
+                (ae.B1VolLFO.phase = pz.B1[1]),
+                (ae.B2VolLFO.phase = pz.B2[1]),
+                (ae.DAP.phase = pz.Dp[1]),
+                (ae.DGainLFO.phase = pz.D[1]),
+                (ae.DF.phase = pz.Df[1]),
+                (ae.SAP.phase = pz.Sp[1]),
+                (ae.Ps[0].autoPan._lfo.phase = pz.P1p[1]),
+                (ae.Ps[0].gainLFO.phase = pz.P1[1]),
+                (ae.Ps[1].autoPan._lfo.phase = pz.P2p[1]),
+                (ae.Ps[1].gainLFO.phase = pz.P2[1]),
+                ae.MEnvLFO.start(),
+                ae.B1VolLFO.start(),
+                ae.B2VolLFO.start(),
+                ae.DAP.start(),
+                ae.DGainLFO.start(),
+                ae.DF.start(),
+                ae.SAP.start(),
+                ae.SChorus.start()
+              for (var n of ae.Ps) n.autoPan.start(), n.gainLFO.start()
+              ae.PChorus.start(),
+                ae.M.gain.setValueAtTime(0, Tone.now()),
+                ae.M.gain.linearRampToValueAtTime(
+                  t.M.gain,
+                  Tone.now() + t.M.fadeIn
+                ),
+                ae.SVolume.volume.setValueAtTime(-1e3, Tone.now()),
+                ae.SVolume.volume.linearRampToValueAtTime(
+                  sp.S.vol,
+                  Tone.now() + t.M.fadeIn + 7
+                ),
+                (ae.started = !0)
+            }
+          },
+          _playSynth: (i, l) => {
+            let p = [...ae.SCluster]
+            for (let e = 1; e < p.length; e++) {
+              var n, a, t
+              rr() < 0.1 &&
+                ((n = Tone.getTransport().toSeconds(l.S.minNoteDuration) / 2),
+                (a = p[e]),
+                (t = p[e - 1]),
+                rr() < 0.5
+                  ? ((p[e - 1] = { ...t, duration: t.duration - n }),
+                    (p[e] = { ...a, t: a.t - n, duration: a.duration + n }))
+                  : ((p[e - 1] = { ...t, duration: t.duration + n }),
+                    (p[e] = { ...a, t: a.t + n, duration: a.duration - n })))
+            }
+            ;(synth_flaga = 0), (synth_flagb = 0), (synth_list = [])
+            for (let t = 0; t < p.length; t++) {
+              let { t: e, note: n, duration: a } = p[t]
+              t !== p.length - 1 &&
+                rr() < 0.1 &&
+                (n = shiftClusterNote(n, ae.SScale))
+              var s = n2f(n, l) * Math.pow(2, l.S.octave),
+                r = 0.07 * rr()
+              ae.playSynthNote(i + e + r, s, a)
+            }
+          },
+          playSynthNote: (e, n, a) => {
+            --synth_flaga,
+              (synth_flagb += 1),
+              synth_list.push(a),
+              ae.SSynth.triggerAttackRelease(n, a, e),
+              ae.SFEnv.triggerAttackRelease(a, e)
+          },
+          _playPad: (a, t, i) => {
+            var l = i[`P${a + 1}`],
+              p = Tone.getTransport().toSeconds(l.repeatInterval) / 3,
+              s = 0.07 * rr()
+            for (let n = 0; n < l.chord.length; n++) {
+              var r = l.chord[n]
+              let e = ae.Ps[a].synths[n]
+              r && e.triggerAttackRelease(n2f(r, i), p, t + s),
+                ae.Ps[a].filterEnv.triggerAttackRelease(p, t + s)
+            }
+          },
+        },
+        pp = {
+          pal: [
+            {
+              w: 15,
+              n: "Awe",
+              v: "F2F3EEF2F3EEF0EDDA7D88975269939B361CF0EDDA39609400155F9B361CE5E6D8FAE193CC948200337F394F77D6AAA5A2938D5C98B43989A93D0000C66C5656526F905B5FDC9B80F0ECDB939690F5EBD9CC94828E74894DA9CC6D492BD8D1BEF3EED9F2F3EEF2F3EE",
+            },
+            {
+              w: 8,
+              n: "Elysium",
+              v: "F2F3EEF2F3EECBC6D5BDB4BD636474F2F3EE424D389794A0F2F3EEF2F3EE9A9AB08D73777A5663F2F3EE70595D935C689D8798B7BDC8817D7F9A9FA8F2F3EEF2F3EE888789967E8759454A474B467A5663F2F3EE70595D935C68564E49F2F3EEF2F3EE848A925A687C291F007A566370595D935C6835362EF2F3EEF2F3EE",
+            },
+            {
+              w: 8,
+              n: "Liquid Dusk",
+              v: "F2F3EEF2F3EEB68662230D00B68662BF8C61C88F5AD19559D39959D69B55E8A557EFA953E3A64BE5BA5CEFD171E6C96DE8CE81EBDDACE9E7CEECE3E4E4E5E9E6E7E1F5E3BDE7BC6EBD7E1FB36F1C9953177F3B0E7F401786522A895F35F2F3EE926B40A2774CBF94699C7347784F316A4027643A246C46335D3C2B2C16092C1609F2F3EEF2F3EE6D452C8E5D35B47F49D09E61DDB67BF6DAA8D7C499E5C384BF9D5EF2F3EEF2F3EE",
+            },
+            {
+              w: 8,
+              n: "Chimera",
+              v: "F2F3EEF2F3EE064f6e064f6ef68c5040456af3a257F2F3EEF2F3EE064f6e064f6ef68c5040456af3a257F2F3EEF2F3EE",
+            },
+            {
+              w: 8,
+              n: "Moonpool",
+              v: "F2F3EEF2F3EE6E8FB09DADC65D718C6D7E987989A28099B74465845E748C72849A78859639405071788A525F720E1D3408172E485367636B7E5A7995F2F3EEF2F3EE2E486334455F1F2B4573839D1C2A44434D665F66801E28416261694D5973606F843E4A5A00000B6261696C809B4E627DF2F3EEF2F3EE",
+            },
+            {
+              w: 10,
+              n: "Body Electric",
+              v: "F2F3EEF2F3EE0000001212120000003636368484847A7A7A5C5C5C4747471313132727271313130000001717172D2D2D707070B4B4B4F2F3EEF2F3EECBCBCBC0C0C02121211A1A1AF2F3EEF2F3EE969696C9C9C98181810000000202025C5C5C454545959595CBCBCBBEBEBEC9C9C92121211A1A1A646464BCBCBCAAAAAAF2F3EEAEAEAE646464010101272727010101010101F2F3EEF2F3EE",
+            },
+            {
+              w: 11,
+              n: "Holotropic",
+              v: "F2F3EE9C5555A298A3738CA20041701E547B194B6B717E7588978BAAABAC39688D909EA2748E92113864002357194B6B625E78928E945C5953829C983A5E779C55556E15059C5555F2F3EE94A0B4A4A0AE92A0AB7E8485BEBAB9928E832E303C92A1A67061685D5B613075925E717B668385F2F3EE194B6B113864002357194B6B759299B5BBBD92A8AEF2F3EEF2F3EE",
+            },
+            {
+              w: 8,
+              n: "Asteria",
+              v: "6346525845527242468C505577566468576A471F300C01255A5A816A638D9F839BD9C8B5CEC8B27242468C5055C7B49FC7B49FBEB0A4A99B999285878A8D918C9097ADAAAF0C01259691A38C849E8A809A7242468C50558A7F9F816D8F7356759B7386471F300C0125B5837FA773707C5E5D7E605F785E5485665A99705F926551",
+            },
+            {
+              w: 12,
+              n: "Meadow",
+              v: "121B2A01002801001265899759869BD3D6DBDBD2D7DED2D4F6EDE8F9C37DF9C37D444849455C6A5D8795567D8CF2F3EEF2F3EE4A707D567C89375F6B2F545D14191F000929C9BCACB57657BB6B4AC4704BAA6D51A69A8CD9DDE0D9DDE021210009182D1F2227253C4238575C31505317292D4B666F5B7C833C4A4D000000D69F5FD69F5FD2C7C3C6BCBAC3BDBDB6BABB4E6C765A737A000000181B2014151A",
+            },
+            {
+              w: 4,
+              n: "Halcyon",
+              v: "9A95A0756485B6A5C89B85A2835061C58FADBC849E883E3FBD636ECF707D7039468C495CB9627D683D4D3F2D397F43645E37502528304A354F3A2D3E1E231D2425252225232224232123222123222123222123221C211E2E272D42303D26262D482F377B40484C3037442F35A9554E9C4E474E282BB26A53CE7C5D8843319A605BC48A8CA06B6A714A4FA88DB1A38AAE594662B1A9B4",
+            },
+          ],
+          song: [
+            { w: 10, n: "Harmonic Transmission", v: 1 },
+            { w: 10, n: "Emanating Dreamscape", v: 2 },
+            { w: 10, n: "Oceanic Expanse", v: 3 },
+            { w: 10, n: "The Deep Now", v: 4 },
+            { w: 10, n: "Glimmering Horizon", v: 5 },
+            { w: 10, n: "Weightless River", v: 6 },
+            { w: 10, n: "Timeless Window", v: 7 },
+            { w: 10, n: "Infinite Portal", v: 8 },
+            { w: 10, n: "Luminous Space", v: 9 },
+            { w: 10, n: "Weightless Moment", v: 10 },
+            { w: 10, n: "Present-Time Awareness", v: 11 },
+            { w: 2, n: "Interbeing", v: 12 },
+          ],
+          rotation: [
+            { w: 7, n: "Unperturbed", v: "0." },
+            { w: 3, n: "Angled", v: "1." },
+            { w: 1, n: "Whip Spiral", v: "3." },
+            { w: 2, n: "Eternal Spiral", v: "4." },
+          ],
+          blur: [
+            { w: 1, n: "Angled Positive", v: "10.,10." },
+            { w: 1, n: "Angled Negative", v: "-10.,10." },
+            { w: 3, n: "Vertical", v: "0.,10." },
+            { w: 2, n: "Horizontal", v: "10.,0." },
+          ],
+          e: [
+            { w: 0, n: "Water", v: "circle" },
+            { w: 0, n: "Earth", v: "rect" },
+            { w: 0, n: "Fire", v: "diamond" },
+            { w: 0, n: "Air", v: "none" },
+          ],
+          e_xy: [
+            { w: 0, n: "Centered", v: 1 },
+            { w: 0, n: "Duality", v: 3 },
+            { w: 0, n: "Symmetric Duality", v: 4 },
+            { w: 0, n: "Trinity", v: 2 },
+            { w: 0, n: "None", v: 0 },
+          ],
+          e_z: [
+            { w: 2, n: "Below", v: 0 },
+            { w: 1, n: "Omnipresent", v: 1 },
+          ],
+          el_exp: [
+            { w: 1, n: "Expanding", v: [0.9, 1.2] },
+            { w: 10, n: "Static", v: [0.95, 1.05] },
+          ],
+          grid: [
+            { w: 3, n: "Transcend", v: [2, 4, 2, 4] },
+            { w: 2, n: "Exhale", v: [2, 4, 10, 15] },
+            { w: 2, n: "Inhale", v: [10, 15, 2, 4] },
+            { w: 3, n: "Lattice", v: [10, 15, 10, 15] },
+            { w: 2, n: "Passage", v: [25, 30, 10, 15] },
+            { w: 2, n: "Universal", v: [25, 30, 25, 30] },
+          ],
+        },
+        p = {
+          pal: rco(pp.pal),
+          rotation: rco(pp.rotation),
+          blur: rco(pp.blur),
+          e: rco(pp.e),
+          el_exp: rco(pp.el_exp),
+          grid: rco(pp.grid),
+          song: rco(pp.song),
+        }
+      ;(p.feel = [
+        "Immersive",
+        "Spacious",
+        "Serene",
+        "Spacious",
+        "Spacious",
+        "Immersive",
+        "Immersive",
+        "Spacious",
+        "Serene",
+        "Immersive",
+        "Serene",
+        "Heartbeat",
+      ][p.song.v - 1]),
+        (p.pal.v = p.pal.v.match(/.{6}/g).map((e) => "#" + e))
+      let nm = {
+        "16n.": 0.0234375,
+        "16n": 0.25 / 16,
+        "8n.": 0.046875,
+        "8n": 0.25 / 8,
+        "4n.": 0.09375,
+        "4n": 0.0625,
+        "2n.": 0.1875,
+        "2n": 0.125,
+        "1n.": 0.375,
+        "1n": 0.25,
+        "1m": 0.25,
+        "2m": 0.5,
+        "3m": 0.75,
+        "4m": 1,
+        "5m": 1.25,
+        "6m": 1.5,
+        "7m": 1.75,
+        "8m": 2,
+        "9m": 2.25,
+        "10m": 2.5,
+        "11m": 2.75,
+        "12m": 3,
+      }
+      if (
+        ((vpl = [
+          [
+            "Water",
+            "Water",
+            "Water",
+            "Fire",
+            "Fire",
+            "Fire",
+            "Air",
+            "Earth",
+            "Earth",
+            "Earth",
+            "Air",
+            rc(["Earth", "Fire", "Water"]),
+          ],
+          [1, 3, 2, 1, 3, 2, 0, 1, 3, 2, 0, 2],
+          [
+            ["S"],
+            [rc(["S", "D"]), rc(["S", "D"])],
+            ["S"],
+            ["S"],
+            ["S", "S"],
+            ["S"],
+            ["S"],
+            ["S"],
+            [rc(["B1", "B2"]), rc(["B1", "B2"])],
+            ["S"],
+            ["B1"],
+            ["Sp"],
+          ],
+          [
+            ["D"],
+            [rc(["S", "D"]), rc(["S", "D"])],
+            ["D"],
+            ["S"],
+            [rc(["S", "B2"]), rc(["S", "B2"])],
+            ["S"],
+            ["S"],
+            ["S"],
+            [rc(["D", "B2"]), rc(["D", "B1"])],
+            ["S"],
+            ["B1"],
+            ["Sp"],
+          ],
+          [
+            "D",
+            "D",
+            "B1",
+            "B2",
+            "P2",
+            "B1",
+            "S",
+            "B2",
+            "D",
+            "B2",
+            rc(["B1", "B2"]),
+            "D",
+          ],
+          [
+            ["B1", "B2", "D", "Df", "S", "Sp", "2", "1"],
+            ["B1", "B2", "D", "Df", "S", "2", "1"],
+            ["B1", "B2", "S", "P2p", "D", "Df", "2", "1"],
+            ["B1", "B1", "P1", "P2p", "D", "Df", "S", "2", "1"],
+            ["B1", "B2", "P2", "P2p", "S", "S", "2", "1"],
+            ["B1", "B2", "D", "Df", "S", "2", "1"],
+            ["B1", "B2", "D", "Df", "P1", "P2", "P2p", "S", "2", "1"],
+            ["B1", "B2", "P2", "P2p", "S", "2", "1"],
+            ["B1", "B2", "D", "Df", "S", "Sp", "2", "1"],
+            ["B1", "B2", "D", "Df", "S", "S", "2", "1"],
+            ["B1", "B2", "4", "2", "1"],
+            ["B1", "B2", "P1", "P2", "D", "Df"],
+          ],
+          [
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+            "14",
+          ],
+          [
+            "D",
+            "D",
+            "D",
+            "D",
+            "S",
+            "D",
+            rc(["B1", "D"]),
+            "P2",
+            "D",
+            "B1",
+            rc(["B1", "B2"]),
+            "B1",
+          ],
+          [
+            rc(["B1", "D"]),
+            rc(["B1", "Df"]),
+            "D",
+            "D",
+            rc(["B2", "P1p"]),
+            "B2",
+            "S",
+            "S",
+            "B2",
+            "B2",
+            rc(["B1", "B2"]),
+            "B2",
+          ],
+        ]),
+        (si = p.song.v - 1),
+        (p.e = get_obj(pp.e, vpl[0][si])),
+        (p.e_xy = vpl[1][si]),
+        (p.e_z = rc([0, 1])),
+        (p.uSC = vpl[2][si]),
+        (p.uSE = vpl[3][si]),
+        (p.uGC = vpl[4][si]),
+        (p.gw = vpl[5][si]),
+        (p.uFC = vpl[6][si]),
+        (p.uSpiral = vpl[7][si]),
+        (p.uGP = vpl[8][si]),
+        "none" == p.e.v
+          ? (p.e_z = { w: 0, n: "None", v: 0 })
+          : ((p.e_z = rco(pp.e_z)), (p.el_exp = rco(pp.el_exp))),
+        (spl = [
+          [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60],
+          ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
+          [
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+            "F#",
+          ],
+          [
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+            "G#",
+          ],
+          ["B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B"],
+          [
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+            "C#",
+          ],
+          [
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+            "just",
+          ],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [
+            1.125, 1.125, 1.125, 1.125, 1.125, 1.125, 1.125, 1.125, 1.125,
+            1.125, 1.125, 1.125,
+          ],
+          [
+            1.265625, 1.265625, 1.265625, 1.265625, 1.265625, 1.265625,
+            1.265625, 1.265625, 1.265625, 1.265625, 1.265625, 1.265625,
+          ],
+          [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+          [
+            1.6875, 1.6875, 1.6875, 1.6875, 1.6875, 1.6875, 1.6875, 1.6875,
+            1.6875, 1.6875, 1.6875, 1.6875,
+          ],
+          ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
+          [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+          [
+            329.628, 329.628, 329.628, 329.628, 329.628, 329.628, 329.628,
+            329.628, 329.628, 329.628, 329.628, 329.628,
+          ],
+          [
+            0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07,
+            0.07,
+          ],
+          [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+          [
+            0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,
+            0.001, 0.001, 0.001,
+          ],
+          [0.55, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0, 0, 0, 0.59],
+          [0.79, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71, 1, 1, 1, 0.5],
+          [
+            0.04, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.86, 0.73, 0.73, 0.73,
+            0.47,
+          ],
+          [
+            0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.48, 0.52, 0.52, 0.52,
+            0.43,
+          ],
+          [122, 188, 188, 188, 188, 188, 188, 207, 122, 122, 122, 28],
+          [1, 1, 1, 1, 1, 1, 0.39, 1, 0, 0, 0, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [
+            0.003, 0.003, 0.003, 0.021, 0.003, 0.027, 0.003, 0.003, 0.003,
+            0.042, 0.042, 0.024,
+          ],
+          [0, 16.5, 28.3, 18.1, 7.1, 24.8, 30, 15.7, 30, 7.4, 7.4, 0],
+          [14, 20, 2.4, 1, 19.8, 5.2, 20, 20, 14.4, 20, 20, 1],
+          [
+            0.08, 0.07, 0.06, 0.08, 0.06, 0.07, 0.25, 0.25, 0.25, 0.21, 0.42,
+            0.25,
+          ],
+          [
+            -32.5, -10.3, -11.5, 0, -0.6, -20.8, -33.1, -16.2, -44.3, 0, -27.1,
+            0,
+          ],
+          [-11, -3, -4, -7.8, -4.6, -3.1, -8.8, -2, -3.5, -4.7, -3.7, -8.9],
+          [0, 0, 0, 0, 0, 0, 0, 0.4, 0, 0, 0, 0],
+          [0.8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [71, 250, 76, 250, 192, 250, 250, 250, 194, 133, 133, 194],
+          [
+            17073, 2500, 2500, 869, 2500, 2500, 2500, 2500, 17073, 17073, 17073,
+            17073,
+          ],
+          [9.5, 8.23, 8.14, 10, 5.74, 8.1, 6.09, 5.57, 7.6, 7.02, 5.83, 7.28],
+          [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+          [2.5, 54.7, 54.7, 54.7, 54.7, 54.7, 54.7, 54.7, 2.5, 2.5, 2.5, 2.5],
+          [0.22, 0.28, 0.46, 0.13, 0.16, 0.03, 0.13, 0.09, 0.12, 0.06, 0.01, 0],
+          [1, 1, 1, 1, 1, 1, 0.83, 1, 1, 0.65, 0.64, 0.19],
+          [
+            "2m",
+            "2m",
+            "8m",
+            "6m",
+            "5m",
+            "4m",
+            "8m",
+            "4m",
+            "5m",
+            "8m",
+            "8m",
+            "8m",
+          ],
+          [1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 14],
+          [
+            "G#1",
+            "G#1",
+            "G#1",
+            "C#2",
+            "C#2",
+            "E1",
+            "B1",
+            "F#1",
+            "F#1",
+            "G#1",
+            "F#1",
+            "F#2",
+          ],
+          [2e3, 2e3, 2e3, 2e3, 2e3, 2e3, 2e3, 2e3, 2e3, 962, 962, 2e3],
+          [1, 5.9, 5.9, 5.9, 5.9, 0, 5.9, 5.9, 1, 1, 1, 1],
+          [0.16, 0.19, 0, 0.21, 0.03, 0, 0, 0, 0, 0.04, 0.04, 0],
+          [0.81, 1, 0.51, 1, 0.73, 1, 0.72, 0.38, 0.22, 0.17, 0.35, 0.33],
+          [
+            "6m",
+            "6m",
+            "12m",
+            "12m",
+            "8m",
+            "7m",
+            "12m",
+            "6m",
+            "8m",
+            "6m",
+            "6m",
+            "8m",
+          ],
+          [14, 1, 1, 4, 1, 14, 4, 1, 8, 8, 8, 14],
+          [2e3, 226, 226, 1649, 1972, 1649, 394, 1649, 367, 1834, 1834, 1264],
+          [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+          [
+            "F#2",
+            "E3",
+            "B2",
+            "E3",
+            "G#2",
+            "E2",
+            "C#3",
+            "B2",
+            "E3",
+            "C#2",
+            "E2",
+            "C#3",
+          ],
+          [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+          [
+            "B1",
+            "B1",
+            "B1",
+            "C#2",
+            "C#2",
+            "F#1",
+            "F#1",
+            "F#1",
+            "F#1",
+            null,
+            null,
+            "E1",
+          ],
+          [
+            "E2",
+            null,
+            null,
+            null,
+            null,
+            "F#2",
+            "C#3",
+            "C#3",
+            "E2",
+            "G#2",
+            "G#2",
+            "C#2",
+          ],
+          [
+            "E3",
+            null,
+            null,
+            null,
+            null,
+            "F#3",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ],
+          [
+            -12.7, -9.4, -11.9, -24.8, -1e3, -28.8, -22.1, -1e3, -27.6, -30.2,
+            -1e3, -23.3,
+          ],
+          [0, 0, 0, 0, 0, 0.19, 0, 0, 0, 0, 0, 0],
+          [0.88, 0.8, 0.8, 0.54, 1, 1, 1, 1, 1, 1, 1, 0.78],
+          [
+            "9m",
+            "6m",
+            "12m",
+            "10m",
+            "10m",
+            "7m",
+            "5m",
+            "5m",
+            "7m",
+            "7m",
+            "7m",
+            "12m",
+          ],
+          [93, 83, 83, 49, 72, 80, 22, 24, 121, 661, 661, 88],
+          [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+          [
+            "5m",
+            "7m",
+            "7m",
+            "9m",
+            "8m",
+            "5m",
+            "6m",
+            "7m",
+            "4m",
+            "4m",
+            "4m",
+            "9m",
+          ],
+          [0.69, 0.43, 0.43, 1.71, 0, 1.26, 2.36, 2.94, 0, 0, 0, 0.04],
+          [0.5, 1, 1, 0.5, 1, 1, 0.5, 0.5, 1, 4, 4, 0.5],
+          [1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 0, 0, 922],
+          [
+            0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946,
+            0.946, 0.946, 0.946,
+          ],
+          [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6],
+          [1, 1, 1, 1, 1, 1, 0.33, 0.33, 1, 1, 1, 1],
+          [
+            42.5, 42.5, 42.5, 42.5, 42.5, 42.5, 20.58, 20.58, 42.5, 42.5, 42.5,
+            42.5,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [0, -1.3, -1.3, -1.3, -1.3, -1.3, -1.3, -1.3, 0, -7.6, -7.6, 0],
+          [1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2],
+          [700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 297],
+          [20, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 20, 20, 20, 20],
+          [
+            0.03072, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.03072, 0.03072,
+            0.03072, 0.03072,
+          ],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [
+            30.2, 30.2, 30.2, 30.2, 30.2, 30.2, 30.2, 30.2, 30.2, 30.2, 30.2,
+            30.2,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [-13.1, -1, -1, -1, -1, -1, -1, -1, -13.1, -13.1, -13.1, -13.1],
+          [3, 2, 2, 1, 2, 2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+          [
+            1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 642, 642,
+            1200,
+          ],
+          [
+            0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946, 0.946,
+            0.946, 0.946, 0.946,
+          ],
+          [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [
+            5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 5.41,
+            5.41,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [0, -4.1, -4.1, -4.1, -4.1, -4.1, -4.1, -4.1, 0, -1e3, -1e3, 0],
+          [0.5, 1, 1, 1, 1, 1, 3, 3, 0.5, 0.5, 0.5, 0.5],
+          [1186, 0, 0, 0, 0, 0, 0, 0, 1186, 1186, 1186, 1186],
+          [
+            0.946, 2.97754, 2.97754, 2.97754, 2.97754, 2.97754, 2.97754,
+            2.97754, 0.946, 0.946, 0.946, 0.946,
+          ],
+          [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [
+            5.41, 5.41, 5.41, 5.41, 5.41, 5.41, 13.61886, 13.61886, 5.41, 5.41,
+            5.41, 5.41,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [-3.7, 0, 0, 0, 0, 0, 0, 0, -3.7, -1e3, -1e3, -3.7],
+          [
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+          ],
+          [0.46, 1, 1, 0.28, 0.55, 0.81, 1, 0.25, 0.44, 0.24, 0.24, 0.65],
+          [0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 5.4, 5.4, 0.1],
+          [1, 0.65, 0.65, 0.16, 0.16, 0.43, 0.41, 0.43, 0.29, 0, 0, 0.29],
+          [-68.5, -70, -70, -70, -54.5, -70, -70, -70, -70, -70, -70, -70],
+          [
+            -37.3, -22.5, -40, -8.6, -12.2, -12, -10.1, -22.3, -13.6, -7.2,
+            -7.2, -11.3,
+          ],
+          [
+            -60.4, -10.6, -1.5, -9.9, -70, -32.3, -34.8, -14.8, -22.7, -5.7,
+            -5.7, -70,
+          ],
+          [250, 50, 50, 50, 50, 50, 50, 50, 250, 250, 250, 250],
+          [
+            2500, 18e3, 18e3, 18e3, 18e3, 18e3, 18e3, 18e3, 2500, 2500, 2500,
+            2500,
+          ],
+          [0.53, 0.72, 0.72, 0.52, 0.72, 0.87, 0.87, 0.87, 0.78, 1, 1, 0],
+          [1, 1, 1, 1, 1, 0.74, 0.74, 0.74, 0.83, 0.83, 0.83, 1],
+          [3, 4, 3, 4, 3, 3, 4, 4, 4, 4, 4, 1],
+          [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+          [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+          [
+            "8m",
+            "6m",
+            "4m",
+            "8m",
+            "8m",
+            "6m",
+            "6m",
+            "5m",
+            "5m",
+            "5m",
+            "5m",
+            "1m",
+          ],
+          [1, 1, 1, 1, 1, 0.6, 0.9, 1, 0.8, 0.9, 0.6, 1],
+          [
+            "4n",
+            "8n",
+            "16n",
+            "16n",
+            "16n",
+            "16n",
+            "4n",
+            "16n",
+            "16n",
+            "8n",
+            "8n",
+            "16n",
+          ],
+          [
+            "2n",
+            "1n",
+            "8n",
+            "1n",
+            "8n",
+            "4n",
+            "2n",
+            "4n",
+            "1n",
+            "2n",
+            "2n",
+            "16n",
+          ],
+          [4, 3, 1, 1, 1, 3, 1, 6, 6, 3, 3, 1],
+          [7, 8, 5, 8, 8, 8, 5, 8, 8, 5, 5, 3],
+          [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+          [
+            -16.9, -30.4, -13.7, -22.8, -6.6, -9.8, -13.8, -6.9, -27.1, -22.2,
+            -1e3, -10.4,
+          ],
+          [
+            "sine",
+            "sine4",
+            "sine4",
+            "sine2",
+            "sine4",
+            "sine2",
+            "square2",
+            "sine",
+            "sine",
+            "fatsine2",
+            "fatsine2",
+            "sine",
+          ],
+          [
+            1.8225, 3.70386, 1.94672, 1.01306, 0.43904, 1.18638, 1.8225, 0.54,
+            0.0675, 0.24334, 1.70368, 0.41458,
+          ],
+          [
+            5.4675, 1, 5.4675, 1, 9.9825, 1, 0.06, 1, 1.31712, 1.31712, 0.2025,
+            0.55566,
+          ],
+          [0.59, 0.4, 0.64, 0.4, 0.72, 0.4, 0.86, 0.78, 0.29, 0.57, 0.62, 0.49],
+          [
+            25.3125, 17.24976, 35.56224, 21.47466, 9.9825, 15.00282, 28.47312,
+            0.73002, 21.47466, 24.31344, 24.31344, 17.24976,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [5281, 362, 362, 362, 341, 362, 3587, 1748, 4035, 5399, 5399, 1594],
+          [0, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+          [
+            1.09744, 1.09744, 1.09744, 0.001, 1.01306, 2.81216, 2.81216,
+            0.02662, 1.09744, 0.3125, 0.3125, 1.09744,
+          ],
+          [0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 23.34102],
+          [0.83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [24.31344, 0, 0, 0, 0, 9.9825, 9.9825, 9.9825, 0, 0, 0, 0],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [1.9, 1.1, 1.1, 1.1, 1.1, 1.8, 1.8, 1.8, 1.1, 1.1, 1.1, 1.1],
+          [
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+          ],
+          [0.2, 0.61, 0.92, 0.99, 0.14, 0.53, 0.38, 0.24, 0.27, 0.27, 0, 0],
+          [1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1, 1, 1, 1],
+          [1, 0.61, 0.71, 0.71, 0.07, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0],
+          [-70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -2.2],
+          [
+            -20.8, -11.3, -36.1, -25.9, -35, -33.9, -19.7, -34.5, -16.6, -20.3,
+            -2.6, -0.9,
+          ],
+          [-37.3, 0, 0, -47.3, 0, -10.6, -17, -55.6, 0, 0, 0, 0],
+          [250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+          [
+            2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500,
+            2500,
+          ],
+          [0.11, 0.31, 0.48, 0, 0.37, 0, 0, 0.33, 0.18, 1, 1, 1],
+          [0.91, 1, 1, 1, 0.9, 0.91, 0.41, 0.78, 1, 0.92, 0.92, 0.38],
+          [0, 3.5, 3.5, 54, 54, 89, 67, 32, 19, 0, 0, 0],
+          [0, 0.7, 0.7, 0, 0, 0.7, 0.7, 0.7, 0, 0, 0, 0],
+          [0.32, 0, 0, 0, 0, 0, 0, 0, 0.32, 0.32, 0.32, 0.01],
+          [37.3, 1.5, 1.5, 1.5, 1.5, 1, 1, 1, 37.3, 37.3, 37.3, 0],
+          [0, 180, 180, 180, 180, 75, 75, 220, 0, 0, 0, 0],
+          [0.1, 0, 0, 0.27, 0.43, 0, 0, 0, 0, 0, 0, 0],
+          [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+          [
+            "E2",
+            "C#3",
+            "C#3",
+            null,
+            "G#2",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "E4",
+          ],
+          [
+            "F#2",
+            "E4",
+            "E4",
+            "C#5",
+            "G#4",
+            "C#5",
+            "C#4",
+            "F#3",
+            "C#4",
+            "B4",
+            "B4",
+            "C#4",
+          ],
+          [
+            "6m",
+            "2n",
+            "6m",
+            "4m",
+            "8m",
+            "8m",
+            "8m",
+            "7m",
+            "5m",
+            "5m",
+            "5m",
+            "5m",
+          ],
+          [0.9, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.6, 1, 1, 1, 1],
+          [
+            -22.3, -1e3, -1e3, -29.4, -29.4, -25.8, -23.9, -22.6, -22.3, -22.3,
+            -22.3, -22.3,
+          ],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [1, 0.77, 0.87, 0.44, 0.8, 0.77, 0.77, 0.77, 0.61, 0.61, 0.61, 0.44],
+          [
+            "1n",
+            "1n",
+            "1n",
+            "6m",
+            "1n",
+            "1n",
+            "3m",
+            "1n",
+            "1n",
+            "1n",
+            "1n",
+            "4m",
+          ],
+          [
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sine",
+            "sine",
+            "sawtooth",
+            "sawtooth",
+            "sine",
+          ],
+          [
+            1.18638, 0.05488, 1.37842, 9.86078, 9.86078, 9.86078, 9.86078,
+            0.71874, 6.28864, 6.28864, 6.28864, 6.28864,
+          ],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 0.79, 0.79, 0.79, 0.79, 0.79, 0.79, 0.79, 1, 0.73, 0.73, 0.82],
+          [
+            5, 29.58234, 46.72128, 29.58234, 60, 29.58234, 29.58234, 29.58234,
+            23.34102, 23.34102, 23.34102, 23.34102,
+          ],
+          [
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+          ],
+          [196, 229, 229, 130, 130, 130, 2011, 130, 1728, 1690, 1690, 714],
+          [0, 0.4, 0.4, 0.4, 0.4, 0.4, 0, 0.4, 0, 0, 0, 0],
+          [
+            4.32, 0.39366, 0.39366, 3.14928, 3.14928, 3.14928, 3.90224, 3.14928,
+            4.32, 4.32, 4.32, 4.32,
+          ],
+          [0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
+          [0, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0, 0, 0, 0],
+          [
+            0, 15.00282, 15.00282, 15.00282, 15.00282, 15.00282, 15.00282,
+            15.00282, 0, 0, 0, 0,
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [1.1, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 1.1, 1.1, 1.1, 1.1],
+          [
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+          ],
+          [
+            0.86, 0.47, 0.47, 0.47, 0.47, 0.47, 0.47, 0.47, 0.86, 0.86, 0.86,
+            0.86,
+          ],
+          [1, 8.1, 8.1, 8.1, 8.1, 8.1, 8.1, 8.1, 1, 1, 1, 1],
+          [
+            0.93, 0.59, 0.59, 0.59, 0.59, 0.59, 0.59, 0.59, 0.93, 0.93, 0.93,
+            0.93,
+          ],
+          [-70, 0, 0, -36.9, -36.9, -36.9, -36.9, -40.1, -70, -70, -70, -70],
+          [0, 0, 0, 0, 0, 0, 0, -10, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, -37.5, -37.5, 0, 0, 0, 0],
+          [250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+          [
+            2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500,
+            2500,
+          ],
+          [0.8, 0.8, 0.8, 0.34, 0.34, 0.34, 0.34, 0.34, 0.8, 0.8, 0.8, 0.8],
+          [0.6, 0.87, 0.87, 0.87, 0.87, 0.87, 0.87, 0.87, 0.6, 0.6, 0.6, 0.6],
+          [3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+          [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+          [180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0.5, 0, 2.4, -11.5, -20.5, 0, 0, 0, 0, 25.7],
+          [-0.56, 0, -0.41, -1, -1, -0.88, -0.67, -1, -1, -1, -1, -0.57],
+          [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+          [
+            "G#3",
+            "G#3",
+            "G#3",
+            null,
+            "F#3",
+            null,
+            null,
+            null,
+            "G#3",
+            "F#4",
+            "F#4",
+            "G#3",
+          ],
+          [
+            "E4",
+            "E4",
+            "E4",
+            "F#5",
+            "G#4",
+            "E6",
+            "F#4",
+            "C#4",
+            null,
+            null,
+            null,
+            "E4",
+          ],
+          [
+            "3m",
+            "2n",
+            "6m",
+            "8m",
+            "6m",
+            "8m",
+            "7m",
+            "7m",
+            "8m",
+            "8m",
+            "8m",
+            "8m",
+          ],
+          [1, 1, 1, 1, 1, 1, 1, 0.7, 1, 1, 1, 1],
+          [
+            -1e3, -1e3, -1e3, -20.4, -20.4, -18.7, -24.2, -13, -1e3, -1e3, -1e3,
+            -1e3,
+          ],
+          [0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 0.23, 1, 0.64, 1, 1, 1, 1, 0.37],
+          [
+            "1n",
+            "2n",
+            "2n",
+            "2n",
+            "7m",
+            "6m",
+            "8m",
+            "7m",
+            "6m",
+            "10m",
+            "10m",
+            "6m",
+          ],
+          [
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sawtooth",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+          ],
+          [0, 0, 20.3, 0, 0, 23.1, -10.2, 0, 0, 0, 0, 24.2],
+          [
+            0.21296, 0.579, 0.579, 2.81216, 2.81216, 2.81216, 2.81216, 7.78034,
+            1.70368, 1.70368, 1.70368, 1.70368,
+          ],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 1, 0.71, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+          [
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+            "linear",
+          ],
+          [420, 420, 420, 420, 420, 269, 281, 281, 420, 420, 420, 420],
+          [0.4, 0.4, 0.4, 0.4, 0.4, 0.35, 0.35, 0.35, 0.4, 0.4, 0.4, 0.4],
+          [
+            0.001, 0.001, 0.001, 8.4375, 8.4375, 8.4375, 8.4375, 8.4375, 0.001,
+            0.001, 0.001, 0.001,
+          ],
+          [0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+            "exponential",
+          ],
+          [1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1],
+          [3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+          [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+          [180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0.76, 0, 0.7, 0.75, 1, 0.74, 0.63, 0.65, 0.55, 0.01, 0.01, 0.22],
+          [
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+            "sine",
+          ],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0.75, 0.75, 0.75, 0.75],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+          [-56, 0, 0, -49.5, -49.5, -49.5, -37.1, -51.9, -56, -56, -56, -56],
+          [0, 0, 0, 0, 0, 0, -21.1, -37.8, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, -42.4, -19.3, 0, 0, 0, 0],
+          [250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+          [
+            2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500,
+            2500,
+          ],
+          [0.8, 0.8, 0.8, 0, 0, 0, 0.43, 0.7, 0.8, 0.8, 0.8, 0.8],
+          [0.6, 0.6, 0.6, 0.74, 0.74, 0.74, 1, 0.47, 0.6, 0.6, 0.6, 0.6],
+          [
+            -9.4, -8.2, -9.3, -5.1, -3.5, -7.6, -12, -2.6, -5.7, -7.7, -17.3,
+            -70,
+          ],
+          [0, 0, 0, 0, 0, 0.8, 0, 0, 1.4, 0.5, 0.5, -18.1],
+          [-0.4, 0, 0, 0, 0, -0.4, 0, 0, -70, -3.4, -3.4, -12.1],
+          [139, 250, 458, 250, 194, 250, 50, 70, 135, 50, 50, 135],
+          [
+            2500, 2500, 2500, 2500, 2500, 2500, 15561, 15561, 6347, 9950, 9950,
+            6347,
+          ],
+          [0.72, 1, 1, 1, 1, 0.77, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0.8, 0, 0, 0, 0, 0.8, 0, 0.24, 0.24, 0.24, 0.19],
+          [1, 0.6, 1, 0.88, 0.91, 0.86, 0.6, 0.6, 0.03, 0.03, 0.03, 1],
+          [
+            -1e3, -1e3, -20.6, -22.9, -24.2, -1e3, -16.4, -2.1, -9.8, -1e3,
+            -1e3, -19.4,
+          ],
+          [-70, 0, -70, -67.5, -70, -70, -70, -70, -69.5, -69.5, -69.5, -69.5],
+          [
+            -12.9, 0, -33.9, -20.7, -15.1, -33.5, -37.6, -35.9, -19.1, -25.9,
+            -25.9, -19.1,
+          ],
+          [-42.6, 0, -32.4, -70, 0, -50.9, -34.8, 0, -33.2, -70, -70, -33.2],
+          [250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+          [
+            2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 6456, 6456, 6456,
+            6456,
+          ],
+          [3.5, 3.5, 0, 3.5, 3.5, 3.5, 3.5, 3.5, 35, 35, 35, 35],
+          [0.7, 0.7, 0.12, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+          [180, 180, 212, 180, 180, 180, 180, 180, 180, 180, 180, 180],
+          [0, 0, 0.31, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ]),
+        (sp = {
+          scale: ["E", "F#", "G#", "B", "C#"],
+          tuning: { type: "just" },
+          M: {
+            fadeIn: 15,
+            envelope: {
+              baseFrequency: 0.001,
+              partials: [spl[18][si], spl[19][si], spl[20][si], spl[21][si]],
+              phase: spl[22][si],
+              minGain: spl[23][si],
+              maxGain: spl[24][si],
+            },
+            compressor: {
+              attack: spl[25][si],
+              knee: spl[26][si],
+              ratio: spl[27][si],
+              release: spl[28][si],
+              threshold: spl[29][si],
+            },
+            eq: {
+              low: spl[30][si],
+              mid: spl[31][si],
+              high: spl[32][si],
+              lowFrequency: spl[33][si],
+              highFrequency: spl[34][si],
+            },
+            gain: spl[35][si],
+          },
+          returns: { reverb: { decay: spl[36][si], pre: spl[37][si] } },
+          B1: {
+            volMin: spl[38][si],
+            volMax: spl[39][si],
+            volLFORate: spl[40][si],
+            difference: spl[41][si],
+            note: spl[42][si],
+            filterFrequency: spl[43][si],
+            filterResonance: spl[44][si],
+          },
+          B2: {
+            volMin: spl[45][si],
+            volMax: spl[46][si],
+            volLFORate: spl[47][si],
+            difference: spl[48][si],
+            filterFrequency: spl[49][si],
+            filterResonance: spl[50][si],
+            note: spl[51][si],
+          },
+          D: {
+            polyphony: 3,
+            chord: [spl[53][si], spl[54][si], spl[55][si]],
+            vol: spl[56][si],
+            gainLFOMin: spl[57][si],
+            gainLFOMax: spl[58][si],
+            gainLFORate: spl[59][si],
+            filterFrequency: spl[60][si],
+            filterResonance: spl[61][si],
+            filterRate: spl[62][si],
+            filterDepth: spl[63][si],
+            oscillators: [
+              {
+                coarse: spl[64][si],
+                fine: spl[65][si],
+                envelope: {
+                  attack: 0.946,
+                  decay: 0.6,
+                  sustain: spl[68][si],
+                  release: spl[69][si],
+                  decayCurve: "exponential",
+                  releaseCurve: "exponential",
+                },
+                vol: spl[72][si],
+              },
+              {
+                coarse: spl[73][si],
+                fine: spl[74][si],
+                envelope: {
+                  attack: spl[75][si],
+                  decay: spl[76][si],
+                  sustain: 1,
+                  release: 30.2,
+                  decayCurve: "exponential",
+                  releaseCurve: "exponential",
+                },
+                vol: spl[81][si],
+              },
+              {
+                coarse: spl[82][si],
+                fine: spl[83][si],
+                envelope: {
+                  attack: 0.946,
+                  decay: 0.6,
+                  sustain: 1,
+                  release: 5.41,
+                  decayCurve: "exponential",
+                  releaseCurve: "exponential",
+                },
+                vol: spl[90][si],
+              },
+              {
+                coarse: spl[91][si],
+                fine: spl[92][si],
+                envelope: {
+                  attack: spl[93][si],
+                  decay: 0.6,
+                  sustain: 1,
+                  release: spl[96][si],
+                  decayCurve: "exponential",
+                  releaseCurve: "exponential",
+                },
+                vol: spl[99][si],
+              },
+            ],
+            autoPan: {
+              type: "sine",
+              depth: spl[101][si],
+              frequency: spl[102][si],
+              wet: spl[103][si],
+            },
+            eq: {
+              low: spl[104][si],
+              mid: spl[105][si],
+              high: spl[106][si],
+              lowFrequency: spl[107][si],
+              highFrequency: spl[108][si],
+            },
+            sends: { direct: spl[109][si], reverb: spl[110][si] },
+          },
+          S: {
+            octave: spl[111][si],
+            scaleDegreeShiftProbability: 0.1,
+            clusterInterval: spl[114][si],
+            clusterProbability: spl[115][si],
+            minNoteDuration: spl[116][si],
+            maxNoteDuration: spl[117][si],
+            minClusterSize: spl[118][si],
+            maxClusterSize: spl[119][si],
+            maxScaleDegreeStep: 2,
+            vol: spl[121][si],
+            oscillatorType: spl[122][si],
+            amplitudeEnvelope: {
+              attack: spl[123][si],
+              decay: spl[124][si],
+              sustain: spl[125][si],
+              release: spl[126][si],
+              decayCurve: "exponential",
+              releaseCurve: "exponential",
+            },
+            filterFrequency: spl[129][si],
+            filterResonance: spl[130][si],
+            filterEnvelope: {
+              attack: spl[131][si],
+              decay: spl[132][si],
+              sustain: spl[133][si],
+              release: spl[134][si],
+              decayCurve: "exponential",
+              releaseCurve: "exponential",
+              octaves: spl[137][si],
+            },
+            autoPan: {
+              type: "sine",
+              depth: spl[139][si],
+              frequency: spl[140][si],
+              wet: spl[141][si],
+            },
+            eq: {
+              low: spl[142][si],
+              mid: spl[143][si],
+              high: spl[144][si],
+              lowFrequency: 250,
+              highFrequency: 2500,
+            },
+            sends: { direct: spl[147][si], reverb: spl[148][si] },
+            chorus: {
+              delayTime: spl[149][si],
+              depth: spl[150][si],
+              feedback: spl[151][si],
+              frequency: spl[152][si],
+              spread: spl[153][si],
+              wet: spl[154][si],
+            },
+          },
+          P1: {
+            polyphony: 2,
+            chord: [spl[156][si], spl[157][si]],
+            repeatInterval: spl[158][si],
+            repeatProbability: spl[159][si],
+            vol: spl[160][si],
+            gainLFOMin: 0,
+            gainLFOMax: spl[162][si],
+            gainLFORate: spl[163][si],
+            oscillatorType: spl[164][si],
+            amplitudeEnvelope: {
+              attack: spl[165][si],
+              decay: 1,
+              sustain: spl[167][si],
+              release: spl[168][si],
+              attackCurve: "linear",
+              decayCurve: "exponential",
+              releaseCurve: "linear",
+            },
+            filterFrequency: spl[172][si],
+            filterResonance: spl[173][si],
+            filterEnvelope: {
+              attack: spl[174][si],
+              decay: 0.8,
+              sustain: spl[176][si],
+              release: spl[177][si],
+              decayCurve: "exponential",
+              releaseCurve: "exponential",
+              octaves: spl[180][si],
+            },
+            autoPan: {
+              type: "sine",
+              depth: spl[182][si],
+              frequency: spl[183][si],
+              wet: spl[184][si],
+            },
+            eq: {
+              low: spl[185][si],
+              mid: spl[186][si],
+              high: spl[187][si],
+              lowFrequency: 250,
+              highFrequency: 2500,
+            },
+            sends: { direct: spl[190][si], reverb: spl[191][si] },
+            chorus: {
+              delayTime: 3.5,
+              depth: 0.7,
+              feedback: 0,
+              frequency: 1.5,
+              spread: 180,
+              wet: 0,
+            },
+            detune: spl[198][si],
+            pan: spl[199][si],
+          },
+          P2: {
+            polyphony: 2,
+            chord: [spl[201][si], spl[202][si]],
+            repeatInterval: spl[203][si],
+            repeatProbability: spl[204][si],
+            vol: spl[205][si],
+            gainLFOMin: spl[206][si],
+            gainLFOMax: spl[207][si],
+            gainLFORate: spl[208][si],
+            oscillatorType: spl[209][si],
+            detune: spl[210][si],
+            amplitudeEnvelope: {
+              attack: spl[211][si],
+              decay: 1,
+              sustain: spl[213][si],
+              release: spl[214][si],
+              attackCurve: "linear",
+              decayCurve: "exponential",
+              releaseCurve: "linear",
+            },
+            filterFrequency: spl[218][si],
+            filterResonance: spl[219][si],
+            filterEnvelope: {
+              attack: spl[220][si],
+              decay: 0.8,
+              sustain: 0,
+              release: 0,
+              decayCurve: "exponential",
+              releaseCurve: "exponential",
+              octaves: 1.1,
+            },
+            chorus: {
+              delayTime: 3.5,
+              depth: 0.7,
+              feedback: 0,
+              frequency: 1.5,
+              spread: 180,
+              wet: 0,
+            },
+            pan: spl[233][si],
+            autoPan: {
+              type: "sine",
+              depth: spl[235][si],
+              frequency: 1,
+              wet: 0.5,
+            },
+            eq: {
+              low: spl[238][si],
+              mid: spl[239][si],
+              high: spl[240][si],
+              lowFrequency: 250,
+              highFrequency: 2500,
+            },
+            sends: { direct: spl[243][si], reverb: spl[244][si] },
+          },
+          binauralEq: {
+            low: spl[245][si],
+            mid: spl[246][si],
+            high: spl[247][si],
+            lowFrequency: spl[248][si],
+            highFrequency: spl[249][si],
+          },
+          binauralSends: { direct: spl[250][si], reverb: spl[251][si] },
+          padSends: { direct: spl[252][si], reverb: spl[253][si] },
+          padVol: spl[254][si],
+          padEq: {
+            low: spl[255][si],
+            mid: spl[256][si],
+            high: spl[257][si],
+            lowFrequency: 250,
+            highFrequency: spl[259][si],
+          },
+          padChorus: {
+            delayTime: spl[260][si],
+            depth: spl[261][si],
+            feedback: 0,
+            frequency: 1.5,
+            spread: spl[264][si],
+            wet: spl[265][si],
+          },
+        }),
+        (nf = 2),
+        (p.b1 = sp.B1.note ? nm[sp.B1.volLFORate] : nf),
+        (p.b2 = sp.B2.note && 0 < sp.B2.volMax ? nm[sp.B2.volLFORate] : nf),
+        (p.p1 =
+          -100 < sp.padVol && 0 < sp.P1.gainLFOMax
+            ? nm[sp.P1.gainLFORate]
+            : nf),
+        (p.p1p =
+          -100 < sp.padVol && 0 < sp.P1.gainLFOMax
+            ? parseFloat(sp.P1.autoPan.frequency)
+            : nf),
+        (p.p2 =
+          -100 < sp.padVol && 0 < sp.P2.gainLFOMax
+            ? nm[sp.P2.gainLFORate]
+            : nf),
+        (p.p2p =
+          -100 < sp.padVol && 0 < sp.P2.gainLFOMax
+            ? sp.P2.autoPan.frequency
+            : nf),
+        (p.d =
+          -100 < sp.D.vol && 0 < sp.D.gainLFOMax ? nm[sp.D.gainLFORate] : nf),
+        (p.dp =
+          -100 < sp.D.vol && 0 < sp.D.gainLFOMax
+            ? parseFloat(sp.D.autoPan.frequency)
+            : nf),
+        (p.df =
+          -100 < sp.D.vol && 0 < sp.D.gainLFOMax ? nm[sp.D.filterRate] : nf),
+        (p.s = -100 < sp.S.vol ? nm[sp.S.clusterInterval] : nf),
+        (p.sp = -100 < sp.S.vol ? parseFloat(sp.S.autoPan.frequency) : nf),
+        (p.el_top = ""),
+        (p.el_bot = ""),
+        "none" != p.e.v)
+      ) {
+        mv = `*(map(w${p.uSE[0]},0.,c${p.uSE[0]},${p.el_exp.v[0]},${p.el_exp.v[1]}))`
+        for (let e = 0; e <= 4; e++)
+          (idx = e + 6),
+            (r = map_r(hns[idx + 1], 0, 1, 0.1, 0.275)),
+            (cd = hns[idx]),
+            3 == p.e_xy &&
+              (1 == p.e_z.v &&
+                (p.el_top += `c=${p.e.v}(V(uve.x,uve.y+.4),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx]},${
+                  hns[idx + 1]
+                }*.8)),V(${r}${mv}),0.1,0.0025);c=${
+                  p.e.v
+                }(V(uve.x,uve.y-.4),c,W(map(w${p.uSC[1]},0.,c${p.uSC[1]},${
+                  hns[idx + 2]
+                },${hns[idx + 3]}*.8)),V(${r}${mv}),0.1,0.0025);`),
+              (0 != p.e_z.v && 1 != p.e_z.v) ||
+                (p.el_bot += `c=${p.e.v}(V(uve.x,uve.y+.4),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx]},${
+                  hns[idx + 1]
+                }*.8)),V(${r}${mv}),0.2,0.0025);c=${
+                  p.e.v
+                }(V(uve.x,uve.y-.4),c,W(map(w${p.uSC[1]},0.,c${p.uSC[1]},${
+                  hns[idx + 2]
+                },${hns[idx + 3]}*.8)),V(${r}${mv}),0.2,0.0025);`)),
+            4 == p.e_xy &&
+              (1 == p.e_z.v &&
+                (p.el_top += `c=${p.e.v}(V(uve.x,uve.y+.4),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx]},${
+                  hns[idx + 1]
+                }*.8)),V(${r}${mv}),0.1,0.0025);c=${
+                  p.e.v
+                }(V(uve.x,uve.y-.4),c,W(map(w${p.uSC[0]},0.,c${p.uSC[0]},${
+                  hns[idx]
+                },${hns[idx + 1]}*.8)),V(${r}${mv}),0.1,0.0025);`),
+              (0 != p.e_z.v && 1 != p.e_z.v) ||
+                (p.el_bot += `c=${p.e.v}(V(uve.x,uve.y+.4),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx + 2]},${
+                  hns[idx + 3]
+                }*.8)),V(${r}${mv}),0.2,0.0025);c=${
+                  p.e.v
+                }(V(uve.x,uve.y-.4),c,W(map(w${p.uSC[0]},0.,c${p.uSC[0]},${
+                  hns[idx + 2]
+                },${hns[idx + 3]}*.8)),V(${r}${mv}),0.2,0.0025);`)),
+            2 == p.e_xy &&
+              ((p.el_top += `c=${p.e.v}(V(uve.x,uve.y),c,W(map(w${
+                p.uSC[0]
+              },0.,c${p.uSC[0]},${hns[idx]},${
+                hns[idx + 1]
+              }*.8)),V(${r}${mv}),0.1,0.0025);`),
+              (p.el_bot += `c=${p.e.v}(V(uve.x,uve.y),c,W(map(w${
+                p.uSC[0]
+              },0.,c${p.uSC[0]},${hns[idx + 4]},${
+                hns[idx + 5]
+              }*.8)),V(${r}${mv}),0.2,0.0025);c=${
+                p.e.v
+              }(V(uve.x,uve.y+.5),c,W(map(w${p.uSC[0]},0.,c${p.uSC[0]},${
+                hns[idx + 4]
+              },${hns[idx + 5]}*.8)),V(${r}${mv})*0.8,0.2,0.0025);c=${
+                p.e.v
+              }(V(uve.x,uve.y-.5),c,W(map(w${p.uSC[0]},0.,c${p.uSC[0]},${
+                hns[idx + 4]
+              },${hns[idx + 5]}*.8)),V(${r}${mv})*0.8,0.2,0.0025);`)),
+            1 == p.e_xy &&
+              (1 == p.e_z.v &&
+                (p.el_top += `c=${p.e.v}(V(uve.x,uve.y),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx]},${
+                  hns[idx + 1]
+                }*.8)),V(${r}${mv}),0.1,0.0025);`),
+              (0 != p.e_z.v && 1 != p.e_z.v) ||
+                (p.el_bot += `c=${p.e.v}(V(uve.x,uve.y),c,W(map(w${
+                  p.uSC[0]
+                },0.,c${p.uSC[0]},${hns[idx + 2]},${
+                  hns[idx + 3]
+                }*.8)),V(${r}${mv})*1.2,0.2,0.0025);`))
+      }
+      let hnx = hash_ints.map((e, n) => map_v_str(n, p.grid.v[0], p.grid.v[1])),
+        hny = hash_ints.map((e, n) => map_v_str(n, p.grid.v[2], p.grid.v[3]))
+      ;(p.grids = `F A,Bx,By,Px,Py,Hx,Hy,Hz,S,ctm;W cb,ct;A=.8;Py=0.;Px=0.;cb=W(.1); ct=W(.9);
+           `),
+        (gw0 = ["1", "2", "4", "8", "14"])
+      for (let e = 1; e <= 4; e++)
+        (radial_modifier = ""),
+          4 == e && (radial_modifier = "map(length(uv),0.,1.,.8,.9)*"),
+          shuffle(p.gw),
+          (wbx = p.gw[0]),
+          (wby = p.gw[1]),
+          (whx = p.gw[2]),
+          (why = p.gw[3]),
+          1 == e &&
+            (shuffle(gw0),
+            (wbx = gw0[0]),
+            (wby = gw0[1]),
+            (whx = gw0[2]),
+            (why = gw0[3])),
+          (p.grids += `
+ ctm=${rb(0.17, 0.5)};
+cb=${radial_modifier}W(map(wGC,0.,cGC,0.,${rb(
+            0.1,
+            0.15
+          )}));ct=${radial_modifier}W(map(wGC,0.,cGC,ctm,${rb(0.95, 1.05)}));
+Bx=map(w${wbx},0.,c${wbx},${hnx[e]},${hnx[e]}*${rb(
+            1.05,
+            1.2
+          )});By=map(w${wby},0.,c${wby},${hny[e]},${hny[e]}*${rb(1.05, 1.2)});
+if (${rd()}>0.5){Py=map(wGP,0.,cGP,0.,${rb(0.018, 0.025)});}
+Hx=map(w${whx},0.,c${whx},-A*${rb(0.55, 0.45)},${rb(
+            -0.05,
+            0.05
+          )});Hy=map(w${why},0.,c${why},-A*${rb(0.55, 0.45)},${rb(
+            -0.05,
+            0.05
+          )});S=${rb(0.8, 1.8)};${
+            p.el_bot
+          }c=mix(c,cb,smoothstep(0.,S,A*cos(Bx*TAU*(uv.x+(Px*TAU)))+Hx));c=mix(c,cb,smoothstep(0.,S,A*cos(By*TAU*(uv.y+(Py*TAU)))+Hy));c=mix(c,ct,smoothstep(0.,S,A*cos(Bx*TAU*(uw.x+(Px*TAU)))+Hx));c=mix(c,ct,smoothstep(0.,S,A*cos(By*TAU*(uw.y+(Py*TAU)))+Hy));
+    `)
+      ;(num_steps = 111), (pal_lerp = [])
+      for (let n = 0; n < p.pal.v.length - 1; n++)
+        for (let e = 0; e < num_steps; e++)
+          pal_lerp.push(lerp_hex(p.pal.v[n], p.pal.v[n + 1], e / num_steps))
+      for (let n = 0; n < rb(0, pal_lerp.length); n++)
+        (e = pal_lerp.shift()), pal_lerp.push(e)
+      function hex_rgb(e) {
+        e = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e)
+        return e
+          ? {
+              r: parseInt(e[1], 16),
+              g: parseInt(e[2], 16),
+              b: parseInt(e[3], 16),
+            }
+          : null
+      }
+      function sn(e) {
+        return e.toFixed(5)
+      }
+      ;(d_array = []),
+        pal_lerp.forEach((e) => {
+          ;(c_rgb = hex_rgb(e)), d_array.push(c_rgb.r, c_rgb.g, c_rgb.b)
+        })
+      var texture = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, texture),
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGB,
+          d_array.length / 3,
+          1,
+          0,
+          gl.RGB,
+          gl.UNSIGNED_BYTE,
+          new Uint8Array(d_array)
+        ),
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST),
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST),
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE),
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      const alignment = 1
+      function U(e, n) {
+        ;(this.n = e), (this.s = n), (this.l = gl.getUniformLocation(pg, e))
+      }
+      function R(e) {
+        ;(b = e.createBuffer()),
+          e.bindBuffer(e.ARRAY_BUFFER, b),
+          e.bufferData(e.ARRAY_BUFFER, R.v, e.STATIC_DRAW)
+      }
+      function rz() {
+        ;(ww = window.innerWidth),
+          (hh = window.innerHeight),
+          hh >= 0.9 * ww
+            ? ((d = ww),
+              (w = d),
+              (h = (16 * d) / 9),
+              h > hh && ((d = hh), (w = (9 * d) / 16), (h = d)),
+              (cv.style.transform = "rotate(0deg)"))
+            : ((d = hh),
+              (w = d),
+              (h = (16 * d) / 9),
+              h > ww && ((d = ww), (w = (9 * d) / 16), (h = d)),
+              (cv.style.transform = "rotate(-90deg)")),
+          (cv.width = w),
+          (cv.height = h),
+          ur.set(w, h),
+          gl.viewport(0, 0, w, h),
+          (document.body.style.backgroundColor = "#000")
+      }
+      gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment),
+        (vs =
+          "attribute vec2 a_position;attribute vec2 a_texcoord;varying vec2 v_texcoord;void main(){gl_Position=vec4(a_position,0,1);v_texcoord=a_texcoord;}"),
+        (fs = `
+#define PI 3.141592653589793
+#define TAU 6.283185307179586
+#define V vec2
+#define W vec3
+#define F float
+precision highp float;uniform V ur;uniform sampler2D u_tex;uniform F fc;F shPos=${p.e_xy.toFixed(
+          5
+        )};F rotv=${p.rotation.v};F cB1=${sn(p.b1)};F cB2=${sn(
+          p.b2
+        )};F cP1=${sn(p.p1)};F cP1p=${sn(p.p1p)};F cP2=${sn(p.p2)};F cP2p=${sn(
+          p.p2p
+        )};F cD=${sn(p.d)};F cDf=${sn(p.df)};F cDp=${sn(p.dp)};F cS=${sn(
+          p.s
+        )};F cSp=${sn(
+          p.sp
+        )};F c1=1.;F c2=2.;F c4=4.;F c8=8.;F c14=14.;F c20=20.;F fB1=mod(fc,cB1);F fB2=mod(fc,cB2);F fP1=mod(fc,cP1);F fP1p=mod(fc,cP1p);F fP2=mod(fc,cP2);F fP2p=mod(fc,cP2p);F fD=mod(fc,cD);F fDp=mod(fc,cDp);F fDf=mod(fc,cDf);F fS=mod(fc,cS);F fSp=mod(fc,cSp);F f1=mod(fc,c1);F f2=mod(fc,c2);F f4=mod(fc,c4);F f8=mod(fc,c8);F f14=mod(fc,c14);F f20=mod(fc,c20);uniform F zB1,zB2,zP1,zP1p,zP2,zP2p,zD,zDp,zDf,zS,zSp,z1,z2,z4,z8,z14,z20;F wB1=cB1/2.*sin(TAU/cB1*fB1+zB1)+cB1/2.;F wB2=cB2/2.*sin(TAU/cB2*fB2+zB2)+cB2/2.;F wP1=cP1/2.*sin(TAU/cP1*fP1+zP1)+cP1/2.;F wP1p=cP1p/2.*sin(TAU/cP1p*fP1p+zP1p)+cP1p/2.;F wP2=cP2/2.*sin(TAU/cP2*fP2+zP2)+cP2/2.;F wP2p=cP2p/2.*sin(TAU/cP2p*fP2p+zP2p)+cP2p/2.;F wD=cD/2.*sin(TAU/cD*fD+zD)+cD/2.;F wDp=cDp/2.*sin(TAU/cDp*fDp+zDp)+cDp/2.;F wDf=cDf/2.*sin(TAU/cDf*fDf+zDf)+cDf/2.;F wS=cS/2.*sin(TAU/cS*fS+zS)+cS/2.;F wSp=cSp/2.*sin(TAU/cSp*fSp+zSp)+cSp/2.;F w1=1./2.*sin(TAU/1.*(f1)+z1)+1./2.;F w2=2./2.*sin(TAU/2.*(f2)+z2)+2./2.;F w4=4./2.*sin(TAU/4.*(f4)+z4)+4./2.;F w8=8./2.*sin(TAU/8.*(f8)+z8)+8./2.;F w14=14./2.*sin(TAU/14.*(f14)+z14)+14./2.;F w20=20./2.*sin(TAU/20.*(f20)+z20)+20./2.;F wGC=w${
+          p.uGC
+        };F cGC=c${p.uGC};F wGP=w${p.uGP};F cGP=c${p.uGP};F wFC=w${
+          p.uFC
+        };F cFC=c${p.uFC};F wSpiral=w${p.uSpiral};F cSpiral=c${
+          p.uSpiral
+        };F map(F value,F min1,F max1,F min2,F max2){return min2+(value-min1)*(max2-min2)/(max1-min1);}
+V rot(V uv,F a){uv=mat2(cos(a),-sin(a),sin(a),cos(a))*uv;return uv;}
+W circle(V uv,W c,W c_to,V r,F blur,F thickness){F d=length(uv)-r.x;return mix(c,c_to,1.0-smoothstep(0.0,blur,abs(d)-thickness));}
+W rect(V uv,W c,W c_to,V r,F blur,F thickness){V d=abs(uv)-r;F dd=length(max(d,V(0)))+min(max(d.x,d.y),0.0);return mix(c,c_to,1.0-smoothstep(0.0,blur,abs(dd)-thickness));}
+W diamond(V uv,W c,W c_to,V r,F blur,F thickness){uv=rot(uv,PI/4.);V d=abs(uv)-r*.8;F dd=length(max(d,V(0)))+min(max(d.x,d.y),0.0);return mix(c,c_to,1.0-smoothstep(0.0,blur,abs(dd)-thickness));}
+W none(V uv,W c,W c_to,V r,F blur,F thickness){return c;}
+W pre_blur(V uv){W c=W(0.0);V uvf=uv;V uve=uv;F sgn=${rc([
+          "1.",
+          "-1.",
+        ])};F spA=${rb(0.1, 0.25)};F spB=${rb(0.1, 0.15)};F spC=${rb(
+          0.2,
+          0.25
+        )};if (rotv==1.){uv=rot(uv,sgn*PI/4.);} else if (rotv==2.){uv=rot(uv,sgn*TAU*length(uv)*spA);} else if (rotv==3.){uv=rot(uv,sgn*TAU*length(uv)*(0.25+map(wSpiral,0.,cSpiral,spA,spA)));} else if (rotv==4.){uv=rot(uv,sgn*TAU*length(uv)*map(wSpiral,0.,cSpiral,spB,spC)+TAU*cSpiral/8.);}V uw=uv*0.96;${
+          p.grids
+        }
+if (${tok_id}<200.){c=rect(uvf,c,W(map(wFC,0.,cFC,.3,.8)),V(0.55,.99),0.07,0.005);}
+return c;}W blur(V uv,V res,V dir){W c=W(0.0);V f1=V(1.411764705882353)*dir/2000.;V f2=V(3.2941176470588234)*dir/2000.;V f3=V(5.176470588235294)*dir/2000.;c += pre_blur(uv)*0.1964825501511404;c += pre_blur(uv+(f1))*0.2969069646728344;c += pre_blur(uv-(f1))*0.2969069646728344;c += pre_blur(uv+(f2))*0.09447039785044732;c += pre_blur(uv-(f2))*0.09447039785044732;c += pre_blur(uv+(f3))*0.010381362401148057;c += pre_blur(uv-(f3))*0.010381362401148057;return c;}W mc (V uv,W c){F ch=c.r;vec4 c_buf=texture2D(u_tex,V(ch,ch));c=W(c_buf.x,c_buf.y,c_buf.z);return c;}
+W m(V uv){V uv_=uv;V uvf=uv;V uve=uv;W c=W(0.);c=pre_blur(uv);c=blur(uv,ur.xy,V(${
+          p.blur.v
+        }));${
+          p.el_top
+        }if (${tok_id}<200.){c=rect(uvf,c,W(map(wFC,0.,cFC,.3,.8)),V(0.55,.99),0.07,0.005);}
+c=mc(uv_,c);return c;}void main(){V uv=(2.*gl_FragCoord.xy-ur.xy)/ur.y;W c=W(0.);c=m(uv);gl_FragColor=vec4(c,1.);}
+`),
+        (U.prototype.set = function (...e) {
+          ;(m = "uniform" + this.s),
+            (a = [this.l].concat(e)),
+            gl[m].apply(gl, a)
+        }),
+        (R.v = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1])),
+        (R.prototype.render = function (e) {
+          e.drawArrays(e.TRIANGLE_STRIP, 0, 4)
+        }),
+        (as = (e, n) => {
+          if (
+            ((sh = gl.createShader(n)),
+            gl.shaderSource(sh, e),
+            gl.compileShader(sh),
+            !gl.getShaderParameter(sh, gl.COMPILE_STATUS))
+          )
+            throw new Error("Shader compile error: " + gl.getShaderInfoLog(sh))
+          gl.attachShader(pg, sh)
+        }),
+        window.addEventListener("resize", rz),
+        (pg = gl.createProgram()),
+        as(vs, gl.VERTEX_SHADER),
+        as(fs, gl.FRAGMENT_SHADER),
+        gl.linkProgram(pg),
+        gl.useProgram(pg)
+      var ur = new U("ur", "2f"),
+        fc = new U("fc", "1f"),
+        zB1 = new U("zB1", "1f"),
+        zB2 = new U("zB2", "1f"),
+        zP1 = new U("zP1", "1f"),
+        zP1p = new U("zP1p", "1f"),
+        zP2 = new U("zP2", "1f"),
+        zP2p = new U("zP2p", "1f"),
+        zD = new U("zD", "1f"),
+        zDp = new U("zDp", "1f"),
+        zDf = new U("zDf", "1f"),
+        zS = new U("zS", "1f"),
+        zSp = new U("zSp", "1f"),
+        z1 = new U("z1", "1f"),
+        z2 = new U("z2", "1f"),
+        z4 = new U("z4", "1f"),
+        z8 = new U("z8", "1f"),
+        z14 = new U("z14", "1f"),
+        z20 = new U("z20", "1f")
+      function oc() {
+        an(),
+          ae.init(sp, "playback"),
+          ae.start(sp, Date.now() - st),
+          cv.removeEventListener("click", oc)
+      }
+      function zr(e) {
+        return (
+          (p0 = (e[0] * Math.PI) / 180),
+          (p1 = (e[1] * Math.PI) / 180),
+          (t = FC / 30 / sp.M.fadeIn),
+          t <= 1
+            ? ((tt = -(Math.cos(Math.PI * t) - 1) / 2), p0 + (p1 - p0) * tt)
+            : p1
+        )
+      }
+      function inc() {
+        FC++,
+          (c = FC / 3e3),
+          fc.set(c),
+          FC / 30 / sp.M.fadeIn <= 1 &&
+            (zB1.set(zr(pz.B1)),
+            zB2.set(zr(pz.B2)),
+            zP1.set(zr(pz.P1)),
+            zP1p.set(zr(pz.P1p)),
+            zP2.set(zr(pz.P2)),
+            zP2p.set(zr(pz.P2p)),
+            zD.set(zr(pz.D)),
+            zDf.set(zr(pz.Df)),
+            zDp.set(zr(pz.Dp)),
+            zS.set(zr(pz.S)),
+            zSp.set(zr(pz.Sp)),
+            z1.set(zr(pz.Q1)),
+            z2.set(zr(pz.Q2)),
+            z4.set(zr(pz.Q4)),
+            z8.set(zr(pz.Q8)),
+            z14.set(zr(pz.Q14)),
+            z20.set(zr(pz.Q20))),
+          bb.render(gl)
+      }
+      function an() {
+        inc(), requestAnimationFrame(an)
+      }
+      ;(bb = new R(gl)),
+        (pl = gl.getAttribLocation(pg, "a_position")),
+        gl.enableVertexAttribArray(pl),
+        gl.vertexAttribPointer(pl, 2, gl.FLOAT, !1, 0, 0),
+        rz(),
+        inc(),
+        console.log(tokenData.hash),
+        console.log(`${p.feel} / ${p.song.n} / ${p.grid.n} / ${p.pal.n}`),
+        cv.addEventListener("click", oc)
+    </script>
+  </body>
+</html>
