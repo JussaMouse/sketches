@@ -145,16 +145,11 @@ let spectral
 let tSpeed = 2
 let siiize = 1
 let rotation
-let hide = false
-let hideFlip = false
-let dx2 = 0
-let dy2 = 0
-let ds2 = 0
 
 // [setup] /////////////////////////////////////////////////////////////////
 function setup() {
   angleMode(DEGREES)
-  createCanvas(wid, hei)
+  createCanvas(10000, 3000)
   // createLoop({ duration: 3, gif: true })
   background(10)
   randomSeed(randSeed)
@@ -178,9 +173,9 @@ function setup() {
   swing = random(20, 35)
   flip = random() < 0.5
   let randy = random()
-  sketchy = randy < 0.2
+  sketchy = randy < 0.5
   let randy2 = random()
-  spectral = randy2 < 0.1
+  spectral = randy2 < 0.2
   console.log(randy, randy2)
   mode = random([isoTight, isoLoose, stackFlat, stackTilt])
   cols = floor(random(3, 6))
@@ -188,50 +183,14 @@ function setup() {
   siiize = random(0.7, 1.5)
   rotation = random([0, 1, 2, 3])
 
-  for (let tick = 0; tick < 5000; tick++) {
+  for (let tick = 0; tick < 10000; tick++) {
     // [transform the brush] /////////////////////////////////////////////////
     push()
-
     if (spectral) tSpeed = 1
     let dx
-    if (flip) {
-      if (hideFlip) {
-        if (dx2) {
-          dx2++
-          translate(dx2, dy2)
-          scale(ds2)
-        } else {
-          dx2 = width - tick / tSpeed + sin(tick / 2) * 30 - unit * 8
-          dy2 = height * 0.4 + noise(tick / 2000) * 300
-          ds2 = 1.5 - sin(tick / 5 - ao) * 0.5
-          tick = 4990
-        }
-      } else {
-        dx = width - tick / tSpeed + sin(tick / 2) * 30 - unit * 8
-        if (dx < unit * 8) {
-          // time to hide the final hexagons
-          hideFlip = true
-        }
-      }
-    } else {
-      if (hide) {
-        if (dx2) {
-          translate(dx2 + 100 * sin(tick * 2), dy2)
-          ds2 -= 0.005
-          scale(ds2)
-        } else {
-          dx2 = tick / tSpeed + sin(tick / 2) * 30 + unit * 8
-          dy2 = height * 0.4 + noise(tick / 2000) * 300
-          ds2 = 1.5 - sin(tick / 5 - ao) * 0.5
-          tick = 4900
-        }
-      } else {
-        dx = tick / tSpeed + sin(tick / 2) * 30 + unit * 8
-        if (dx > wid - unit * 8) {
-          hide = true
-        }
-      }
-    }
+    flip
+      ? (dx = width - tick / tSpeed + sin(tick / 2) * 30)
+      : (dx = tick / tSpeed + sin(tick / 2) * 30)
 
     translate(dx, height * 0.4 + noise(tick / 2000) * 300)
     scale(1.5 - sin(tick / 5 - ao) * 0.5)
@@ -250,6 +209,7 @@ function setup() {
           tick / 7
       )
     }
+    // rotate(tick)
 
     // [mark making] ////////////////////////////////////////////////////////
     drawPattern(mode, cols, rows, pal)

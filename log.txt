@@ -34,4 +34,10 @@ make hexBrush5
 -utilize structy
 -create stating/ending points for the brush
 -experiment with primitive
+experimented with starting/ stopping inside frame
+ugly hexagon ending
+no good way to hide?
+what if brush travelled around a sphere and started/stopped behind, or just looped
+
+
 
