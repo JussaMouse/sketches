@@ -1,0 +1,37 @@
+03/01/23
+hexBrush3.1.js
+pull functions out of draw() into global
+(didn't need to de-p5ify since they will
+be called in setup)
+pull brush transforms/ mark-making into a 
+loop in setup()
+nothing in draw() anymore
+todo: use a separate canvas for bg
+todo: use 3d transforms? 
+name idea: soul writer
+
+
+03/02/23
+hexBrush3.1
+review what parts to keep
+-isoTight looks good
+-stackTilt pretty nice
+-stackFlat good
+change name to hexBrush4
+existing draw technique of moving across the screen can be one of many
+how to zoom out, keep in border, add geographic control structures, use extra canvas
+idea for control structures:
+-one big ellipse, 3 small ellipses
+-random x,y within inner border
+-use dist() to detect collisions
+
+03/03/23
+hexBrush4.1
+make WEBGL
+experiment rotating axes
+make hexBrush5
+-study rotation more
+-utilize structy
+-create stating/ending points for the brush
+-experiment with primitive
+

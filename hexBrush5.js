@@ -145,6 +145,8 @@ let spectral
 let tSpeed = 2
 let siiize = 1
 let rotation
+let hide = false
+let hideFlip = false
 
 // [setup] /////////////////////////////////////////////////////////////////
 function setup() {
@@ -188,9 +190,16 @@ function setup() {
     push()
     if (spectral) tSpeed = 1
     let dx
-    flip
-      ? (dx = width - tick / tSpeed + sin(tick / 2) * 30)
-      : (dx = tick / tSpeed + sin(tick / 2) * 30)
+    if (flip) {
+      dx = width - tick / tSpeed + sin(tick / 2) * 30 - unit * 8
+      if (dx < unit * 8) tick = 4999
+      // time to hide the final hexagons
+      hideFlip = true
+    } else {
+      dx = tick / tSpeed + sin(tick / 2) * 30 + unit * 8
+      if (dx > wid - unit * 8) tick = 4999
+      hide = true
+    }
 
     translate(dx, height * 0.4 + noise(tick / 2000) * 300)
     scale(1.5 - sin(tick / 5 - ao) * 0.5)

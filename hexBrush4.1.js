@@ -150,8 +150,10 @@ let rotation
 function setup() {
   angleMode(DEGREES)
   createCanvas(wid, hei)
+  paint = createGraphics(wid, hei, WEBGL)
+  paint.translate(-wid / 2, -hei / 2)
   // createLoop({ duration: 3, gif: true })
-  background(10)
+  paint.background(10)
   randomSeed(randSeed)
   noiseSeed(randSeed)
 
@@ -172,11 +174,8 @@ function setup() {
   pal = shuffle(pal.rgb)
   swing = random(20, 35)
   flip = random() < 0.5
-  let randy = random()
-  sketchy = randy < 0.5
-  let randy2 = random()
-  spectral = randy2 < 0.2
-  console.log(randy, randy2)
+  sketchy = random() < 0.5
+  spectral = random() < 0.2
   mode = random([isoTight, isoLoose, stackFlat, stackTilt])
   cols = floor(random(3, 6))
   rows = floor(random(3, 9))
@@ -185,26 +184,36 @@ function setup() {
 
   for (let tick = 0; tick < 5000; tick++) {
     // [transform the brush] /////////////////////////////////////////////////
-    push()
+    paint.push()
     if (spectral) tSpeed = 1
     let dx
     flip
       ? (dx = width - tick / tSpeed + sin(tick / 2) * 30)
       : (dx = tick / tSpeed + sin(tick / 2) * 30)
 
-    translate(dx, height * 0.4 + noise(tick / 2000) * 300)
-    scale(1.5 - sin(tick / 5 - ao) * 0.5)
+    paint.translate(dx, height * 0.4 + noise(tick / 2000) * 300)
+    paint.scale(1.5 - sin(tick / 5 - ao) * 0.5)
+    //testing///
+    rotation = 0
     if (rotation === 0) {
-      rotate((sin(tick + ao) + sin(tick / 2 + ao)) * swing + tick / 7)
+      // paint.rotateX(
+      //   ((sin(tick / 60 + ao) + sin(tick / 120 + ao)) * swing) / 60 + tick / 300
+      // )
+      // paint.rotateX(90)
+      paint.rotateZ(
+        (sin(tick / 60 + ao) + sin(tick / 120 + ao)) * swing + tick / 1300
+      )
+      // paint.rotateY(tick / 2500)
+      ////////////
     } else if (rotation === 1) {
-      rotate((sin(tick + ao) + sin(tick / 4 + ao)) * swing + tick / 7)
+      paint.rotate((sin(tick + ao) + sin(tick / 4 + ao)) * swing + tick / 7)
     } else if (rotation === 2) {
-      rotate(
+      paint.rotate(
         (sin(tick + ao) + sin(tick / 2 + ao) + sin(tick / 4 + ao)) * swing +
           tick / 7
       )
     } else {
-      rotate(
+      paint.rotate(
         (sin(tick + ao) + sin(tick / 4 + ao) + sin(tick / 8 + ao)) * swing +
           tick / 7
       )
@@ -213,16 +222,16 @@ function setup() {
 
     // [mark making] ////////////////////////////////////////////////////////
     drawPattern(mode, cols, rows, pal)
-    pop()
+    paint.pop()
   }
 
   // [draw a frame] //////////////////////////////////////////////
-  fill(215)
-  noStroke()
-  rect(0, 0, width, height * 0.025)
-  rect(0, 0, width * 0.025, height)
-  rect(width * 0.975, 0, width * 0.0251, height)
-  rect(0, height * 0.975, width, height * 0.0251)
+  paint.fill(215)
+  paint.noStroke()
+  paint.rect(0, 0, width, height * 0.025)
+  paint.rect(0, 0, width * 0.025, height)
+  paint.rect(width * 0.975, 0, width * 0.0251, height)
+  paint.rect(0, height * 0.975, width, height * 0.0251)
 
   // [metadata viewer] ///////////////////////////////////////////
   console.log(`seed: ${randSeed}`)
@@ -239,23 +248,24 @@ function setup() {
   console.log(`siiize: ${siiize.toFixed(2)}`)
   console.log(`rotation: ${rotation}`)
 
+  image(paint, 0, 0)
   // structy(1, 6, 100)
 }
 
 // hexagon maker ///////////////////////////////////////////////////////
 function hexy(x, y, u) {
-  push()
-  translate(x, y)
-  beginShape()
+  paint.push()
+  paint.translate(x, y)
+  paint.beginShape()
   for (let i = 30; i < 391; i += 60) {
     if (sketchy) {
-      vertex(u * cos(i + random(10)), u * sin(i + random(10)))
+      paint.vertex(u * cos(i + random(10)), u * sin(i + random(10)))
     } else {
-      vertex(u * cos(i), u * sin(i))
+      paint.vertex(u * cos(i), u * sin(i))
     }
   }
-  endShape()
-  pop()
+  paint.endShape()
+  paint.pop()
 }
 
 // these objects are sets of parameters (modes) describing where to draw
@@ -263,8 +273,8 @@ function hexy(x, y, u) {
 //////////////////////////////////////////////////////////////////////////
 let isoTight = {
   name: 'isoTight',
-  dx: Math.floor(2 * (unit * Math.cos(30))),
-  dy: Math.floor(unit * (1 + 0.5 * Math.cos(30))) + 2,
+  dx: Math.floor(2 * (unit * Math.cos(0.523599))),
+  dy: Math.floor(unit * (1 + 0.5 * Math.cos(0.523599))) + 2,
   step: 0.5,
   colorSkip: true,
   sColor: [40],
@@ -272,7 +282,7 @@ let isoTight = {
 
 let isoLoose = {
   name: 'isoLoose',
-  dx: Math.floor(4 * (unit * Math.cos(30))) + 1,
+  dx: Math.floor(4 * (unit * Math.cos(0.523599))) + 1,
   dy: unit,
   step: 0.5,
   colorSkip: true,
@@ -281,7 +291,7 @@ let isoLoose = {
 
 let stackFlat = {
   name: 'stackFlat',
-  dx: Math.floor(2 * (unit * Math.cos(30))),
+  dx: Math.floor(2 * (unit * Math.cos(0.523599))),
   dy: unit + 1,
   step: 0,
   colorSkip: false,
@@ -290,7 +300,7 @@ let stackFlat = {
 
 let stackTilt = {
   name: 'stackTilt',
-  dx: Math.floor(2 * (unit * Math.cos(30))),
+  dx: Math.floor(2 * (unit * Math.cos(0.523599))),
   dy: unit + 1,
   step: 0.5,
   colorSkip: true,
@@ -315,11 +325,17 @@ function drawPattern(mode, cols, rows, pal) {
 
     for (let col = 0; col < cols; col++) {
       if (spectral) {
-        noFill()
-        stroke(...pal[(startColor + col + row + skipColor) % colorTotal], 30)
+        paint.noFill()
+        paint.stroke(
+          ...pal[(startColor + col + row + skipColor) % colorTotal],
+          30
+        )
       } else {
-        noStroke()
-        fill(...pal[(startColor + col + row + skipColor) % colorTotal], 20)
+        paint.noStroke()
+        paint.fill(
+          ...pal[(startColor + col + row + skipColor) % colorTotal],
+          20
+        )
       }
 
       hexy(col * dx + xOffset, row * dy, unit * siiize)
