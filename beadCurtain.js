@@ -35,9 +35,9 @@ function setup() {
 
   layer1.scale(3)
 
-  for (let f = 0; f < 3000; f++) {
+  for (let f = 0; f < 30000; f++) {
     let dTheta = (f * 360) / 3000
-    let x = 100 + 150 * sin(dTheta * 4.32)
+    let x = 1000 + 150 * sin(dTheta * 4.32)
     let y = -105
     layer1.rotateY(dTheta)
     layer1.translate(20, sin(dTheta * 10), 0)
