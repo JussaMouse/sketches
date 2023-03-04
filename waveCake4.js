@@ -46,7 +46,6 @@ function setup() {
       color0x,
       color1x
     )
-
     image(layer1, 0, -unit * 6)
     layer1.rotateY(0.05)
     layer1.rotateX(0.15 * sin(a / 100))
