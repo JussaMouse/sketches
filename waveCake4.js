@@ -1,8 +1,18 @@
-// parameters of interest
+// parameters of interest ////////////////////////////////////////////////
 // A: rotateX()
-let poiA = -92
-// B: x, y, z passed to markMake
-//
+let a = -92
+// B: markMake(x)
+let b1 = 10
+let b2 = 8
+let b3 = 0.125
+let b4 = 2
+let b5 = 0.25
+// C: markMake(y)
+let c1 = 0
+let c2 = 0
+let c3 = 0.1
+
+let mode = 'sphere'
 
 // define unit length //////////////////////////////////////////////////
 let wid = window.innerWidth
@@ -12,43 +22,45 @@ wid > hei ? (unit = hei / 40) : (unit = wid / 40)
 
 // globals
 let layer1
-let siiize = unit * 4
+let numLevels = 20
+let siiize = unit * 2
 let color0 = [205, 100, 41, 1]
 let color1 = [180, 11, 100, 1]
 
 function setup() {
   createCanvas(wid, hei)
   angleMode(DEGREES)
-  // painting layer:
+  // painting layer :
   layer1 = createGraphics(wid, hei * 1.2, WEBGL)
   layer1.colorMode(HSB)
   layer1.angleMode(DEGREES)
   background(10)
 
   layer1.clear()
-  layer1.translate(0, -unit * 3, 0)
+  layer1.translate(unit * 18, -unit * 5, 0)
   // A ////////////////////////////////
-  layer1.rotateX(poiA)
-  layer1.scale(0.8)
+  layer1.rotateX(a)
+  layer1.scale(1)
 
   // mark making /////////////////////////////////////////////////////////
   layer1.rotateY(180)
   for (let tick = 0; tick < 7200; tick++) {
     let color0x = [color0[0] + tick / 60, color0[1], color0[2], color0[3]]
     let color1x = [color1[0] - tick / 25, color1[1], color1[2], color1[3]]
-    // B //////////////////////////////
     // x, y, z, numSquares, color0, color1
     markMake(
-      unit * 10 + 8 * unit * sin(tick / 8) + 2 * unit * sin(tick / 4),
-      0, //-unit * 14 + 2 * unit * sin(a / 30),
-      0,
-      5,
+      // B ////////////////////////////////
+      b1 * unit + b2 * unit * sin(b3 * tick) + b4 * unit * sin(b5 * tick),
+      // C ////////////////////////////////
+      c1 * unit + c2 * unit * sin(c3 * tick),
+      -tick / 100, // 1 * unit * sin(tick / 10),
+      numLevels,
       color0x,
       color1x
     )
     image(layer1, 0, -unit * 6)
     layer1.rotateY(0.05)
-    layer1.rotateX(0.15 * sin(a / 100))
+    layer1.rotateX(0.15 * sin(tick / 100))
   }
 }
 
@@ -72,8 +84,16 @@ function markMake(x, y, z, numSquares, color0, color1) {
     layer1.noStroke()
     let color = blendColor(color0, color1, t)
     layer1.fill(color)
-    layer1.box(siiize)
-    layer1.translate(0, siiize, 0)
+    if (mode == 'ellipse') {
+      layer1.ellipse(0, i * siiize, siiize)
+    } else {
+      if (mode == 'box') {
+        layer1.box(siiize)
+      } else if (mode == 'sphere') {
+        layer1.sphere(siiize)
+      }
+      layer1.translate(0, siiize, 0)
+    }
     t += dt
   }
 
