@@ -39,5 +39,24 @@ ugly hexagon ending
 no good way to hide?
 what if brush travelled around a sphere and started/stopped behind, or just looped
 
+3/7/23
+waveCakeRebuild
+disliked outputs for these scB values:
+.395
+.929
+.443
+.423
+.320
+.489
+.341
+.375
+.148
+.322
+.423
+
+
+time to move the markmaking loop to draw()
+wavecake3d
+
 
 
