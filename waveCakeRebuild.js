@@ -75,6 +75,7 @@ let pal1 = [
   [16, 82, 84, 1],
 ]
 let layer1
+let layer2
 let numLevels = 20
 let siiize = unit * 4
 let numShapes = 6
@@ -93,13 +94,16 @@ function setup() {
   noiseSeed(randSeed)
   createCanvas(wid, hei)
   angleMode(DEGREES)
-  background(175)
+  background(5)
   // painting layer :
   layer1 = createGraphics(wid, hei, WEBGL)
   layer1.colorMode(HSB)
   layer1.angleMode(DEGREES)
   layer1.clear()
   layer1.scale(scale0)
+
+  // shadow layer
+  layer2 = createGraphics(wid, hei)
 
   // gradient flip
   if (random() > 0.5) [pal0, pal1] = [pal1, pal0]
@@ -138,7 +142,7 @@ function setup() {
   let rzF
 
   // cakeShape=random[0,1,2]
-  cakeShape = 1
+  cakeShape = 0
   if (cakeShape == 0) {
     tickMax = wid * 1.5
     // sc = scale
@@ -188,11 +192,9 @@ function setup() {
     // layer1.rotateZ(
     //   (sin(tick + 30) * unit) / 2 + sin(tick / 3) * (tick / 10000) ** 2
     // )
-    if (tick > tickMax * 0.85) {
-    }
 
     // x, y, z
-    makeBrush(mbA + mbB * tick, mbC, mbD, 0)
+    makeBrush(mbA + mbB * tick, mbC, mbD)
 
     let imgX = 0
     if (cakeShape == 1) imgX = siiize * 1.5

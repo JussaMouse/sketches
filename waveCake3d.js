@@ -8,7 +8,7 @@ let unit
 wid > hei ? (unit = hei / 40) : (unit = wid / 40)
 
 // globals
-let a = 0.2
+let a = 0.55
 let pal0 = [
   [205, 100, 41, a],
   [346, 71, 100, a],
@@ -121,6 +121,7 @@ function setup() {
   color0 = pal0[colorIndex]
   color1 = pal1[colorIndex]
 
+  console.log(color0, color1)
   // push vertices (x,y) for n triangles to vertices array
   vertices = vertexCache(numShapes, siiize)
 
@@ -131,12 +132,12 @@ function setup() {
     rsColor.push(random(pal0))
     rsColor[i][3] = random(0.2, 1)
   }
-  layer1.rotateX(-45)
+  // layer1.rotateX(-45)
 }
 
 function draw() {
   console.log(frameCount)
-  layer1.rotateY(0.1)
+  // layer1.rotateY(0.1)
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
   cakeShape = 0
@@ -154,8 +155,8 @@ function draw() {
     rzE = 1 // frequency
     rzF = 0 // offset (degrees)
     // mb = makeBrush
-    mbA = 200 //-0.375 * wid - siiize / 2 // x parameter 1st term
-    mbB = 0 // 0.5 // x parameter 2nd term (times tick)
+    mbA = -0.375 * wid - siiize / 2 // x parameter 1st term
+    mbB = 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
   } else if (cakeShape == 1) {
@@ -179,17 +180,19 @@ function draw() {
   }
   tick = frameCount
   // mark making /////////////////////////////////////////////////////////
-  layer1.push()
+  if (tick < wid * 1.5) {
+    layer1.push()
 
-  layer1.scale(scale0 + scA * sin(scB * tick + scC))
-  layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
+    layer1.scale(scale0 + scA * sin(scB * tick + scC))
+    layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
 
-  // x, y, z
-  makeBrush(mbA + mbB * tick, mbC, mbD, 0)
+    // x, y, z
+    makeBrush(mbA + mbB * tick, mbC, mbD, 0)
 
-  layer1.pop()
+    layer1.pop()
 
-  image(layer1, 0, 0)
+    image(layer1, 0, 0)
+  }
 }
 
 function makeBrush(x, y, z) {
