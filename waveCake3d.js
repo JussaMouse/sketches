@@ -1,5 +1,5 @@
-let randSeed = Math.floor(Math.random() * 1000000000)
-console.log(randSeed)
+let randSeed = Math.floor(Math.random() * 1000000000000)
+console.log(String(randSeed).slice(String(randSeed).length - 9))
 
 // define unit length //////////////////////////////////////////////////
 let wid = window.innerWidth
@@ -43,36 +43,37 @@ let pal0 = [
   [51, 39, 89, a],
 ]
 let pal1 = [
-  [180, 11, 100, a],
-  [294, 100, 51, a],
-  [179, 82, 20, a],
-  [194, 19, 71, a],
-  [213, 93, 34, a],
-  [160, 29, 94, a],
-  [153, 28, 61, a],
-  [23, 52, 96, a],
-  [252, 61, 35, a],
-  [168, 95, 87, a],
-  [159, 96, 28, a],
-  [202, 62, 56, a],
-  [154, 24, 45, a],
-  [340, 53, 45, a],
-  [211, 22, 85, a],
-  [194, 99, 70, a],
-  [179, 82, 20, a],
-  [249, 46, 58, a],
-  [326, 93, 47, a],
-  [353, 71, 80, a],
-  [27, 26, 13, a][(349, 91, 100, a)],
-  [27, 26, 13, a],
-  [32, 14, 37, a],
-  [352, 17, 91, a],
-  [359, 100, 41, a],
-  [32, 31, 93, a],
-  [32, 14, 37, a],
-  [14, 68, 43, a],
-  [19, 100, 98, a],
-  [16, 82, 84, a],
+  [180, 11, 100, 1],
+  [294, 100, 51, 1],
+  [179, 82, 20, 1],
+  [194, 19, 71, 1],
+  [213, 93, 34, 1],
+  [160, 29, 94, 1],
+  [153, 28, 61, 1],
+  [23, 52, 96, 1],
+  [252, 61, 35, 1],
+  [168, 95, 87, 1],
+  [159, 96, 28, 1],
+  [202, 62, 56, 1],
+  [154, 24, 45, 1],
+  [340, 53, 45, 1],
+  [211, 22, 85, 1],
+  [194, 99, 70, 1],
+  [179, 82, 20, 1],
+  [249, 46, 58, 1],
+  [326, 93, 47, 1],
+  [353, 71, 80, 1],
+  [27, 26, 13, 1],
+  [349, 91, 100, 1],
+  [27, 26, 13, 1],
+  [32, 14, 37, 1],
+  [352, 17, 91, 1],
+  [359, 100, 41, 1],
+  [32, 31, 93, 1],
+  [32, 14, 37, 1],
+  [14, 68, 43, 1],
+  [19, 100, 98, 1],
+  [16, 82, 84, 1],
 ]
 let layer1
 let numLevels = 20
@@ -88,6 +89,18 @@ let rsIndex = []
 let rsColor = []
 let cakeShape
 let cakeHeight
+// let life={
+//   dna:{
+//     design: ["land", "sea"],
+//     packaging: ["light", "dark"],
+//     multi-user: ["one", "many"],
+//     lang: ["elder", "academy"],
+//     version: "seed", "tree"
+//     remote: world, visitor
+//     ui: soul, extension
+//     os compatibility: dog, cat
+//   }
+// }
 
 // set shape
 let tickMax
@@ -117,7 +130,7 @@ function setup() {
   if (random() > 0.5) [pal0, pal1] = [pal1, pal0]
 
   // choose gradient color
-  colorIndex = floor(random(31))
+  colorIndex = floor(random(30))
   color0 = pal0[colorIndex]
   color1 = pal1[colorIndex]
 
@@ -136,7 +149,7 @@ function setup() {
 }
 
 function draw() {
-  console.log(frameCount)
+  // console.log(frameCount)
   // layer1.rotateY(0.1)
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
