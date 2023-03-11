@@ -91,18 +91,117 @@ let rsIndex = []
 let rsColor = []
 let cakeShape
 let cakeHeight
-// let life={
-//   dna:{
-//     design: ["land", "sea"],
-//     packaging: ["light", "dark"],
-//     multi-user: ["one", "many"],
-//     lang: ["elder", "academy"],
-//     version: "seed", "tree"
-//     remote: world, visitor
-//     ui: soul, extension
-//     os compatibility: dog, cat
-//   }
-// }
+
+const soulSet = [
+  [0, 1, 'land', 'sea'], // 0 design| 0: land, 1: sea
+  [0, 1, 'light', 'dark'], // 1 form| 0: light, 1: dark
+  [0, 1, 'one', 'many'], // 2 user| 0: one, 1: many
+  [0, 1, 'elder', 'academy'], // 3 logos| 0: elder, 1: academy
+  [0, 1, 'ice', 'gas'], // 4 draw| 0: ice, 1: gas
+  [0, 1, 'seed', 'tree'], // 5 age| 0: seed, 1: tree
+  [0, 1, 'world', 'visitor'], // 6 distance| 0: world, 1: visitor
+  [0, 1, 'bio', 'techno'], // 7 interface| 0: bio, 1: techno
+  [0, 1, 'dog', 'cat'], // 8 system| 0: dog, 1: cat
+  // house| 111: augment, 110: collect, 101: math, 100: control, 011: data, 010: communication, 001: art, 000: play
+  [
+    111,
+    110,
+    101,
+    100,
+    11,
+    10,
+    1,
+    0,
+    'augment',
+    'collect',
+    'math',
+    'control',
+    'data',
+    'communication',
+    'art',
+    'play',
+  ],
+]
+console.log(soulSet)
+const eventSet = [
+  [00, 01, 10], //fork: 0: none, 1: give new offsrping, 2: become new offspring
+  [00, 01, 10], //growth: 0: none, 1: expand, 2: contract
+  [00, 01, 10], //down: 0: up, 1: service outage, 2: death
+  [0000, 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1111], //soulSwitched: 1111: none, 0000-1000: element of soul{} to toggle
+]
+let life = {
+  soul: {
+    design: [0, ''],
+    form: [0, ''],
+    user: [0, ''],
+    logos: [0, ''],
+    draw: [0, ''],
+    age: [0, ''],
+    distance: [0, ''],
+    interface: [0, ''],
+    system: [0, ''],
+    house: [000, ''],
+  },
+  soulState: '',
+  event: {
+    fork: [00, ''],
+    growth: [00, ''],
+    down: [00, ''],
+    soulSwitch: [1111, ''],
+  },
+  eventState: '',
+}
+let i = 0
+for (stat of Object.keys(life.soul)) {
+  if (i < soulSet.length - 1) {
+    if (diceBox[i] > 4) {
+      life.soul[stat][0] = soulSet[i][0]
+      life.soul[stat][1] = soulSet[i][2]
+    } else {
+      life.soul[stat][0] = soulSet[i][1]
+      life.soul[stat][1] = soulSet[i][3]
+    }
+  } else {
+    let bigDie = randSeed % 100
+    if (bigDie > 98) {
+      // 2%
+      life.soul[stat][0] = soulSet[i][0]
+      life.soul[stat][1] = soulSet[i][8]
+    } else if (bigDie > 96) {
+      // 2%
+      life.soul[stat][0] = soulSet[i][1]
+      life.soul[stat][1] = soulSet[i][9]
+    } else if (bigDie > 92) {
+      // 4%
+      life.soul[stat][0] = soulSet[i][2]
+      life.soul[stat][1] = soulSet[i][10]
+    } else if (bigDie > 86) {
+      // 6%
+      life.soul[stat][0] = soulSet[i][3]
+      life.soul[stat][1] = soulSet[i][11]
+    } else if (bigDie > 76) {
+      // 10%
+      life.soul[stat][0] = soulSet[i][4]
+      life.soul[stat][1] = soulSet[i][12]
+    } else if (bigDie > 60) {
+      // 16%
+      life.soul[stat][0] = soulSet[i][5]
+      life.soul[stat][1] = soulSet[i][13]
+    } else if (bigDie > 34) {
+      // 26%
+      life.soul[stat][0] = soulSet[i][6]
+      life.soul[stat][1] = soulSet[i][14]
+    } else {
+      // 34%
+      life.soul[stat][0] = soulSet[i][7]
+      life.soul[stat][1] = soulSet[i][15]
+    }
+  }
+  life.soulState += life.soul[stat][0]
+  i++
+}
+
+console.log(life)
 
 // set shape
 let tickMax
