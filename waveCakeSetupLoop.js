@@ -12,20 +12,87 @@ let unit
 wid > hei ? (unit = hei / 40) : (unit = wid / 40)
 
 // get remap() ///////////////////////////////////////////////////////////
-function norm(value, min, max) {
+function normy(value, min, max) {
   return (value - min) / (max - min)
 }
-function lerpy(norm, min, max) {
-  return (max - min) * norm + min
+function lerpy(normy, min, max) {
+  return (max - min) * normy + min
 }
 function remap(value, sourceMin, sourceMax, destMin, destMax) {
-  var n = norm(value, sourceMin, sourceMax)
-  return lerpy(norm(value, sourceMin, sourceMax), destMin, destMax)
+  var n = normy(value, sourceMin, sourceMax)
+  return lerpy(normy(value, sourceMin, sourceMax), destMin, destMax)
 }
 
 // globals
 let a = 0.55
 let pal0 = [
+  [205, 100, 41],
+  [346, 71, 100],
+  [155, 99, 80],
+  [196, 64, 37],
+  [248, 12, 77],
+  [211, 45, 91],
+  [220, 69, 19],
+  [63, 55, 98],
+  [148, 25, 82],
+  [177, 80, 27],
+  [150, 9, 9],
+  [148, 25, 82],
+  [211, 22, 85],
+  [23, 52, 96],
+  [345, 78, 80],
+  [205, 59, 95],
+  [194, 99, 70],
+  [120, 14, 81],
+  [350, 48, 100],
+  [294, 100, 51],
+  [63, 55, 98],
+  [326, 93, 47],
+  [47, 37, 66],
+  [42, 60, 89],
+  [0, 63, 24],
+  [349, 91, 100],
+  [51, 24, 54],
+  [43, 100, 100],
+  [51, 39, 89],
+  [359, 95, 40],
+  [51, 39, 89],
+]
+let pal1 = [
+  [180, 11, 100],
+  [294, 100, 51],
+  [179, 82, 20],
+  [194, 19, 71],
+  [213, 93, 34],
+  [160, 29, 94],
+  [153, 28, 61],
+  [23, 52, 96],
+  [252, 61, 35],
+  [168, 95, 87], // light
+  [159, 96, 28],
+  [202, 62, 56],
+  [154, 24, 45],
+  [340, 53, 45],
+  [211, 22, 85],
+  [194, 99, 70],
+  [179, 82, 20],
+  [249, 46, 58],
+  [326, 93, 47],
+  [353, 71, 80],
+  [27, 26, 13],
+  [349, 91, 100],
+  [27, 26, 13],
+  [32, 14, 37],
+  [352, 17, 91],
+  [359, 100, 41],
+  [32, 31, 93],
+  [32, 14, 37],
+  [14, 68, 43],
+  [19, 100, 98],
+  [16, 82, 84],
+]
+
+let crazyPal0 = [
   [205, 100, 41],
   [346, 71, 100],
   [155, 99, 80],
@@ -81,8 +148,94 @@ let pal0 = [
   [266, 21, 42],
   [177, 63, 87],
   [21, 46, 95],
+  [180, 11, 100],
+  [294, 100, 51],
+  [179, 82, 20],
+  [194, 19, 71],
+  [213, 93, 34],
+  [160, 29, 94],
+  [153, 28, 61],
+  [23, 52, 96],
+  [252, 61, 35],
+  [168, 95, 87], // light
+  [159, 96, 28],
+  [202, 62, 56],
+  [154, 24, 45],
+  [340, 53, 45],
+  [211, 22, 85],
+  [194, 99, 70],
+  [179, 82, 20],
+  [249, 46, 58],
+  [326, 93, 47],
+  [353, 71, 80],
+  [27, 26, 13],
+  [349, 91, 100],
+  [27, 26, 13],
+  [32, 14, 37],
+  [352, 17, 91],
+  [359, 100, 41],
+  [32, 31, 93],
+  [32, 14, 37],
+  [14, 68, 43],
+  [19, 100, 98],
+  [16, 82, 84],
 ]
-let pal1 = [
+let crazyPal1 = [
+  [205, 100, 41],
+  [346, 71, 100],
+  [155, 99, 80],
+  [196, 64, 37],
+  [248, 12, 77],
+  [211, 45, 91],
+  [220, 69, 19],
+  [63, 55, 98],
+  [148, 25, 82],
+  [177, 80, 27],
+  [150, 9, 9],
+  [148, 25, 82],
+  [211, 22, 85],
+  [23, 52, 96],
+  [345, 78, 80],
+  [205, 59, 95],
+  [194, 99, 70],
+  [120, 14, 81],
+  [350, 48, 100],
+  [294, 100, 51],
+  [63, 55, 98],
+  [326, 93, 47],
+  [47, 37, 66],
+  [42, 60, 89],
+  [0, 63, 24],
+  [349, 91, 100],
+  [51, 24, 54],
+  [43, 100, 100],
+  [51, 39, 89],
+  [359, 95, 40],
+  [51, 39, 89],
+  [214, 12, 46],
+  [7, 84, 67],
+  [14, 17, 71],
+  [17, 72, 33],
+  [37, 58, 47],
+  [353, 77, 27],
+  [72, 10, 19],
+  [216, 19, 31],
+  [5, 59, 59],
+  [15, 17, 97],
+  [5, 31, 43],
+  [348, 88, 44],
+  [37, 13, 95],
+  [245, 10, 49],
+  [29, 32, 67],
+  [173, 26, 61],
+  [336, 42, 91],
+  [16, 20, 96],
+  [197, 33, 42],
+  [137, 32, 83],
+  [326, 38, 52],
+  [266, 21, 42],
+  [177, 63, 87],
+  [21, 46, 95],
   [180, 11, 100],
   [294, 100, 51],
   [179, 82, 20],
@@ -129,6 +282,7 @@ let rsIndex = []
 let rsColor = []
 let cakeShape
 let cakeHeight
+let frisky = false // if true... glitch color0/color1
 
 const soulSet = [
   [0, 1, 'land', 'sea'], // 0 design| 0: land, 1: sea
@@ -271,9 +425,11 @@ function setup() {
   if (random() > 0.5) [pal0, pal1] = [pal1, pal0]
 
   // choose gradient color
-  colorIndex = floor(random(30))
-  color0 = [...pal0[colorIndex], a]
-  color1 = [...pal1[colorIndex], a]
+  // colorIndex = floor(random(30))
+  // color0 = [...pal0[colorIndex], a]
+  // color1 = [...pal1[colorIndex], a]
+  color0 = [...random(crazyPal0), a]
+  color1 = [...random(crazyPal1), a]
 
   // push vertices (x,y) for n triangles to vertices array
   vertices = vertexCache(numShapes, siiize)
@@ -284,29 +440,26 @@ function setup() {
     rsIndex.push(floor(random(numShapes)))
     rsColor.push(random(pal0))
     // console.log(rsColor)
-    rsColor[i][3] = random(0.2, 1)
+    // rsColor[i][3] = random(0.2, 1)
+    rsColor[i][3] = 0.01
   }
   // layer1.rotateX(-45)
 
-  for (let x = -wid / 2; x < wid / 2; x++) {
-    life.eventState = noise(x / 10)
-    if (life.eventState > 0.8333) {
-      layer1.fill(0, 100, 100)
-      layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 9)
-    } else if (life.eventState > 0.6666) {
-      layer1.fill(120, 100, 100)
-      layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 5)
-    } else if (life.eventState > 50) {
-      layer1.fill(170, 100, 100)
-      layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 2)
-    }
-  }
+  // for (let x = -wid / 2; x < wid / 2; x++) {
+  //   life.eventState = noise(x / 10)
+  //   if (life.eventState > 0.8333) {
+  //     layer1.fill(0, 100, 100)
+  //     layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 9)
+  //   } else if (life.eventState > 0.6666) {
+  //     layer1.fill(120, 100, 100)
+  //     layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 5)
+  //   } else if (life.eventState > 50) {
+  //     layer1.fill(170, 100, 100)
+  //     layer1.ellipse(x, -hei / 2 + map(life.eventState, 0, 1, 150, 50), 2)
+  //   }
+  // }
   console.log(color0, color1)
-}
 
-function draw() {
-  // console.log(frameCount)
-  // layer1.rotateY(0.1)
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
   cakeShape = 0
@@ -347,9 +500,9 @@ function draw() {
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
   }
-  tick = frameCount
+
   // mark making /////////////////////////////////////////////////////////
-  if (tick < wid * 1.5) {
+  for (let tick = 0; tick < wid * 1.5; tick++) {
     layer1.push()
 
     layer1.scale(scale0 + scA * sin(scB * tick + scC))
@@ -362,6 +515,11 @@ function draw() {
 
     image(layer1, 0, 0)
   }
+}
+
+function draw() {
+  // console.log(frameCount)
+  // layer1.rotateY(0.1)
 }
 
 function makeBrush(x, y, z) {
