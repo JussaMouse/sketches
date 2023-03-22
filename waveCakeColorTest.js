@@ -1,10 +1,13 @@
 let randSeed =
   Math.floor(Math.random() * Number.MAX_SAFE_INTEGER) % 100000000000000
 const diceBox = Array.from(String(randSeed), Number)
-
 // randSeed=47692433034945 // sunset
-
 console.log(randSeed)
+
+let sortedP
+function preload() {
+  sortedP = loadJSON('color-town/sortedP.json')
+}
 
 // define unit length //////////////////////////////////////////////////
 let wid = window.innerWidth
@@ -26,7 +29,6 @@ function remap(value, sourceMin, sourceMax, destMin, destMax) {
 
 // globals
 let a = 0.55
-// RIP pal0/pal1
 let c = [
   '#003D69',
   '#E3FFFF',
@@ -98,6 +100,121 @@ let c = [
   '#2F302C',
   '#739C97',
   '#F2E6D3',
+  '#FB4F00',
+  '#61A130',
+  '#007A50',
+  '#F3FA70',
+  '#A62401',
+  '#03FF98',
+  '#FF8601',
+  '#FFB800',
+  '#093332',
+  '#FF163F',
+  '#FF859A',
+  '#3BE018',
+  '#FB4F00',
+  '#61A130',
+  '#007A50',
+  '#F3FA70',
+  '#A62401',
+  '#03FF98',
+  '#FF8601',
+  '#FFB800',
+  '#093332',
+  '#FF163F',
+  '#FF859A',
+  '#3BE018',
+  '#221D19',
+  '#D75426',
+  '#BB987C',
+  '#63B5F1',
+  '#351A7D',
+  '#C4E5EA',
+  '#070D21',
+  '#062B57',
+  '#2B463F',
+  '#224F5F',
+  '#265884',
+  '#6F9B87',
+  '#B2CEB2',
+  '#E4D78C',
+  '#7FB3E9',
+  '#E9C2C7',
+  '#CCA54C',
+  '#B0EAFF',
+  '#CC7D00',
+  '#74364B',
+  '#CB3A4A',
+  '#006D1E',
+  '#00410A',
+  '#7F9895',
+  '#F5A676',
+  '#6997C3',
+  '#846B93',
+  '#823A1C',
+  '#6A7F51',
+  '#790949',
+  '#93ADB5',
+  '#22281F',
+  '#5E5851',
+  '#690001',
+  '#1B848C',
+  '#873800',
+  '#412A19',
+  '#FF7B23',
+  '#829DBF',
+  '#7B8699',
+  '#0A6D90',
+  '#366E8F',
+  '#211846',
+  '#2D2258',
+  '#43387D',
+  '#5A5094',
+  '#B0ADC5',
+  '#0F1A30',
+  '#1B2A4C',
+  '#315486',
+  '#5D81AC',
+  '#A9C0D8',
+  '#151E10',
+  '#1E301C',
+  '#284228',
+  '#31542F',
+  '#6E906E',
+  '#164782',
+  '#FE4A75',
+  '#0E4643',
+  '#12292F',
+  '#FC0F26',
+  '#670506',
+  '#3E0403',
+  '#0D0907',
+  '#EECCA5',
+  '#41000A',
+  '#CD2E57',
+  '#ABF0D9',
+  '#0289B2',
+  '#754C41',
+  '#123135',
+  '#151716',
+  '#0BDEB3',
+  '#1F022C',
+  '#C88128',
+  '#4C7DA6',
+  '#760083',
+  '#041E1E',
+  '#034830',
+  '#9E5292',
+  '#191B0D',
+  '#2F0500',
+  '#6E3423',
+  '#7C5146',
+  '#9E5434',
+  '#C27B03',
+  '#E4BC5B',
+  '#A60004',
+  '#7FB84F',
+  '#769D9E',
 ]
 
 let pairs = [
@@ -360,6 +477,7 @@ let rzE
 let rzF
 
 function setup() {
+  console.log(sortedP)
   randomSeed(randSeed)
   noiseSeed(randSeed)
   createCanvas(wid, hei)
@@ -425,7 +543,7 @@ function setup() {
 
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
-  cakeShape = 1
+  cakeShape = 0
   if (cakeShape == 0) {
     tickMax = wid * 1.5
     // sc = scale
@@ -474,7 +592,7 @@ function setup() {
     layer1.rotateZ(randSeed % 100)
 
     // x, y, z, toggle renegade stripes
-    makeBrush(mbA + mbB * tick, mbC, mbD, true)
+    makeBrush(mbA + mbB * tick, mbC, mbD, false)
 
     layer1.pop()
 
@@ -491,7 +609,7 @@ function makeBrush(x, y, z, renegade) {
   layer1.push()
   layer1.translate(x, y, z)
 
-  let bc = chroma.scale([color0, color1]).mode('lab')
+  let bc = chroma.scale([color0, color1]).mode('lch')
 
   for (let i = 0; i < numShapes; i++) {
     let dt = (numShapes - 1) ** -1
@@ -551,21 +669,4 @@ function vertexCache(numShapes, siiize) {
     }
   }
   return vertexArray
-}
-
-function blendColor(color0, color1, t) {
-  if (abs(color0[0] - color1[0]) > 180) {
-    if (color0[0] > color1[0]) {
-      color1[0] += 360
-    } else {
-      color0[0] += 360
-    }
-  }
-
-  return [
-    lerp(color0[0], color1[0], t) % 360,
-    lerp(color0[1], color1[1], t),
-    lerp(color0[2], color1[2], t),
-    lerp(color0[3], color1[3], t),
-  ]
 }

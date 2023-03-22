@@ -2,7 +2,7 @@ let randSeed =
   Math.floor(Math.random() * Number.MAX_SAFE_INTEGER) % 100000000000000
 const diceBox = Array.from(String(randSeed), Number)
 
-// randSeed=47692433034945 // sunset
+// randSeed = 56598228421479
 
 console.log(randSeed)
 
@@ -26,90 +26,89 @@ function remap(value, sourceMin, sourceMax, destMin, destMax) {
 
 // globals
 let a = 0.55
-// RIP pal0/pal1
 let c = [
-  '#003D69',
-  '#E3FFFF',
-  '#FF4A74',
-  '#750082',
-  '#02CC78',
-  '#093332',
-  '#224E5E',
-  '#93ADB5',
-  '#B0ADC4',
-  '#062A57',
-  '#80B2E8',
-  '#AAF0D9',
-  '#0F1A30',
-  '#709C88',
-  '#F3FA70',
-  '#F5A676',
-  '#9DD1B5',
-  '#2E2359',
-  '#0E4542',
-  '#0BDEB4',
-  '#151716',
-  '#03472F',
-  '#366E8F',
-  '#A9C0D9',
-  '#577367',
-  '#73364A',
-  '#CC2D55',
-  '#63B7F2',
-  '#0289B3',
-  '#B2CFB2',
-  '#5A5094',
-  '#FF8599',
-  '#780848',
-  '#CC3B4C',
-  '#211C19',
-  '#FF1741',
-  '#A89B6A',
-  '#E3BA5B',
-  '#5E5851',
-  '#3D1717',
-  '#E8C1C6',
-  '#690002',
-  '#8A8569',
-  '#EDCBA4',
-  '#FFB700',
-  '#E3D68A',
-  '#6E3423',
-  '#660507',
-  '#FA4F00',
-  '#D65527',
-  '#71707D',
-  '#FF4A74',
-  '#52DED7',
-  '#700D21',
-  '#AB8F74',
-  '#48616B',
-  '#85526F',
-  '#F7D8CD',
-  '#F5D1C4',
-  '#E887AE',
-  '#542918',
-  '#676D75',
-  '#F2AA83',
-  '#90D4A3',
-  '#6E4E4C',
-  '#451016',
-  '#5E556B',
-  '#2F302C',
-  '#739C97',
-  '#F2E6D3',
+  '#003D69', // 0 deep blue
+  '#E3FFFF', // 1 white teal
+  '#FF4A74', // 2 brite pink
+  '#750082', // 3 deep purp
+  '#02CC78', // 4 brite teal
+  '#093332', // 5 drk teal
+  '#224E5E', // 6 drk teal
+  '#93ADB5', // 7 lite gray teal
+  '#B0ADC4', // 8 lite gray purp
+  '#062A57', // 9 drk blu
+  '#80B2E8', // 10 sky blu
+  '#AAF0D9', // 11 hot teal
+  '#0F1A30', // 12 blk blu
+  '#709C88', // 13 mid gray teal
+  '#F3FA70', // 14 brite pastel yello
+  '#F5A676', // 15 lit brn orng
+  '#9DD1B5', // 16 lit aqua
+  '#2E2359', // 17 deep purp
+  '#0E4542', // 18 drk teal
+  '#0BDEB4', // 19 hot teal
+  '#151716', // 20 blk
+  '#03472F', // 21 drk grn
+  '#366E8F', // 22 mid gray blu
+  '#A9C0D9', // 23 lit gray blu
+  '#577367', // 24 mid gray grn
+  '#73364A', // 25 mid gray wine
+  '#CC2D55', // 26 brite salmon
+  '#63B7F2', // 27 bby blu
+  '#0289B3', // 28 lit blu
+  '#B2CFB2', // 29 lit gray grn
+  '#5A5094', // 30 mid gray purp
+  '#FF8599', // 31 brite pink
+  '#780848', // 32 deep mgnta
+  '#CC3B4C', // 33 brite salmon
+  '#211C19', // 34 blk
+  '#FF1741', // 35 brite red
+  '#A89B6A', // 36 tan
+  '#E3BA5B', // 37 cream yello
+  '#5E5851', // 38 mid gray
+  '#3D1717', // 39 drk ochre
+  '#E8C1C6', // 40 cream pink
+  '#690002', // 41 deep red
+  '#8A8569', // 42 mid gray yello
+  '#EDCBA4', // 43 cream
+  '#FFB700', // 44 marrigold
+  '#E3D68A', // 45 lit gray yello
+  '#6E3423', // 46 deep orng brn
+  '#660507', // 47 drk red
+  '#FA4F00', // 48 brite orng
+  '#D65527', // 49 deep orng
+  '#71707D', // 50 mid gray
+  '#FF4A74', // 51 brite salmon
+  '#52DED7', // 52 hot aqua
+  '#700D21', // 53 drk red
+  '#AB8F74', // 54 khaki
+  '#48616B', // 55 drk blu gray
+  '#85526F', // 56 mid gray mgnta
+  '#F7D8CD', // 57 cream
+  '', // 58
+  '#E887AE', // 59 lit pink
+  '#542918', // 60 deep brn
+  '#676D75', // 61 mid gray
+  '#F2AA83', // 62 cream orng
+  '#90D4A3', // 63 lit gray lime
+  '#6E4E4C', // 64 mid gray brn
+  '#451016', // 65 drk red
+  '#5E556B', // 66 mid gray purp
+  '#2F302C', // 67 blk gray
+  '#739C97', // 68 mid gray teal
+  '#F2E6D3', // 69 yello cream
 ]
 
 let pairs = [
   [c[0], c[1]], //00 brite white/lit blu/drk blu    // salmon/brn/orng/drk green/bby blu on the navy side accent
-  [c[0], c[10]], //01 briteish baby blu/ dark aqua
+  [c[0], c[10]], //01 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
   [c[0], c[27]], //02 briteish baby blu/ dark aqua    //drk grn/hot teal/ brn
-  [c[1], c[23]], //03 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent
-  [c[1], c[6]], //04 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent
+  [c[1], c[23]], //03 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent //no drk grn
+  [c[1], c[6]], //04 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent //navy mgnta?
   [c[1], c[52]], //05 brite hot aqua/ white   //gray/cream/blk
   [c[1], c[28]], //06 brite aqua/white    // drk teal/brn?/ accent
   [c[1], c[12]], //07 briteish drk navy/ gray blu/ white    // tan on navy/ cream/ blk/ bby blu
-  [c[1], c[14]], //08 megabrite yello/green/white     // drk grn
+  [c[1], c[14]], //08 megabrite yello/green/white     // drk grn // med grn on white edge
   [c[2], c[3]], //09 megabrite purp/hotpink/hotsalmon     // drk teal accent/ cream/ gray/ yello //brite red on purple/aqua middle
   [c[3], c[33]], //10 brite orng /purp    // hot aqua/salmon/white teal
   [c[3], c[23]], //11 brite lit blu ray/purp/mgnta
@@ -126,22 +125,22 @@ let pairs = [
   [c[5], c[28]], //22 briteish drk teal/ baby blu   // tan/ peach or white teal edge on bby blu/ ? behind drk teal/ salmon on blu
   [c[5], c[22]], //23 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
   [c[5], c[42]], //24 dullish drk teal/grn/tan    // navy /white
-  [c[5], c[63]], //25 dullish dark aqua /light aqua
+  [c[5], c[63]], //25 dullish dark aqua /light aqua   // cream orng?/white gray
   [c[5], c[23]], //26 briteish drk teal/lit gray blu  // cream/hot blu accent
-  [c[6], c[58]], //27 briteish cream/grn/drk aqua
+  [c[6], c[57]], //27 briteish cream/grn/drk aqua   // marrigold on cream/ hot grn middle/brite smth on drk aqua
   [c[6], c[7]], //28 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
   [c[7], c[34]], //29 dull drk brn/olive/lit gray   //hot colors
   [c[7], c[55]], //30 dull lit gray teal/gray teal    // merrigold behind
   [c[7], c[17]], //31 dull lit gray/purp    // navy, bby blu, salmon
   [c[7], c[20]], //32 dull drk olive/lit gray blu
-  [c[7], c[58]], //33 briteish pastel pink/grn/blu    // brn/blk/cream
-  [c[7], c[61]], //34 dull slate /bluegray    // pink/ teal
-  [c[7], c[52]], //35 brite gray/hot aqua   // navy/peach accent
+  [c[7], c[57]], //33 briteish pastel pink/grn/blu    // brn/blk/cream
+  [c[7], c[61]], //34 dull slate /bluegray    // pink/ teal //hot yello/ drk blu //drk purp
+  [c[7], c[52]], //35 brite gray/hot aqua   // navy/peach accent //pink cream + mustard on the grey side/salmon on aqua
   [c[7], c[39]], //36 dull blue/ purp
   [c[8], c[9]], //37 dullish navy/lit gray purp
   [c[8], c[53]], //38 briteish lit gray blu/purp/drk red
   [c[1], c[32]], //39 white blu/drk mgnta
-  [c[9], c[45]], //40 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello
+  [c[9], c[45]], //40 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello //mgnta or aqua on navy/marrigold on yello
   [c[10], c[62]], //41 brite peach/pink/purp/baby blu     //hot teal/ navy on the blue side/white/ yello on pink
   [c[10], c[20]], //42 briteish lit gray blu/gray teal/blk teal
   [c[10], c[11]], //43 brite hot aqua/bby blu
@@ -150,11 +149,11 @@ let pairs = [
   [c[11], c[36]], //46 briteish hot aqua/ tan
   [c[11], c[27]], //47 brite lit gray aqua/bby blu    // navy/drk teal/cream/brn/ hot salmon over the blue side
   [c[12], c[27]], //48 briteish lit blu/drk blu
-  [c[12], c[23]], //49 dull navy/lit gray   // cream/ pink/ purp on the gray edge
+  [c[12], c[23]], //49 dull navy/lit gray   // cream/ pink/ purp on the gray edge //no drk red
   [c[12], c[13]], //50 briteish navy/teal   //hot aqua/cream accent
   [c[12], c[63]], //51 briteish navy/aqua   // peach/merrigold/navy
-  [c[14], c[15]], //52 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind
-  [c[14], c[34]], //53 dark brn/hot yello     // grey purp/ purp
+  [c[14], c[15]], //52 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind  // hot pink+aqua on peach side
+  [c[68], c[52]], //53 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
   [c[15], c[25]], //54 dull ochre /cream
   [c[16], c[17]], //55 briteish hot aqua/drk purp   // merrigold? accent
   [c[17], c[37]], //56 bright drk purp/pink/yello
@@ -165,18 +164,18 @@ let pairs = [
   [c[34], c[16]], //61 briteish lit aqua/drk brn
   [c[16], c[66]], //62 brite lit aqua/ gray drk purp    // brn on teal side/thin salmon lines middle
   [c[18], c[19]], //63 briteish drk grn/ aqua   // brn/blk/cream
-  [c[20], c[21]], //64 dull blk grn/grn     // hot aqua/white
+  [c[20], c[21]], //64 dull blk grn/grn     // hot aqua/white // no red
   [c[21], c[45]], //65 brite cream yello/grn
-  [c[66], c[22]], //66  tween gray purp/aqua
+  [c[66], c[22]], //66  tween gray purp/aqua   //hot orng behind purp
   [c[23], c[24]], //67 dull light gray/ gray green    // wine/ gray/ white
-  [c[26], c[23]], //68 brite hot mgnta/lit gray bby blu   //blk navy on gray bby/ orange on pink
+  [c[26], c[23]], //68 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
   [c[66], c[23]], //69 dull gray purp/ lit gray
   [c[50], c[23]], //70 dull lit gray/ lit brn gray
-  [c[34], c[26]], //71 brite hot mgnta/drk brn
+  [c[34], c[26]], //71 brite hot mgnta/drk brn   // blue/lit gray on brn side
   [c[27], c[28]], //72 megabrite lit blu/ blu   // white/ cream edge/ drk gray/ cream behind blu
-  [c[56], c[28]], //73 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue
+  [c[56], c[28]], //73 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue //no aqua on purp side
   [c[28], c[57]], //74 //brite yello/ grn/ blu
-  [c[28], c[66]], //75 briteish sky blue/gray purp    //wine/drk gray teal/lit lavender
+  [c[28], c[66]], //75 briteish sky blue/gray purp    //wine/drk gray teal/lit lavender //c[59] on blu side/ cream behind gray purp
   [c[31], c[27]], //76 megabrite hot blue/purp/pnk/salmon   // cream/
   [c[27], c[40]], //77 brite powder blue /pink /cream   //white/cream in middle or hot aqua
   [c[29], c[64]], //78 dullish lit gray aqua/olive/med brn
@@ -186,8 +185,8 @@ let pairs = [
   [c[31], c[32]], //82 brite drk mgnta/lit pink
   [c[31], c[45]], //83 brite hot lit pink/hot lit yello ***   //white accent
   [c[32], c[35]], //84 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
-  [c[42], c[33]], //85 dullish gray teal/hot salmon
-  [c[45], c[32]], //86 briteish cream yello/drk mgnta
+  [c[42], c[33]], //85 dullish gray teal/hot salmon //no red/orng on salmon side
+  [c[45], c[32]], //86 briteish cream yello/drk mgnta   // hot aqua on yello side //hot salmon on yello/ yello on  mgnta
   [c[34], c[35]], //87 brite drk brn/ hot salmon
   [c[35], c[41]], //88 briteish drk red/hot salmon
   [c[3], c[51]], //89 brite purp/powder salmon
@@ -199,23 +198,20 @@ let pairs = [
   [c[60], c[37]], //95 med yello/med brn
   [c[39], c[40]], //96 dullish drk red brn/cream
   [c[42], c[43]], //97 dullish lit olive/cream
-  [c[45], c[46]], //98 briteish lit yello/mid brn
+  [c[12], c[16]], //98 briteish navy/ lit teal
   [c[47], c[48]], //99 brite orng/red orng
   [c[45], c[49]], //100 brite orng/lit yello
   [c[2], c[25]], //101 briteish hot salmon/brn red      // navy/ white behind/ white gray on salmon edge/ hot color in middle/ blk
-  [c[30], c[19]], //102 drk gray purp/hot teal    // hot orng/hot teal/pink accent
-  [c[52], c[35]], //103 megabrite red/hot aqua
-  [c[10], c[18]], //104 lit blu/drk aqua
-  [c[44], c[53]], //105 brite drk red/merrigold   // mgnta/ drk teal
-  [c[58], c[65]], //106 dullish drk red/ cream    //drk green over cream
-  [c[13], c[19]], //107 brite teal gray/hot teal
-  [c[53], c[49]], //108 brite lit orng/drk red orng
+  [c[30], c[19]], //102 drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
+  [c[52], c[35]], //103 megabrite red/hot aqua //mid gray on red edge
+  [c[10], c[18]], //104 lit blu/drk aqua // purp/ cream
+  [c[44], c[53]], //105 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
+  [c[57], c[65]], //106 dullish drk red/ cream    //drk green over cream
+  [c[13], c[19]], //107 brite teal gray/hot teal    // hot salmon on aqua side/ no brn
+  [c[53], c[49]], //108 brite lit orng/drk red orng  // hot orng edge/ white teal
   [c[45], c[48]], //109 brite white yello/daglo orng
-  [c[34], c[63]], //110 briteish lite teal/drk brn
+  [c[27], c[18]], //110 briteish bby blu/drk grn    // cream/drk mgnta
   [c[20], c[61]], //111 dull mid gray/dark gray   // blu on drk gray/white behind gray
-  [c[68], c[52]], //112 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
-  [c[12], c[16]], //113 briteish navy/ lit teal
-  [c[27], c[18]], //114 briteish bby blu/drk grn    // cream/drk mgnta
 ]
 
 let layer1
@@ -225,9 +221,9 @@ let numShapes = 6
 let color0
 let color1
 let vertices = []
-let scale0 = 1
+let scale0 = 0.9
 let colorIndex // color to use for gradient
-let numRs = 5 // number of Renegade Strokes
+let numRs = 8 // number of Renegade Strokes
 let rsIndex = []
 let rsColor = []
 let cakeShape
@@ -383,15 +379,15 @@ function setup() {
   // color1 = [...pairs[colorIndex][1], a]
   color0 = chroma(pairs[colorIndex][0])
   color1 = chroma(pairs[colorIndex][1])
-  color0 = chroma(random(c))
-  color1 = chroma(random(c))
+  // color0 = chroma(random(c))
+  // color1 = chroma(random(c))
   // let cIndex0 = c.indexOf(pairs[colorIndex][0])
   // let cIndex1 = c.indexOf(pairs[colorIndex][1])
   let cIndex0 = c.indexOf(color0.hex().toUpperCase())
   let cIndex1 = c.indexOf(color1.hex().toUpperCase())
-  // console.log(`pairs[${colorIndex}]`)
-  console.log(`c[${cIndex0}]: ${color0}`)
-  console.log(`c[${cIndex1}]: ${color1}`)
+  console.log(
+    `pairs[${colorIndex}]/ c[${cIndex0}]: ${color0}/ c[${cIndex1}]: ${color1}`
+  )
 
   // push vertices (x,y) for n triangles to vertices array
   vertices = vertexCache(numShapes, siiize)
@@ -402,7 +398,7 @@ function setup() {
     rsIndex.push(floor(random(numShapes)))
     let randC = floor(random(c.length))
     console.log(`rs${i}: c[${randC}]: ${c[randC]}`)
-    rsColor.push(random(c))
+    rsColor.push(c[randC])
     // console.log(rsColor)
     // rsColor[i][3] = random(0.2, 1)
     rsColor[i][3] = 1
@@ -425,20 +421,27 @@ function setup() {
 
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
-  cakeShape = 1
+  cakeShape = 0
   if (cakeShape == 0) {
     tickMax = wid * 1.5
     // sc = scale
-    scA = 0.3 // amplitude
+    scA = 0.24 // amplitude {0.12 -}
     scB = 1 // frequency
     scC = 0 // offset (degrees)
     // rz = rotateZ
+    // crab:       rzB = rzE = 0.25
+    // wonky crab: rzB = rzE = 0.5
+    // loopy:      rzB = rzE = 1
+    // loopy2:     rzB = 1, rzE = 0.5/0.25
+    // classic:    rzB = 0.25, rzE = 1
+    // bunched:    rzB = 0.88, rzE = 0.45
     rzA = unit / 2 // amplitude
-    rzB = 1 // frequency
-    rzC = 30 // offset (degrees)
-    rzD = unit / 3 // amplitude
-    rzE = 1 // frequency
-    rzF = 0 // offset (degrees)
+    rzB = 0.88 // frequency
+    rzC = randSeed % 360 // offset (degrees)
+    rzD = unit * 0.5 // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
+    rzE = 0.35 // frequency
+    rzF = randSeed % 180 // offset (degrees)
+    console.log(`rzA: ${rzA}/ rzB: ${rzB}/ rzD: ${rzD}/ rzE: ${rzE}`)
     // mb = makeBrush
     mbA = -0.375 * wid - siiize / 2 // x parameter 1st term
     mbB = 0.5 // x parameter 2nd term (times tick)
@@ -447,7 +450,7 @@ function setup() {
   } else if (cakeShape == 1) {
     tickMax = wid / 2
     // sc = scale
-    scale0 = 1.6
+    scale0 = 1
     scA = 0 // amplitude
     scB = 2 //randSeed / 1000000000 // frequency
     scC = 0 // offset (degrees)
@@ -463,6 +466,7 @@ function setup() {
     mbB = 0.33 // 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
+    layer1.rotateZ(randSeed % 100)
   }
 
   // mark making /////////////////////////////////////////////////////////
@@ -471,7 +475,6 @@ function setup() {
 
     layer1.scale(scale0 + scA * sin(scB * tick + scC))
     layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
-    layer1.rotateZ(randSeed % 100)
 
     // x, y, z, toggle renegade stripes
     makeBrush(mbA + mbB * tick, mbC, mbD, true)
@@ -483,6 +486,7 @@ function setup() {
 }
 
 function draw() {
+  layer1.orbitControl()
   // console.log(frameCount)
   // layer1.rotateY(0.1)
 }
@@ -491,7 +495,7 @@ function makeBrush(x, y, z, renegade) {
   layer1.push()
   layer1.translate(x, y, z)
 
-  let bc = chroma.scale([color0, color1]).mode('lab')
+  let bc = chroma.scale([color0, color1]).mode('lch')
 
   for (let i = 0; i < numShapes; i++) {
     let dt = (numShapes - 1) ** -1
@@ -551,21 +555,4 @@ function vertexCache(numShapes, siiize) {
     }
   }
   return vertexArray
-}
-
-function blendColor(color0, color1, t) {
-  if (abs(color0[0] - color1[0]) > 180) {
-    if (color0[0] > color1[0]) {
-      color1[0] += 360
-    } else {
-      color0[0] += 360
-    }
-  }
-
-  return [
-    lerp(color0[0], color1[0], t) % 360,
-    lerp(color0[1], color1[1], t),
-    lerp(color0[2], color1[2], t),
-    lerp(color0[3], color1[3], t),
-  ]
 }
