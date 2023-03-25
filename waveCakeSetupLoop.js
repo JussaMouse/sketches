@@ -425,7 +425,7 @@ function setup() {
 
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
   // cakeShape=random[0,1,2]
-  cakeShape = 1
+  cakeShape = 0
   if (cakeShape == 0) {
     tickMax = wid * 1.5
     // sc = scale
@@ -471,7 +471,7 @@ function setup() {
 
     layer1.scale(scale0 + scA * sin(scB * tick + scC))
     layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
-    layer1.rotateZ(randSeed % 100)
+    // layer1.rotateZ(randSeed % 100)
 
     // x, y, z, toggle renegade stripes
     makeBrush(mbA + mbB * tick, mbC, mbD, true)
