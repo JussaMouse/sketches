@@ -1,6 +1,8 @@
 let c = {
   R: [
+    '#700D21',
     '#FF1741', // 35 brite red
+    '#FF8599', //31
     '#E887AE', // 59 lit pink
     '#690002', // 41 deep red
     '#451016', // 65 drk red
@@ -25,6 +27,7 @@ let c = {
   G: [
     '#0BDEB4', // 19 hot teal
     '#02CC78', // 4 brite teal
+    '#90D4A3', // 63
     '#AAF0D9', // 11 hot teal
     '#E3FFFF', // 1 white teal
     '#9DD1B5', // 16 lit
@@ -58,7 +61,7 @@ let c = {
     '#5E556B', // 66 mid gray purp
   ],
   M: [
-    '#FF4A74', // 51 brite salmon
+    '#FF4A74', // 2 brite salmon
     '#CC2D55', // 26 brite salmon
     '#CC3B4C', // 33 brite salmon
     '#780848', // 32 deep mgnta
@@ -70,6 +73,7 @@ let c = {
     '#676D75', // 61 mid gray
     '#5E5851', // 38 mid gray
     '#2F302C', // 67 blk gray
+    '#151716', //blk
   ],
   dull: [
     '#F2E6D3', // 69 yello cream
@@ -78,6 +82,7 @@ let c = {
     '#6E4E4C', // 64 mid gray brn
     '#6E3423', // 46 deep orng brn
     '#542918', // 60 deep brn
+    '#211C19', // 34 blk brn
   ],
 }
 function setup() {

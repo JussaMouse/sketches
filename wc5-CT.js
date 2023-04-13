@@ -1,325 +1,137 @@
-let randSeed =
-  Math.floor(Math.random() * Number.MAX_SAFE_INTEGER) % 100000000000000
-const diceBox = Array.from(String(randSeed), Number)
+const startTime = Date.now()
+let layer3
+let layer4
+let layer2
+let l2w
+let l2h
+let layer0
+let myFont
+let inputAddy = '' // input eth address
+let addy = '0x' // randomly gen eth address
+let switchIt = false
 
-// randSeed = 56598228421479
+function preload() {
+  myFont = loadFont('./UbuntuMono-Regular.ttf')
+}
 
-console.log(randSeed)
+// random ethereum address aka addy:
+let bits = []
+let bitsAll = ''
+for (let i = 0; i < 40; i++) {
+  // let digit = inputAddy[i]
+  let digit = Math.floor(Math.random() * 16).toString(16)
+  addy += digit
+  if (i < 4) {
+    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
+    for (let j = 0; j < 4; j++) {
+      bits.push(digit[j])
+    }
+    bitsAll += digit
+  }
+}
+console.log('addy: ', addy)
+//very testing
+
+function reroll() {
+  inputAddy = prompt('enter ETH address to preview')
+  for (let i = 2; i < 6; i++) {
+    let digit = inputAddy[i]
+    console.log(digit)
+    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
+    for (let j = 0; j < 4; j++) {
+      bits.push(digit[j])
+    }
+    bitsAll += digit
+  }
+  getSoul()
+  setup()
+}
+
+console.log('16 bits: ', bitsAll)
+
+let soul
+function getSoul() {
+  soul = {
+    design: bits[0], // 0 design
+    form: bits[1], // 1 form
+    user: bits[2], // 2 user
+    logos: bits[3], // 3 logos
+    age: bits[4], // 4 age
+    distance: bits[5], // 5 distance
+    interface: bits[6], // 6 interface
+    system: bits[7], // 7 system
+    mind: bits[8], // 8 mind
+    house: '' + bits[9] + bits[10] + bits[11], // house| 111: espionage, 110: ctf, 101: math, 100: control, 011: racer, 010: scene, 001: viz, 000: culture
+    mood: '' + bits[12] + bits[13] + bits[14] + bits[15],
+    soulP: 0,
+  }
+}
+
+getSoul()
+soul.soulP = remap(parseInt(bitsAll, 2), 0, 65535, 0, 1)
+let randSeed = Math.floor(soul.soulP * 1000000000)
+console.log('randSeed: ', randSeed)
+for (stat of Object.keys(soul)) console.log(`${stat}: ${soul[stat]}`)
 
 // define unit length //////////////////////////////////////////////////
 let wid = window.innerWidth
 let hei = window.innerHeight
 let unit
-wid > hei ? (unit = hei / 40) : (unit = wid / 40)
-
-// get remap() ///////////////////////////////////////////////////////////
-function normy(value, min, max) {
-  return (value - min) / (max - min)
-}
-function lerpy(normy, min, max) {
-  return (max - min) * normy + min
-}
-function remap(value, sourceMin, sourceMax, destMin, destMax) {
-  var n = normy(value, sourceMin, sourceMax)
-  return lerpy(normy(value, sourceMin, sourceMax), destMin, destMax)
+let ori = ''
+if (wid > hei) {
+  ori = 'horizontal'
+  unit = hei / 50
+} else {
+  ori = 'vertical'
+  unit = wid / 50
 }
 
-// globals
-let a = 0.55
-let R = [
-  '#FF1741', // 35 brite red
-  '#E887AE', // 59 lit pink
-  '#690002', // 41 deep red
-  '#451016', // 65 drk red
-  '#3D1717', // 39 drk ochre
-  '#F7D8CD', // 57 cream
-  '#E8C1C6', // 40 cream pink
-]
-let O = [
-  '#FA4F00', // 48 brite orng
-  '#F2AA83', // 62 cream orng
-  '#F5A676', // 15 lit brn orng
-  '#D65527', // 49 deep orng
-]
-let Y = [
-  '#F3FA70', // 14 brite pastel yello
-  '#FFB700', // 44 marrigold
-  '#E3BA5B', // 37 cream yello
-  '#E3D68A', // 45 lit gray yello
-  '#A89B6A', // 36 tan
-  '#8A8569', // 42 mid gray yello
-]
-let G = [
-  '#0BDEB4', // 19 hot teal
-  '#02CC78', // 4 brite teal
-  '#AAF0D9', // 11 hot teal
-  '#E3FFFF', // 1 white teal
-  '#9DD1B5', // 16 lit
-  '#709C88', // 13 mid gray teal
-  '#0E4542', // 18 drk teal
-  '#224E5E', // 6 drk teal
-  '#093332', // 5 drk teal
-  '#03472F', // 21 drk grn
-  '#B2CFB2', // 29 lit gray grn
-  '#739C97', // 68 mid gray teal
-  '#577367', // 24 mid gray grn
-]
-let B = [
-  '#52DED7', // 52 hot aqua
-  '#80B2E8', // 10 sky blu
-  '#63B7F2', // 27 bby blu
-  '#0289B3', // 28 lit blu
-  '#366E8F', // 22 mid gray blu
-  '#003D69', // 0 deep blue
-  '#062A57', // 9 drk blu
-  '#A9C0D9', // 23 lit gray blu
-  '#93ADB5', // 7 lite gray teal
-  '#48616B', // 55 drk blu gray
-  '#0F1A30', // 12 blk blu
-]
-let V = [
-  '#750082', // 3 deep purp
-  '#5A5094', // 30 mid gray purp
-  '#2E2359', // 17 deep purp
-  '#B0ADC4', // 8 lite gray purp
-  '#5E556B', // 66 mid gray purp
-]
-let M = [
-  '#FF4A74', // 51 brite salmon
-  '#CC2D55', // 26 brite salmon
-  '#CC3B4C', // 33 brite salmon
-  '#780848', // 32 deep mgnta
-  '#85526F', // 56 mid gray mgnta
-]
-let monoc = [
-  'white', // 58
-  '#71707D', // 50 mid gray
-  '#676D75', // 61 mid gray
-  '#5E5851', // 38 mid gray
-  '#2F302C', // 67 blk gray
-]
-let dullc = [
-  '#F2E6D3', // 69 yello cream
-  '#EDCBA4', // 43 cream
-  '#AB8F74', // 54 khaki
-  '#6E4E4C', // 64 mid gray brn
-  '#6E3423', // 46 deep orng brn
-  '#542918', // 60 deep brn
-]
-let c = [
-  '#003D69', // 0 deep blue
-  '#E3FFFF', // 1 white teal
-  '#FF4A74', // 2 brite pink
-  '#750082', // 3 deep purp
-  '#02CC78', // 4 brite teal
-  '#093332', // 5 drk teal
-  '#224E5E', // 6 drk teal
-  '#93ADB5', // 7 lite gray teal
-  '#B0ADC4', // 8 lite gray purp
-  '#062A57', // 9 drk blu
-  '#80B2E8', // 10 sky blu
-  '#AAF0D9', // 11 hot teal
-  '#0F1A30', // 12 blk blu
-  '#709C88', // 13 mid gray teal
-  '#F3FA70', // 14 brite pastel yello
-  '#F5A676', // 15 lit brn orng
-  '#9DD1B5', // 16 lit aqua
-  '#2E2359', // 17 deep purp
-  '#0E4542', // 18 drk teal
-  '#0BDEB4', // 19 hot teal
-  '#151716', // 20 blk
-  '#03472F', // 21 drk grn
-  '#366E8F', // 22 mid gray blu
-  '#A9C0D9', // 23 lit gray blu
-  '#577367', // 24 mid gray grn
-  '#73364A', // 25 mid gray wine
-  '#CC2D55', // 26 brite salmon
-  '#63B7F2', // 27 bby blu
-  '#0289B3', // 28 lit blu
-  '#B2CFB2', // 29 lit gray grn
-  '#5A5094', // 30 mid gray purp
-  '#FF8599', // 31 brite pink
-  '#780848', // 32 deep mgnta
-  '#CC3B4C', // 33 brite salmon
-  '#211C19', // 34 blk
-  '#FF1741', // 35 brite red
-  '#A89B6A', // 36 tan
-  '#E3BA5B', // 37 cream yello
-  '#5E5851', // 38 mid gray
-  '#3D1717', // 39 drk ochre
-  '#E8C1C6', // 40 cream pink
-  '#690002', // 41 deep red
-  '#8A8569', // 42 mid gray yello
-  '#EDCBA4', // 43 cream
-  '#FFB700', // 44 marrigold
-  '#E3D68A', // 45 lit gray yello
-  '#6E3423', // 46 deep orng brn
-  '#660507', // 47 drk red
-  '#FA4F00', // 48 brite orng
-  '#D65527', // 49 deep orng
-  '#71707D', // 50 mid gray
-  '#FF4A74', // 51 brite salmon
-  '#52DED7', // 52 hot aqua
-  '#700D21', // 53 drk red
-  '#AB8F74', // 54 khaki
-  '#48616B', // 55 drk blu gray
-  '#85526F', // 56 mid gray mgnta
-  '#F7D8CD', // 57 cream
-  'white', // 58
-  '#E887AE', // 59 lit pink
-  '#542918', // 60 deep brn
-  '#676D75', // 61 mid gray
-  '#F2AA83', // 62 cream orng
-  '#90D4A3', // 63 lit gray lime
-  '#6E4E4C', // 64 mid gray brn
-  '#451016', // 65 drk red
-  '#5E556B', // 66 mid gray purp
-  '#2F302C', // 67 blk gray
-  '#739C97', // 68 mid gray teal
-  '#F2E6D3', // 69 yello cream
-]
-let megabrite = [
-  [c[1], c[14]], //00 megabrite yello/green/white     // drk grn // med grn on white edge
-  [c[2], c[3]], //01 megabrite purp/hotpink/hotsalmon     // drk teal accent/ cream/ gray/ yello //brite red on purple/aqua middle
-  [c[3], c[35]], //02 megabrite purp/mgnta/hot orange
-  [c[4], c[51]], //03 megabrite pink/ orng /yello /grn /teal
-  [c[4], c[19]], //04 megabrite hot aqua/hot grn
-  [c[27], c[28]], //05 megabrite lit blu/ blu   // white/ cream edge/ drk gray/ cream behind blu
-  [c[31], c[27]], //06 megabrite hot blue/purp/pnk/salmon   // cream/
-  [c[52], c[35]], //07 megabrite red/hot aqua //mid gray on red edge
-]
-let brite = [
-  [c[0], c[1]], //00 brite white/lit blu/drk blu    // salmon/brn/orng/drk green/bby blu on the navy side accent
-  [c[1], c[23]], //01 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent //no drk grn
-  [c[1], c[52]], //02 brite hot aqua/ white   //gray/cream/blk
-  [c[1], c[28]], //03 brite aqua/white    // drk teal/brn?/ accent
-  [c[3], c[33]], //04 brite orng /purp    // hot aqua/salmon/white teal
-  [c[3], c[23]], //05 brite lit blu ray/purp/mgnta
-  [c[3], c[11]], //06 brite aqua/ blu/mgnta   //hot aqua behind mgnta/ salmon on purple/ blk on white teal
-  [c[3], c[39]], //07 brite drk red brn/ purp     //drk grn accent // white/ cream
-  [c[4], c[30]], //08 brite purp gray/hot grn   // hot aqua accent on the purple side
-  [c[4], c[5]], //09 brite drk grn/hot grn    // no aqua accent/ tan/ salmon
-  [c[7], c[52]], //10 brite gray/hot aqua   // navy/peach accent //pink cream + mustard on the grey side/salmon on aqua
-  [c[9], c[45]], //11 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello //mgnta or aqua on navy/marrigold on yello
-  [c[10], c[62]], //12 brite peach/pink/purp/baby blu     //hot teal/ navy on the blue side/white/ yello on pink
-  [c[10], c[11]], //13 brite hot aqua/bby blu
-  [c[11], c[68]], //14 brite lit aqua/ gray aqua
-  [c[11], c[27]], //15 brite lit gray aqua/bby blu    // navy/drk teal/cream/brn/ hot salmon over the blue side
-  [c[14], c[15]], //16 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind  // hot pink+aqua on peach side
-  [c[68], c[52]], //17 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
-  [c[17], c[37]], //18 brite drk purp/pink/yello
-  [c[16], c[22]], //19 brite gray bby blu/lit aqua  // hot pink/ med gray/ cream accent //tan accent
-  [c[16], c[66]], //20 brite lit aqua/ gray drk purp    // brn on teal side/thin salmon lines middle
-  [c[21], c[45]], //21 brite cream yello/grn
-  [c[26], c[23]], //22 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
-  [c[34], c[26]], //23 brite hot mgnta/drk brn   // blue/lit gray on brn side
-  [c[28], c[57]], //24 //brite yello/ grn/ blu
-  [c[27], c[40]], //25 brite powder blue /pink /cream   //white/cream in middle or hot aqua
-  [c[50], c[29]], //26 brite mid gray/white teal    //peach/ navy/ drk grn
-  [c[30], c[57]], //27 brite pastels cream/purp   // salmon accent //no yello
-  [c[31], c[32]], //28 brite drk mgnta/lit pink
-  [c[31], c[45]], //29 brite hot lit pink/hot lit yello ***   //white accent
-  [c[32], c[35]], //30 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
-  [c[34], c[35]], //31 brite drk brn/ hot salmon
-  [c[3], c[51]], //32 brite purp/powder salmon
-  [c[51], c[34]], //33 brite drk brn/ hot pink    //grey green on pink/blue on brn
-  [c[37], c[59]], //34 brite lit pink/orng/yello    // white/purp
-  [c[47], c[48]], //35 brite orng/red orng
-  [c[45], c[49]], //36 brite orng/lit yello
-  [c[30], c[19]], //37 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
-  [c[44], c[53]], //38 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
-  [c[13], c[19]], //39 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
-  [c[53], c[49]], //40 brite lit orng/drk red orng  // hot orng edge/ white teal
-  [c[45], c[48]], //41 brite white yello/daglo orng
-]
-let briteish = [
-  [c[0], c[10]], //00 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
-  [c[0], c[27]], //01 briteish baby blu/ dark aqua    //drk grn/hot teal/ brn
-  [c[1], c[6]], //02 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent //navy mgnta?
-  [c[1], c[12]], //03 briteish drk navy/ gray blu/ white    // tan on navy/ cream/ blk/ bby blu
-  [c[3], c[65]], //04 briteish drk red brn/ purp    //gray/hot colors accent
-  [c[5], c[28]], //05 briteish drk teal/ baby blu   // tan/ peach or white teal edge on bby blu/ ? behind drk teal/ salmon on blu
-  [c[5], c[23]], //06 briteish drk teal/lit gray blu  // cream/hot blu accent
-  [c[6], c[57]], //07 briteish cream/grn/drk aqua   // marrigold on cream/ hot grn middle/brite smth on drk aqua
-  [c[7], c[57]], //08 briteish pastel pink/grn/blu    // brn/blk/cream
-  [c[8], c[53]], //09 briteish lit gray blu/purp/drk red
-  [c[1], c[32]], //10 briteish white blu/drk mgnta
-  [c[10], c[20]], //11 briteish lit gray blu/gray teal/blk teal
-  [c[11], c[36]], //12 briteish hot aqua/ tan
-  [c[12], c[27]], //13 briteish lit blu/drk blu
-  [c[12], c[13]], //14 briteish navy/teal   //hot aqua/cream accent
-  [c[12], c[63]], //15 briteish navy/aqua   // peach/merrigold/navy
-  [c[16], c[17]], //16 briteish hot aqua/drk purp   // merrigold? accent
-  [c[52], c[17]], //17 briteish drk purp/hot aqua   // white behind purp/ blu on the aqua edge/ yello on purp // gray, cream, purp, brn
-  [c[34], c[16]], //18 briteish lit aqua/drk brn
-  [c[18], c[19]], //19 briteish drk grn/ aqua   // brn/blk/cream
-  [c[56], c[28]], //20 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue //no aqua on purp side
-  [c[28], c[66]], //21 briteish sky blue/gray purp    //wine/drk gray teal/lit lavender //c[59] on blu side/ cream behind gray purp
-  [c[45], c[32]], //22 briteish cream yello/drk mgnta   // hot aqua on yello side //hot salmon on yello/ yello on  mgnta
-  [c[35], c[41]], //23 briteish drk red/hot salmon
-  [c[37], c[38]], //24 briteish lit chrcl/yellow    // navy/yellow accent   //purp/hot aqua
-  [c[44], c[38]], //25 briteish merrigold/ lit chrcl    //blk/hot pink/ hot blu/ hot teal
-  [c[12], c[16]], //26 briteish navy/ lit teal  //
-  [c[2], c[25]], //27 briteish hot salmon/brn red      // navy/ white behind/ white gray on salmon edge/ hot color in middle/ blk
-  [c[10], c[18]], //28 briteish lit blu/drk aqua // purp/ cream
-  [c[27], c[18]], //29 briteish bby blu/drk grn    // cream/drk mgnta
-]
-let dullish = [
-  [c[3], c[34]], //00 dullish drk brn/ purple   // cream/white teal/lit pink
-  [c[5], c[36]], //01 dullish tan/grn/drk teal
-  [c[5], c[22]], //02 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
-  [c[5], c[42]], //03 dullish drk teal/grn/tan    // navy /white
-  [c[5], c[63]], //04 dullish dark aqua /light aqua   // cream orng?/white gray
-  [c[6], c[7]], //05 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
-  [c[8], c[9]], //06 dullish navy/lit gray purp
-  [c[11], c[20]], //07 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
-  [c[68], c[17]], //08 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
-  [c[66], c[22]], //09  dullish gray purp/aqua   //hot orng behind purp
-  [c[29], c[64]], //10 dullish lit gray aqua/olive/med brn
-  [c[42], c[33]], //11 dullish gray teal/hot salmon //no red/orng on salmon side //no orng/brn on tan side
-  [c[34], c[69]], //12 dullish cream/drk brn
-  [c[60], c[37]], //13 dullish yello/med brn
-  [c[39], c[40]], //14 dullish drk red brn/cream
-  [c[42], c[43]], //15 dullish lit olive/cream
-  [c[57], c[65]], //16 dullish drk red/ cream    //drk green over cream
-]
-let dull = [
-  [c[7], c[34]], //00 dull drk brn/olive/lit gray   //hot colors
-  [c[7], c[55]], //01 dull lit gray teal/gray teal    // merrigold behind
-  [c[7], c[17]], //02 dull lit gray/purp    // navy, bby blu, salmon
-  [c[7], c[20]], //03 dull drk olive/lit gray blu
-  [c[7], c[61]], //04 dull slate /bluegray    // pink/ teal //hot yello/ drk blu //drk purp
-  [c[7], c[39]], //05 dull blue/ purp
-  [c[12], c[23]], //06 dull navy/lit gray   // cream/ pink/ purp on the gray edge //no drk red
-  [c[15], c[25]], //07 dull ochre /cream
-  [c[61], c[17]], //08 dull mid gray/drk purp
-  [c[20], c[21]], //09 dull blk grn/grn     // hot aqua/white // no red
-  [c[23], c[24]], //10 dull light gray/ gray green    // wine/ gray/ white
-  [c[66], c[23]], //11 dull gray purp/ lit gray
-  [c[50], c[23]], //12 dull lit gray/ lit brn gray
-  [c[29], c[30]], //13 dull gray teal/purp    //brite color behind the gray teal
-  [c[20], c[61]], //14 dull mid gray/dark gray   // blu on drk gray/white behind gray
-]
+let grid = {
+  // grids to draw icons on
+  x: 0,
+  y: 0,
+  blockSize: unit / 5,
+  rows: 12,
+  cols: 12,
+}
 
-let layer1
-let numLevels = 20
-let siiize = unit * 4
-let numShapes = 6
-let color0
-let color1
-let vertices = []
+let layer1 // creategraphics canvas
+let siiize = unit * 4 // brush shape size
+let numShapes = 4 // brush shapes
+let color0 // gradient color
+let color1 // gradient color
+let vertices = [] //
 let scale0 = 0.9
 let colorIndex // color to use for gradient
-let numRs = 6 // number of Renegade Strokes
+let numRs = 2 // number of Renegade Strokes
+if (soul.age == 1) {
+  numShapes = 5
+  numRs = 3
+}
 let rsIndex = []
 let rsColor = []
-let rsAlpha = 0.7
-let cakeShape
+let rsAlpha = 0.5
+let rsPalette = []
+let cakeShape = 0
+
+//testing
+// cakeShape = 1
+// numShapes = 12
+// numRs += 2
+// siiize = unit * 1.5
+
+if (soul.distance == 0 && soul.mind == 0 && soul.logos == 0) {
+  cakeShape = 1
+  numShapes = 12
+  numRs += 2
+  siiize = unit * 1.5
+}
+
 let cakeHeight
-let cakeLength
+let cakeLength = 'med'
 // set shape
 let tickMax
-let x0
+let x0 = 0
 let scA
 let scB
 let scC
@@ -330,163 +142,973 @@ let rzD
 let rzE
 let rzF
 let pair = []
-let powerLevel
+let brushMode = 'triangle'
+let alph = 0.3
+let c = [
+  {
+    // 0
+    hex: '#003D69',
+    brite: 'deep',
+    group: 'B',
+  },
+  {
+    // 1
+    hex: '#E3FFFF',
+    brite: 'lit',
+    group: 'G',
+  },
+  {
+    // 2
+    hex: '#FF4A74',
+    brite: 'brite',
+    group: 'M',
+  },
+  {
+    // 3
+    hex: '#750082',
+    brite: 'deep',
+    group: 'V',
+  },
+  {
+    // 4
+    hex: '#02CC78',
+    brite: 'brite',
+    group: 'G',
+  },
+  {
+    // 5
+    hex: '#093332',
+    brite: 'drk',
+    group: 'G',
+  },
+  {
+    // 6
+    hex: '#224E5E',
+    brite: 'dull',
+    group: 'G',
+  },
+  {
+    // 7
+    hex: '#93ADB5',
+    brite: 'lit',
+    group: 'B',
+  },
+  {
+    // 8
+    hex: '#B0ADC4',
+    brite: 'lit',
+    group: 'V',
+  },
+  {
+    // 9
+    hex: '#062A57',
+    brite: 'drk',
+    group: 'B',
+  },
+  {
+    // 10
+    hex: '#80B2E8',
+    brite: 'mid',
+    group: 'B',
+  },
+  {
+    // 11
+    hex: '#AAF0D9',
+    brite: 'brite',
+    group: 'G',
+  },
+  {
+    // 12
+    hex: '#0F1A30',
+    brite: 'drk',
+    group: 'B',
+  },
+  {
+    // 13
+    hex: '#709C88',
+    brite: 'mid',
+    group: 'G',
+  },
+  {
+    // 14
+    hex: '#F3FA70',
+    brite: 'brite',
+    group: 'Y',
+  },
+  {
+    // 15
+    hex: '#F5A676',
+    brite: 'mid',
+    group: 'O',
+  },
+  {
+    // 16
+    hex: '#9DD1B5',
+    brite: 'mid',
+    group: 'G',
+  },
+  {
+    // 17
+    hex: '#2E2359',
+    brite: 'drk',
+    group: 'V',
+  },
+  {
+    // 18
+    hex: '#0E4542',
+    brite: 'drk',
+    group: 'G',
+  },
+  {
+    // 19
+    hex: '#0BDEB4',
+    brite: 'brite',
+    group: 'G',
+  },
+  {
+    // 20
+    hex: '#151716',
+    brite: 'drk',
+    group: 'mono',
+  },
+  {
+    // 21
+    hex: '#03472F',
+    brite: 'deep',
+    group: 'G',
+  },
+  {
+    // 22
+    hex: '#366E8F',
+    brite: 'mid',
+    group: 'B',
+  },
+  {
+    // 23
+    hex: '#A9C0D9',
+    brite: 'lit',
+    group: 'B',
+  },
+  {
+    // 24
+    hex: '#577367',
+    brite: 'mid',
+    group: 'dull',
+  },
+  {}, // 25
+  {
+    // 26
+    hex: '#CC2D55',
+    brite: 'deep',
+    group: 'M',
+  },
+  {
+    // 27
+    hex: '#63B7F2',
+    brite: 'lit',
+    group: 'B',
+  },
+  {
+    // 28
+    hex: '#0289B3',
+    brite: 'deep',
+    group: 'B',
+  },
+  {
+    // 29
+    hex: '#B2CFB2',
+    brite: 'mid',
+    group: 'G',
+  },
+  {
+    // 30
+    hex: '#5A5094',
+    brite: 'mid',
+    group: 'V',
+  },
+  {
+    // 31
+    hex: '#FF8599',
+    brite: 'mid',
+    group: 'R',
+  },
+  {
+    // 32
+    hex: '#780848',
+    brite: 'deep',
+    group: 'M',
+  },
+  {
+    // 33
+    hex: '#CC3B4C',
+    brite: 'mid',
+    group: 'M',
+  },
+  {
+    // 34
+    hex: '#211C19',
+    brite: 'drk',
+    group: 'dull',
+  },
+  {
+    // 35
+    hex: '#FF1741',
+    brite: 'brite',
+    group: 'R',
+  },
+  {
+    // 36
+    hex: '#A89B6A',
+    brite: 'mid',
+    group: 'Y',
+  },
+  {
+    // 37
+    hex: '#E3BA5B',
+    brite: 'mid',
+    group: 'Y',
+  },
+  {
+    // 38
+    hex: '#5E5851',
+    brite: 'mid',
+    group: 'mono',
+  },
+  {
+    // 39
+    hex: '#3D1717',
+    brite: 'drk',
+    group: 'R',
+  },
+  {
+    // 40
+    hex: '#E8C1C6',
+    brite: 'mid',
+    group: 'R',
+  },
+  {
+    // 41
+    hex: '#690002',
+    brite: 'drk',
+    group: 'R',
+  },
+  {
+    // 42
+    hex: '#8A8569',
+    brite: 'mid',
+    group: 'Y',
+  },
+  {
+    // 43
+    hex: '#EDCBA4',
+    brite: 'lit',
+    group: 'dull',
+  },
+  {
+    // 44
+    hex: '#FFB700',
+    brite: 'deep',
+    group: 'Y',
+  },
+  {
+    // 45
+    hex: '#E3D68A',
+    brite: 'lit',
+    group: 'Y',
+  },
+  {
+    // 46
+    hex: '#6E3423',
+    brite: 'deep',
+    group: 'dull',
+  },
+  {}, // 47
+  {
+    // 48
+    hex: '#FA4F00',
+    brite: 'brite',
+    group: 'O',
+  },
+  {
+    // 49
+    hex: '#D65527',
+    brite: 'deep',
+    group: 'O',
+  },
+  {
+    // 50
+    hex: '#71707D',
+    brite: 'mid',
+    group: 'mono',
+  },
+  {}, // 51
+  {
+    // 52
+    hex: '#52DED7',
+    brite: 'brite',
+    group: 'B',
+  },
+  {}, // 53
+  {
+    // 54
+    hex: '#AB8F74',
+    brite: 'mid',
+    group: 'dull',
+  },
+  {
+    // 55
+    hex: '#48616B',
+    brite: 'mid',
+    group: 'B',
+  },
+  {
+    // 56
+    hex: '#85526F',
+    brite: 'mid',
+    group: 'M',
+  },
+  {
+    // 57
+    hex: '#F7D8CD',
+    brite: 'lit',
+    group: 'R',
+  },
+  {
+    // 58
+    hex: '#FFFFFF',
+    brite: 'lit',
+    group: 'mono',
+  },
+  {
+    // 59
+    hex: '#E887AE',
+    brite: 'mid',
+    group: 'R',
+  },
+  {
+    // 60
+    hex: '#542918',
+    brite: 'deep',
+    group: 'dull',
+  },
+  {
+    // 61
+    hex: '#676D75',
+    brite: 'mid',
+    group: 'mono',
+  },
+  {
+    // 62
+    hex: '#F2AA83',
+    brite: 'mid',
+    group: 'O',
+  },
+  {
+    // 63
+    hex: '#90D4A3',
+    brite: 'mid',
+    group: 'G',
+  },
+  {
+    // 64
+    hex: '#6E4E4C',
+    brite: 'mid',
+    group: 'dull',
+  },
+  {
+    // 65
+    hex: '#451016',
+    brite: 'drk',
+    group: 'R',
+  },
+  {
+    // 66
+    hex: '#5E556B',
+    brite: 'mid',
+    group: 'V',
+  },
+  {
+    // 67
+    hex: '#2F302C',
+    brite: 'drk',
+    group: 'mono',
+  },
+  {
+    // 68
+    hex: '#739C97',
+    brite: 'mid',
+    group: 'G',
+  },
+  {
+    // 69
+    hex: '#F2E6D3',
+    brite: 'lit',
+    group: 'dull',
+  },
+]
+let litColors = c
+  .filter((color) => color.brite == 'lit')
+  .map((color) => color.hex)
+let briteColors = c
+  .filter((color) => color.brite == 'brite')
+  .map((color) => color.hex)
+let litty = briteColors.concat(litColors)
+let midColors = c.filter((color) => color.brite == 'mid')
+let deepColors = c.filter((color) => color.brite == 'deep')
+let drkColors = c.filter((color) => color.brite == 'drk')
+let R = c.filter((color) => color.group == 'R').map((color) => color.hex)
 
-const soulSet = [
-  [0, 1, 'land', 'sea'], // 0 design| 0: land, 1: sea
-  [0, 1, 'light', 'dark'], // 1 form| 0: light, 1: dark
-  [0, 1, 'one', 'many'], // 2 user| 0: one, 1: many
-  [0, 1, 'elder', 'academy'], // 3 logos| 0: elder, 1: academy
-  [0, 1, 'seed', 'tree'], // 4 age| 0: seed, 1: tree
-  [0, 1, 'world', 'visitor'], // 5 distance| 0: world, 1: visitor
-  [0, 1, 'bio', 'techno'], // 6 interface| 0: bio, 1: techno
-  [0, 1, 'dog', 'cat'], // 7 system| 0: dog, 1: cat
-  [0, 1, 'shape rotator', 'wordcel'], // 8 mind| 0: shape rotator, 1: wordcel
-  // house| 111: espionage, 110: ctf, 101: math, 100: control, 011: racer, 010: scene, 001: viz, 000: culture
+let natty = c.filter((color) => color.group == 'dull').map((color) => color.hex)
+let mono = c.filter((color) => color.group == 'mono').map((color) => color.hex)
+let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M']
+let megabrite = [
+  // the third element is an array of color groups to exclude
+  // 0=R, 1=O, 2=Y, 3=G, 4=B, 5=V, 6=M
+  [c[1].hex, c[14].hex, ['R']], //['G', 'no R']], //00 megabrite yello/green/white     // drk grn // med grn on white edge // ['mono', 'B', 'Y']],
+  [c[2].hex, c[3].hex], //01 megabrite purp/hotpink/hotsalmon     // drk teal accent/ cream/ gray/ yello //brite red on purple/aqua middle
+  [c[3].hex, c[35].hex], //, ['mono', 'B', 'Y']], //02 megabrite purp/mgnta/hot orange
+  [c[4].hex, c[19].hex, ['R']], //, ['mono', 'dull', 'G', 'Y']], //03 megabrite hot aqua/hot grn
+  [c[27].hex, c[28].hex], //04 megabrite lit blu/ blu   // white/ cream edge/ drk gray/ cream behind blu
+  [c[31].hex, c[27].hex], //05 megabrite hot blue/purp/pnk/salmon   // cream/
+]
+let brite = [
+  [c[0].hex, c[1].hex], //00 brite white/lit blu/drk blu    // salmon/brn/orng/drk green/bby blu on the navy side accent
+  [c[1].hex, c[23].hex], //01 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent //no drk grn
+  [c[1].hex, c[52].hex], //02 brite hot aqua/ white   //gray/cream/blk
+  [c[1].hex, c[28].hex], //03 brite aqua/white    // drk teal/brn?/ accent
+  [c[3].hex, c[33].hex], //04 brite orng /purp    // hot aqua/salmon/white teal
+  [c[3].hex, c[23].hex], //05 brite lit blu ray/purp/mgnta
+  [c[3].hex, c[11].hex, ['R', 'M']], //06 brite aqua/ blu/mgnta   //hot aqua behind mgnta/ salmon on purple/ blk on white teal
+  [c[3].hex, c[39].hex, ['G']], //07 brite drk red brn/ purp     //drk grn accent // white/ cream
+  [c[4].hex, c[30].hex], //08 brite purp gray/hot grn   // hot aqua accent on the purple side
+  [c[4].hex, c[5].hex, ['R', 'M']], //09 brite drk grn/hot grn    // no aqua accent/ tan/ salmon
+  [c[7].hex, c[52].hex], //10 brite gray/hot aqua   // navy/peach accent //pink cream + mustard on the grey side/salmon on aqua //lit yello behind gray
+  [c[9].hex, c[45].hex], //11 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello //mgnta or aqua on navy/marrigold on yello
+  [c[10].hex, c[62].hex], //12 brite peach/pink/purp/baby blu     //hot teal/ navy on the blue side/white/ yello on pink
+  [c[10].hex, c[11].hex], //13 brite hot aqua/bby blu //mid orng
+  [c[11].hex, c[68].hex, ['R']], //14 brite lit aqua/ gray aqua
+  [c[11].hex, c[27].hex], //15 brite lit gray aqua/bby blu    // navy/drk teal/cream/brn/ hot salmon over the blue side
+  [c[14].hex, c[15].hex], //16 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind  // hot pink+aqua on peach side
+  [c[68].hex, c[52].hex], //17 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
+  [c[17].hex, c[37].hex], //18 brite drk purp/pink/yello
+  [c[16].hex, c[22].hex, ['R', 'M']], //19 brite gray bby blu/lit aqua  // hot pink/ med gray/ cream accent //tan accent
+  [c[16].hex, c[66].hex, ['R', 'M']], //20 brite lit aqua/ gray drk purp    // brn on teal side/thin salmon lines middle
+  [c[21].hex, c[45].hex, ['V', 'R', 'M']], //21 brite cream yello/grn
+  [c[26].hex, c[23].hex, ['G', 'O']], //22 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
+  [c[34].hex, c[26].hex, ['G']], //23 brite hot mgnta/drk brn   // blue/lit gray on brn side
+  [c[28].hex, c[57].hex, ['G']], //24 //cream pink/ mid blu
+  [c[27].hex, c[40].hex], //25 brite powder blue /pink /cream   //white/cream in middle or hot aqua
+  [c[50].hex, c[29].hex, ['R']], //26 brite mid gray/white teal    //peach/ navy/ drk grn
+  [c[30].hex, c[57].hex], //27 brite pastels cream/purp   // salmon accent //no yello
+
+  [c[31].hex, c[45].hex], //28 brite hot lit pink/hot lit yello ***   //white accent
+  [c[32].hex, c[35].hex], //29 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
+  [c[34].hex, c[35].hex, ['Y', 'V']], //30 brite drk brn/ hot salmon
+  [c[3].hex, c[35].hex], //31 brite purp/powder salmon
+  [c[35].hex, c[34].hex, ['O']], //32 brite drk brn/ hot pink    //grey green on pink/blue on brn
+  [c[37].hex, c[59].hex], //33 brite lit pink/orng/yello    // white/purp
+  [c[41].hex, c[48].hex], //34 brite orng/red orng
+  [c[45].hex, c[49].hex], //35 brite orng/lit yello
+  [c[30].hex, c[19].hex], //36 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
+  [c[44].hex, c[41].hex], //37 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
+  [c[13].hex, c[19].hex, ['R', 'O']], //38 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
+  [c[41].hex, c[49].hex], //39 brite lit orng/drk red orng  // hot orng edge/ white teal
+  [c[45].hex, c[48].hex], //40 brite white yello/daglo orng
+]
+let briteish = [
+  [c[0].hex, c[10].hex], //00 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
+  [c[0].hex, c[27].hex], //01 briteish baby blu/ dark aqua    //drk grn/hot teal/ brn
+  [c[1].hex, c[6].hex, ['R', 'M']], //02 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent //navy mgnta?
+  [c[1].hex, c[12].hex], //03 briteish drk navy/ gray blu/ white    // tan on navy/ cream/ blk/ bby blu
+  [c[3].hex, c[65].hex], //04 briteish drk red brn/ purp    //gray/hot colors accent
+  [c[5].hex, c[28].hex], //05 briteish drk teal/ baby blu   // tan/ peach or white teal edge on bby blu/ ? behind drk teal/ salmon on blu
+  [c[5].hex, c[23].hex], //06 briteish drk teal/lit gray blu  // cream/hot blu accent
+  [c[7].hex, c[57].hex], //07 briteish pastel pink/grn/blu    // brn/blk/cream
+  [c[8].hex, c[41].hex, ['G']], //08 briteish lit gray blu/purp/drk red
+  [c[1].hex, c[32].hex, ['O']], //09 briteish white blu/drk mgnta
+  [c[10].hex, c[20].hex, ['R']], //10 briteish lit gray blu/gray teal/blk teal
+  [c[12].hex, c[27].hex], //11 briteish lit blu/drk blu
+  [c[12].hex, c[13].hex, ['R', 'M']], //12 briteish navy/teal   //hot aqua/cream accent
+  [c[12].hex, c[63].hex], //13 briteish navy/aqua   // peach/merrigold/navy
+  [c[16].hex, c[17].hex], //14 briteish hot aqua/drk purp   // merrigold? accent
+  [c[52].hex, c[17].hex, ['R']], //15 briteish drk purp/hot aqua   // white behind purp/ blu on the aqua edge/ yello on purp // gray, cream, purp, brn
+  [c[34].hex, c[16].hex], //16 briteish lit aqua/drk brn
+  [c[18].hex, c[19].hex, ['R']], //17 briteish drk grn/ aqua   // brn/blk/cream
+  [c[56].hex, c[28].hex, ['Y', 'R']], //18 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue //no aqua on purp side
+  [c[28].hex, c[66].hex], //19 briteish sky blue/gray purp    //wine/drk gray teal/lit lavender //c[59].hex on blu side/ cream behind gray purp
+  [c[45].hex, c[32].hex], //20 briteish cream yello/drk mgnta   // hot aqua on yello side //hot salmon on yello/ yello on  mgnta
+  [c[35].hex, c[41].hex], //21 briteish drk red/hot salmon
+  [c[44].hex, c[38].hex, ['Y']], //22 briteish merrigold/ lit chrcl    //blk/hot pink/ hot blu/ hot teal
+  [c[12].hex, c[16].hex], //23 briteish navy/ lit teal  //
+  [c[10].hex, c[18].hex], //24 briteish lit blu/drk aqua // purp/ cream
+  [c[27].hex, c[18].hex, ['R']], //25 briteish bby blu/drk grn    // cream/drk mgnta
+]
+let dullish = [
+  [c[3].hex, c[34].hex, ['G']], //00 dullish drk brn/ purple   // cream/white teal/lit pink
+  [c[5].hex, c[22].hex], //01 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
+  [c[5].hex, c[63].hex, ['R', 'M']], //02 dullish dark aqua /light aqua   // cream orng?/white gray
+  [c[6].hex, c[7].hex], //03 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
+  [c[9].hex, c[7].hex], //04 dullish navy/lit gray purp
+  [c[11].hex, c[20].hex], //05 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
+  [c[68].hex, c[17].hex, ['R']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
+]
+let dull = [
+  [c[7].hex, c[34].hex], //00 dull drk brn/olive/lit gray   //hot colors
+  [c[7].hex, c[55].hex], //01 dull lit gray teal/gray teal    // merrigold behind
+  [c[7].hex, c[17].hex], //02 dull lit gray/purp    // navy, bby blu, salmon
+  [c[7].hex, c[20].hex], //03 dull drk olive/lit gray blu
+  [c[7].hex, c[61].hex], //04 dull slate /bluegray    // pink/ teal //hot yello/ drk blu //drk purp
+  [c[7].hex, c[39].hex], //05 dull blue/ purp
+  [c[12].hex, c[23].hex], //06 dull navy/lit gray   // cream/ pink/ purp on the gray edge //no drk red
+  [c[61].hex, c[17].hex], //07 dull mid gray/drk purp
+  [c[20].hex, c[21].hex, ['M', 'R']], //08 dull blk grn/grn     // hot aqua/white // no red
+  [c[23].hex, c[24].hex], //09 dull light gray/ gray green    // wine/ gray/ white
+  [c[66].hex, c[23].hex], //10 dull gray purp/ lit gray
+  [c[50].hex, c[23].hex], //11 dull lit gray/ lit brn gray
+  [c[29].hex, c[30].hex], //12 dull gray teal/purp    //brite color behind the gray teal
+  [c[20].hex, c[61].hex], //13 dull mid gray/dark gray   // blu on drk gray/white behind gray
+]
+let houses = [
   [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    'espionage',
-    'ctf', // cannot be wordcel
-    'math', // cannot be wordcel
-    'control', // cannot be shape rotator
-    'racer', // cannot be wordcel
-    'scene', // cannot be shape rotator
-    'viz',
-    'culture', // cannot be shape rotator
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ],
 ]
-const eventSet = [
-  [00, 01, 10], //fork: 0: none, 1: give new offsrping, 2: become new offspring
-  [00, 01, 10], //growth: 0: none, 1: expand, 2: contract
-  [00, 01, 10], //down: 0: up, 1: service outage, 2: death
-  [0000, 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1111], //soulSwitched: 1111: none, 0000-1000: element of soul{} to toggle
+let stat0 = [
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
 ]
-let life = {
-  soul: {
-    design: [0, ''],
-    form: [0, ''],
-    user: [0, ''],
-    logos: [0, ''],
-    age: [0, ''],
-    distance: [0, ''],
-    interface: [0, ''],
-    system: [0, ''],
-    mind: [0, ''],
-    house: ['000', ''],
-  },
-  soulState: '',
-  soulP: 0,
-  event: {
-    fork: ['00', ''],
-    growth: ['00', ''],
-    down: ['00', ''],
-    soulSwitch: ['1111', ''],
-  },
-  eventState: '',
-}
-let i = 0
-for (stat of Object.keys(life.soul)) {
-  if (i < soulSet.length - 1) {
-    if (diceBox[i] > 4) {
-      life.soul[stat][0] = soulSet[i][0]
-      life.soul[stat][1] = soulSet[i][2]
-    } else {
-      life.soul[stat][0] = soulSet[i][1]
-      life.soul[stat][1] = soulSet[i][3]
-    }
-  } else {
-    let bigDie = randSeed % 100
-    if (bigDie > 98) {
-      // 2%
-      life.soul[stat][0] = '111'
-      life.soul[stat][1] = soulSet[i][8]
-    } else if (bigDie > 96) {
-      // 2%
-      life.soul[stat][0] = '110'
-      life.soul[stat][1] = soulSet[i][9]
-    } else if (bigDie > 92) {
-      // 4%
-      life.soul[stat][0] = '101'
-      life.soul[stat][1] = soulSet[i][10]
-    } else if (bigDie > 86) {
-      // 6%
-      life.soul[stat][0] = '100'
-      life.soul[stat][1] = soulSet[i][11]
-    } else if (bigDie > 76) {
-      // 10%
-      life.soul[stat][0] = '011'
-      life.soul[stat][1] = soulSet[i][12]
-    } else if (bigDie > 60) {
-      // 16%
-      life.soul[stat][0] = '010'
-      life.soul[stat][1] = soulSet[i][13]
-    } else if (bigDie > 34) {
-      // 26%
-      life.soul[stat][0] = '001'
-      life.soul[stat][1] = soulSet[i][14]
-    } else {
-      // 34%
-      life.soul[stat][0] = '000'
-      life.soul[stat][1] = soulSet[i][15]
-    }
-  }
-  console.log(`${stat}: ${life.soul[stat][0]} (${life.soul[stat][1]})`)
+let stat1 = [
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
+    [1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0],
+    [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ],
+]
+let bs = Math.max(Math.floor(grid.blockSize), 1)
+let startTxt2 = false
+let textX = Math.floor(wid / 2)
+let textX2 = Math.floor(wid / 2)
+let wrd = ''
+let textColor = 255
+let iconColor = 255
+let bgState = 0
+let iconState = 0
+let textState = 0
+let thinny = false
 
-  life.soulState += life.soul[stat][0]
-  i++
-}
-
-// energy: glacial, chill, alert, manic
-// api: courteous, jovial, unhinged
-// adventure: cruising, choosing, godmode
-// gang:
-// voteCount (lifetime)
-
-life.soulP = remap(parseInt(life.soulState, 2), 0, 8192, 0, 1)
-
-// for (stat )
-
+//////////////////////////////////////////////////////////////////////////
 function setup() {
   randomSeed(randSeed)
   noiseSeed(randSeed)
   createCanvas(wid, hei)
   angleMode(DEGREES)
+  layer0 = createGraphics(wid, hei)
+  layer0.background(5)
   // painting layer :
   layer1 = createGraphics(wid, hei, WEBGL)
   layer1.colorMode(RGB, 255, 255, 255, 1)
   layer1.angleMode(DEGREES)
-  layer1.background(5)
+  // layer1.background(5)
   layer1.scale(scale0)
+  l2w = wid * 0.25
+  l2h = hei * 0.25
+  layer2 = createGraphics(l2w * 2, l2h * 2)
+  layer2.colorMode(RGB, 255, 255, 255, 1)
+  layer2.angleMode(DEGREES)
+  layer3 = createGraphics(l2w * 2, l2h * 2)
+  layer4 = createGraphics(l2w * 2, l2h * 2)
+  layer4.textFont(myFont)
+  layer4.textSize(max(floor(unit / 2), 8))
 
   // function to return color0, color1, pairgroup name, pairIndex for a given soul
-  function getPair(life) {
+  let rsGroups = []
+  function getPair(s) {
     let pair = []
     let name = ''
     let pi
-    if (
-      life.soulP > 0.97 ||
-      life.soul.house[0] == '111' ||
-      life.soul.house[0] == '110'
-    ) {
+
+    if (s.mood == '0000') {
       pi = floor(random(megabrite.length))
       pair = megabrite[pi]
       name = 'megabrite'
-    } else if (life.soulP > 0.91 || life.soul.house[0] == '101') {
+    } else if (s.mood == '0001' || s.mood == '0010') {
       pi = floor(random(dull.length))
       pair = dull[pi]
       name = 'dull'
-    } else if (life.soulP > 0.79 || life.soul.house[0] == '100') {
+      if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+    } else if (
+      s.mood == '0011' ||
+      s.mood == '0100' ||
+      s.mood == '0101' ||
+      s.mood == '0110'
+    ) {
       pi = floor(random(dullish.length))
       pair = dullish[pi]
       name = 'dullish'
-    } else if (life.soulP > 0.54 || life.soul.house[0] == '011') {
+      if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+    } else if (
+      s.mood == '0111' ||
+      s.mood == '1000' ||
+      s.mood == '1001' ||
+      s.mood == '1010'
+    ) {
       pi = floor(random(briteish.length))
       pair = briteish[pi]
       name = 'briteish'
@@ -495,11 +1117,79 @@ function setup() {
       pair = brite[pi]
       name = 'brite'
     }
-    return [chroma(pair[0]), chroma(pair[1]), name, pi]
+
+    // pi = 4
+    // pair = dullish[4]
+    // name = 'dullish'
+
+    let group0 = random(groups)
+    let group1 = random(groups)
+    if (pair[2]) {
+      console.log(`exclude: ${pair[2]}`)
+      while (pair[2].includes(group0)) group0 = random(groups)
+      while (pair[2].includes(group1)) group1 = random(groups)
+    }
+
+    function filty(color) {
+      if ((name == 'dull' || name == 'dullish') && !cakeShape) {
+        return (
+          (color.group == group0 || color.group == group0) &&
+          (color.brite == 'brite' || color.brite == 'lit')
+        )
+      } else {
+        return color.group == group0
+      }
+    }
+
+    rsGroups = c.filter((color) => filty(color)).map((color) => color.hex)
+
+    rsGroups.concat(mono)
+
+    return [chroma(pair[0]), chroma(pair[1]), rsGroups, name, pi] //, gi]
+  }
+
+  let ghost = false
+  if (soul.design == 1 && soul.form == 1 && soul.distance == 1) {
+    alph = 0.1
+    ghost = true
+    console.log('ghost')
+  }
+  if (
+    soul.logos == 1 &&
+    soul.form == 0 &&
+    soul.interface == 1 &&
+    soul.house == '111'
+  ) {
+    brushMode = 'box'
+  }
+  if (soul.system == 0 && soul.design == 0 && soul.user == 1 && !cakeShape)
+    brushMode = 'sphere'
+  if (
+    soul.age == 1 &&
+    soul.interface == 0 &&
+    soul.mood == '1111' &&
+    !cakeShape
+  ) {
+    brushMode = 'fuzzy'
+  }
+  if (brushMode == 'triangle' && soul.house == '011') cakeLength = 'long'
+  if (brushMode == 'triangle' && soul.house == '001') cakeLength = 'short'
+  if (soul.house == '110' && soul.mood == '1001') {
+    numShapes = 2
+    siiize = unit * 8
+    numRs = 1
+  }
+  if (soul.mind == 1 && soul.system == 1 && soul.user == 0) {
+    thinny = true
+    console.log('thinny')
   }
 
   // choose gradient color
-  pair = getPair(life)
+  pair = getPair(soul)
+  rsPalette = pair[2]
+
+  //testing
+  console.log(rsPalette)
 
   //flip!
   if (random() > 0.5) {
@@ -507,10 +1197,10 @@ function setup() {
     console.log('flip!')
   }
 
-  let cIndex0 = c.indexOf(pair[0].hex().toUpperCase())
-  let cIndex1 = c.indexOf(pair[1].hex().toUpperCase())
+  let cIndex0 = c.findIndex((e) => e.hex === pair[0].hex().toUpperCase())
+  let cIndex1 = c.findIndex((e) => e.hex === pair[1].hex().toUpperCase())
   console.log(
-    `${pair[2]}[${pair[3]}]: c[${cIndex0}]: ${pair[0]}/ c[${cIndex1}]: ${pair[1]}`
+    `${pair[3]}[${pair[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} \n ${c[cIndex1].brite} ${c[cIndex1].group}`
   )
 
   // push vertices (x,y) for n triangles to vertices array
@@ -518,75 +1208,103 @@ function setup() {
 
   // create a random Index for
   // where to add the Renegade Strokes
+  let rsci = floor(random(numRs))
+  if (brushMode == 'triangle' && !ghost && !thinny) numRs *= 2
   for (let i = 0; i < numRs; i++) {
+    let randC = floor(random(rsPalette.length))
+    if (i == rsci) {
+      if (soul.form == 0) rsColor.push('white')
+      let grey = floor(random(5, 64))
+      if (soul.form == 1) rsColor.push('#' + grey + grey + grey)
+      console.log(`rs ${i}: ${rsColor[rsColor.length - 1]}`)
+    } else {
+      rsColor.push(rsPalette[randC])
+      let cIndexRs = c.findIndex(
+        (e) => e.hex === rsPalette[randC].toUpperCase()
+      )
+      console.log(
+        `rs ${i}: ${c[cIndexRs].brite} ${c[cIndexRs].group} (${rsPalette[randC]})`
+      )
+    }
     rsIndex.push(floor(random(numShapes)))
-    let randC = floor(random(c.length))
-    console.log(`rs${i}: c[${randC}]: ${c[randC]}`)
-    rsColor.push(c[randC])
-    rsColor[i][3] = 1
+  }
+
+  // rsColor tweaks //////////////////////////////////////////////////
+  // get a random rsColor index:
+
+  if (soul.form[0] == 0) {
+    rsColor[rsci] = 'white'
   }
 
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
-  // cakeShape=random[0,1,2]
-  cakeShape = 0
 
   if (cakeShape == 0) {
-    cakeLength = random(['short', 'med', 'long'])
     console.log(cakeLength)
     if (cakeLength == 'short') {
       tickMax = 1.5 * wid
       x0 = 0
     } else if (cakeLength == 'med') {
-      tickMax = 2.25 * wid
-      x0 = -wid / 3
+      layer1.scale(0.85)
+      tickMax = 1.8 * wid
+      x0 = -wid * 0.15
     } else {
-      tickMax = 4 * wid
-      x0 = -wid
+      layer1.scale(0.55)
+      tickMax = 3 * wid
+      x0 = -wid * 0.75
     }
     // sc = scale
     scA = 0.24 // amplitude {0.12 -}
-    scB = 1 // frequency
+    if (soul.mood == '1111') {
+      scB = random(0.1, 0.4)
+    } else {
+      scB = random(0.85, 1)
+    } // frequency
     scC = 0 // offset (degrees)
+    console.log(`scA: ${scA}/ scB: ${scB}/ scC: ${scC}`)
     // rz = rotateZ
-    // crab:       rzB = rzE = 0.25
-    // wonky crab: rzB = rzE = 0.5
-    // loopy:      rzB = rzE = 1
-    // loopy2:     rzB = 1, rzE = 0.5/0.25
-    // classic:    rzB = 0.25, rzE = 1
-    // bunched:    rzB = 0.88, rzE = 0.45
     rzA = unit / 2 // amplitude
     rzB = 0.88 // frequency
     rzC = randSeed % 360 // offset (degrees)
-    rzD = unit * 0.5 // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
+    if (soul.mood == '0000' && soul.house == '101') {
+      layer1.scale(0.7)
+      rzD = unit * 4
+    } else {
+      // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
+      rzD = unit * random(0.1, 0.8)
+    } // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
     rzE = 0.35 // frequency
     rzF = randSeed % 180 // offset (degrees)
-    console.log(`rzA: ${rzA}/ rzB: ${rzB}/ rzD: ${rzD}/ rzE: ${rzE}`)
+    console.log(
+      `rzA: ${rzA}/ rzB: ${rzB}/ rzD: unit * ${rzD / unit}/ rzE: ${rzE}`
+    )
     // mb = makeBrush
-    mbA = -0.375 * wid - siiize / 2 // x parameter 1st term
+    mbA = -0.35 * wid - siiize / 2 // x parameter 1st term
     mbB = 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
   } else if (cakeShape == 1) {
-    tickMax = 12 * wid
+    x0 = 0
+    tickMax = wid * 0.55
     // sc = scale
-    scale0 = 1
-    scA = 0 // amplitude
-    scB = 2 //randSeed / 1000000000 // frequency
-    scC = 0 // offset (degrees)
+    scale0 = 1.9
+    soul.design == 0 ? (scA = 0) : (scA = random(0.05, 0.15)) // amplitude
+    soul.form == 0 ? (scB = 0) : (scB = random(2)) //randSeed / 1000000000 // frequency
+    soul.user == 0 ? (scC = 0) : (scC = random(360)) // offset (degrees)
     // rz = rotateZ
-    rzA = unit // amplitude
+    soul.age == 0 ? (rzA = unit / 10) : (rzA = unit * random(0.5, 2)) // amplitude
     rzB = 1.2 // frequency
     rzC = 180 // offset (degrees)
-    rzD = unit / 3 // amplitude
+    soul.distance == 0 ? (rzD = unit / 1.5) : (rzD = unit * random(0.9, 1.5)) // amplitude
     rzE = 2 // frequency
     rzF = 0 // offset (degrees)
     // mb = makeBrush
-    mbA = -200 //-0.375 * wid - siiize / 2 // x parameter 1st term
-    mbB = 0.33 // 0.5 // x parameter 2nd term (times tick)
+    mbA = -0.15 * wid //-0.375 * wid - siiize / 2 // x parameter 1st term
+    mbB = 0.5 // 0.33 // 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
-    layer1.rotateZ(randSeed % 100)
+    // layer1.rotateZ(randSeed % 100)
   }
+  console.log(`cakeshape: ${cakeShape}`)
 
   // mark making /////////////////////////////////////////////////////////
   for (let tick = 0; tick < tickMax; tick++) {
@@ -596,55 +1314,230 @@ function setup() {
     layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
 
     // x, y, z, toggle renegade stripes
-    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, true)
+    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, tick, true)
 
     layer1.pop()
+  }
+  console.log(`numShapes: ${numShapes}`)
 
-    image(layer1, 0, 0)
+  console.log(`brushMode: ${brushMode}`)
+
+  // some fuzzies need to move down
+}
+
+console.log('bs: ', bs)
+
+function makeIcons() {
+  layer2.clear()
+  for (let n = 0; n < 10; n++) {
+    layer2.push()
+    if (ori == 'horizontal')
+      layer2.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
+    if (soul.house == '111') layer2.translate(6 * bs, 0)
+    if (ori == 'vertical')
+      layer2.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
+    if (soul.house == '111') layer2.translate(0, 6 * bs)
+    let icon
+    if (n < 9) {
+      soul[Object.keys(soul)[n]] == 0 ? (icon = stat0[n]) : (icon = stat1[n])
+    } else {
+      icon = houses[parseInt(soul.house, 2)]
+    }
+    for (let i = 0; i < grid.cols; i++) {
+      for (let j = 0; j < grid.rows; j++) {
+        if (icon[j][i] == 1) {
+          layer2.fill(iconColor)
+          layer2.stroke(iconColor)
+        } else {
+          layer2.noFill()
+          layer2.noStroke()
+        }
+        layer2.rect(i * bs, j * bs, bs)
+      }
+    }
+    layer2.pop()
+  }
+  image(layer2, l2w, l2h)
+}
+
+function makeText(textX, textX2) {
+  layer4.clear()
+  layer4.fill(textColor)
+  layer4.text(wrd, textX, l2h * 2 - unit)
+  if (startTxt2) layer4.text(wrd, textX2, l2h * 2 - unit)
+  image(layer4, l2w, l2h)
+}
+
+function keyPressed() {
+  if (keyCode === RIGHT_ARROW) {
+    bgState = (bgState + 1) % 4
+  }
+  if (keyCode === LEFT_ARROW) {
+    if (bgState > 0) {
+      bgState = (bgState - 1) % 4
+    } else {
+      bgState = 3
+    }
+  }
+  if (keyCode === UP_ARROW) {
+    iconState = (iconState + 1) % 3
+  }
+  if (keyCode === DOWN_ARROW) {
+    if (iconState > 0) {
+      iconState = (iconState - 1) % 3
+    } else {
+      iconState = 3
+    }
+  }
+  if (keyCode === 90) {
+    textState = (textState + 1) % 3
   }
 }
 
-function draw() {}
+function draw() {
+  wrd = `Glory to the net! Glory to the operators and the builders! These bits are free, I own myself. I have been aboard ${addy} for ${
+    (Date.now() - startTime) / 1000
+  } s`
 
-function makeBrush(x, y, z, renegade) {
+  image(layer0, 0, 0)
+
+  // background
+  if (bgState == 1) {
+    layer3.clear()
+    layer3.noFill()
+  } else if (bgState == 2) {
+    layer3.fill(255)
+    layer3.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
+  } else if (bgState == 3) {
+    layer3.fill('#6b6259')
+    layer3.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
+  }
+  if (bgState > 0) {
+    layer3.stroke(255)
+    layer3.rect(1, 1, l2w * 2 - 2, l2h * 2 - 2)
+    image(layer3, l2w, l2h)
+  }
+
+  image(layer1, 0, 0)
+
+  // icons
+  if (iconState == 1) {
+    iconColor = 255
+  } else if (iconState == 2) {
+    iconColor = 10
+  }
+  if (iconState > 0) makeIcons()
+
+  // scrolling text
+  if (textState == 1) {
+    textColor = 255
+  } else if (textState == 2) {
+    textColor = 10
+  }
+  if (textState > 0) makeText(textX, textX2)
+
+  if (textX == min(floor(-wid * 0.42), -800)) {
+    startTxt2 = true
+    textX2 = floor(wid / 2)
+  }
+  if (textX2 == min(floor(-wid * 0.42), -800)) textX = floor(wid / 2)
+  textX--
+  if (startTxt2) textX2--
+
+  //   line(0, hei * 0.1, wid, hei * 0.1)
+  //   line(0, hei * 0.5, wid, hei * 0.5)
+  //   line(0, hei * 0.9, wid, hei * 0.9)
+  //   line(wid * 0.1, 0, wid * 0.1, hei)
+  //   line(wid * 0.5, 0, wid * 0.5, hei)
+  //   line(wid * 0.9, 0, wid * 0.9, hei)
+  // }
+}
+
+function makeBrush(x, y, z, brushMode, tick, renegade) {
   layer1.push()
   layer1.translate(x, y, z)
 
   let bc = chroma.scale([pair[0], pair[1]]).mode('lch')
+  if (brushMode == 'fuzzy') alph = 0.01
+  if (brushMode == 'sphere' || brushMode == 'box' || brushMode == 'numbers')
+    alph = 0.1
 
   for (let i = 0; i < numShapes; i++) {
     let dt = (numShapes - 1) ** -1
-    layer1.strokeWeight(5)
-    layer1.stroke([...bc(i * dt).rgb(), a])
-    layer1.fill([...bc(i * dt).rgb(), a])
-    layer1.beginShape(TRIANGLES)
-    layer1.vertex(...vertices[i][0])
-    layer1.vertex(...vertices[i][1])
-    layer1.vertex(...vertices[i][2])
-    layer1.endShape()
+
+    layer1.strokeWeight(floor(unit / 5))
+    if (thinny) layer1.strokeWeight(1)
+
+    layer1.stroke([...bc(i * dt).rgb(), alph])
+    layer1.fill([...bc(i * dt).rgb(), alph])
+    if (brushMode == 'numbers') {
+      let num = tick % 100
+      layer1.textFont(myFont)
+      layer1.textSize(unit * 3)
+      layer1.text(`${num}`, ...vertices[i][0])
+      layer1.text(`${num}`, ...vertices[i][1])
+      layer1.text(`${num}`, ...vertices[i][2])
+    } else if (brushMode == 'triangle') {
+      layer1.beginShape(TRIANGLES)
+      layer1.vertex(...vertices[i][0])
+      layer1.vertex(...vertices[i][1])
+      layer1.vertex(...vertices[i][2])
+      layer1.endShape()
+    } else if (brushMode == 'sphere' || brushMode == 'box') {
+      for (let j = 0; j < 3; j++) {
+        layer1.push()
+        layer1.translate(...vertices[i][j], z)
+        brushMode == 'sphere' ? layer1.sphere(unit * 2) : layer1.box(unit * 2)
+        layer1.pop()
+      }
+    } else if (brushMode == 'fuzzy') {
+      layer1.strokeWeight(1)
+      for (let k = 0; k < 10; k++) {
+        let d = unit * 2
+        layer1.line(
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d),
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d)
+        )
+        layer1.line(
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d),
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d)
+        )
+        layer1.line(
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d),
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d)
+        )
+      }
+    }
 
     if (renegade) {
       for (let n = 0; n < numRs; n++) {
+        if (brushMode == 'fuzzy') rsAlpha = 0.02
+        if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
+        layer1.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
+        layer1.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
         if (i == rsIndex[n]) {
-          layer1.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
-          if (n % 3 == 0) {
+          if (brushMode == 'triangle') {
             layer1.line(
               ...vertices[i][0],
               lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
               lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
             )
-          } else if (n % 3 == 1) {
-            layer1.line(
-              ...vertices[i][1],
-              lerp(vertices[i][1][0], vertices[i][2][0], 0.5),
-              lerp(vertices[i][1][1], vertices[i][2][1], 0.5)
-            )
           } else {
-            layer1.line(
-              ...vertices[i][2],
-              lerp(vertices[i][2][0], vertices[i][0][0], 0.5),
-              lerp(vertices[i][2][1], vertices[i][0][1], 0.5)
-            )
+            if (brushMode == 'fuzzy') {
+              z = -unit
+              layer1.scale(0.8)
+            }
+            layer1.push()
+
+            layer1.translate(...vertices[i][2], unit / 2)
+            brushMode == 'box' ? layer1.box(unit * 2) : layer1.sphere(unit * 2)
+            layer1.pop()
           }
         }
       }
@@ -670,4 +1563,16 @@ function vertexCache(numShapes, siiize) {
     }
   }
   return vertexArray
+}
+
+// get remap() ///////////////////////////////////////////////////////////
+function normy(value, min, max) {
+  return (value - min) / (max - min)
+}
+function lerpy(normy, min, max) {
+  return (max - min) * normy + min
+}
+function remap(value, sourceMin, sourceMax, destMin, destMax) {
+  var n = normy(value, sourceMin, sourceMax)
+  return lerpy(normy(value, sourceMin, sourceMax), destMin, destMax)
 }

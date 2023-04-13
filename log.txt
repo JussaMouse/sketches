@@ -1,3 +1,298 @@
+SoulWriter 23
+-------------
+
+- I am a cosmetic accessory for Ethereum addresses. 
+- The 16 bits that determine my output are taken from 
+the first 4 characters of your address after the 0x.
+- All addresses starting with 0xABCD... will have the 
+same output, because it is determined by the 'ABCD'.
+- You can preview any of my 2^16 possibilities by 
+entering another address. (Coming soon ^^)
+- Transferring me triggers me to update.
+- Push SPACE for HUD.
+
+
+From Jussa:
+one of the things that draws me to crypto is the power 
+that it gives you. flip a coin 256 times and you get a 
+number that is all yours. in the act of key generation, 
+you become a god. i want to give something to people who 
+love their public keys. 
+
+the piece has changed considerably since its inception. 
+a central theme has always been color.
+i started collecting palettes with movie stills.
+a lot of Kubrick, Wizard of Oz, Fallen Angels, 
+A Touch of Zen and others all contributed colors to 
+SW23. i also went with the chroma.js lib for a lot of 
+the color operations. however, SW23 has no color 
+palettes in the traditional sense. more precisely: 
+
+each output starts with a color pair that the program 
+creates a gradient from. added to this gradient are 
+a few stripes that are from a randomly selected hue.
+on average it adds a few neutral colors, plus a few
+from a single hue group (like 'red'). inherent in this 
+scheme is the inevitability of color clashes. the 
+original intention was to keep the color system as-is, 
+except create boutique rules for certain gradient 
+pairs ("don't add 'red'").
+
+that decision and other color-related ones are 
+still on the table, but for now: any combo is 
+possible according to the rules above.
+
+the HUD idea, the pixel icons, and the scrolling 
+text all spawned from an earlier element of the piece.
+i wanted the program to have a soul. its form 
+is one possible "life", in whatever sense that 
+applies to computer programs. the 16 bits used 
+in the creation of the soul flip different switches. 
+the icons on the HUD show the results.
+the 16 bits determine: 
+- land / sea
+- dark / light
+- one / many
+- elder / academy
+- seed / tree
+- home / visitor
+- bio / techno
+- cat / dog
+- shape rotator / wordcel
+- house:
+     - culture
+     - viz
+     - scene
+     - racer
+     - control
+     - math
+     - ctf
+     - espionage
+- mood (1-16)
+
+and these determine the output.
+
+
+
+
+
+
+
+
+
+
+
+
+
+structure:
+
+0 load font
+
+6 create eth addy (0xABCD) (string addy='abcd')
+  create array bits (contains 16 elements, each a 1 or zero. the 1st 4 elements correspond to 'a', the next 4 correspond to 'b', etc.)
+  create string bitsAll
+  idea: display the 4 digits of addy in the 4 corners of the piece
+
+20 soul
+    - bits[0] = design
+    - bits[1] = form
+    - bits[2] = user
+    - bits[3] = logos
+    - bits[4] = age
+    - bits[5] = distance
+    - bits[6] = interface
+    - bits[7] = system
+    - bits[8] = mind
+    - bits[9-11] = house
+    - bits[12-15] = mood
+    - soulP
+
+36 randSeed = soulP * 1e9
+
+41 define wid, hei, unit
+
+47 define grid object for icons
+   layer1 canvas
+   siiize
+   numshapes
+   color0
+   color1
+   vertices
+   scale0
+   colorIndex
+   numRs
+   rsIndex
+   rsColor
+   rsAlpha
+   rsPalette
+   cakeShape
+   cakeHeight
+   cakeLength
+   tickMax
+   x0
+   scA
+   scB
+   scC
+   rzA
+   rzB
+   rzC
+   rzD
+   rzE
+   rzF
+   pair
+   brushMode
+   alph
+
+86 c (array of color objects)
+
+488 various arrays for color groupings...
+
+503 groups of pairs (arrays of arrays)
+
+620 houses (icon bitmaps - object of arrays)
+    stat0
+    stat1
+
+993 bs (block size)
+    cnvwid
+    cnvhei
+    patterns [stat0, stat1, houses]
+
+999 setup
+    - randomSeed
+    - noiseSeed
+    - createCanvas
+    - angleMode
+    - createGraphics layer1
+    - layer.colorMode
+    - layer1.angleMode
+    - layer1.background
+    - layer1.scale
+    
+1011 define getPair(soul)
+     - returns [color0, color1, rsGroups, name, pi]
+
+1042 pachinko rules to trigger brushmode etc.
+
+1055 pair = getPair(soul)
+     rsPalette = pair[2]
+
+1058 flip logic
+
+1064 define cIndex to search c[] for color0, color1
+
+1071 vertices = vertexCache(numShapes, siiize)
+
+1073 rsci = random(numRs)
+     push random colors from rsPalette to rsColor
+     push random numShapes index to rsIndex
+     logic to change color of rsColor[rsci]
+
+1097 get cakeHeight
+
+1099 cakeShape == 0 logic
+     - set scale, x0, tickMax depending on cakeLength
+     - set scA... rzA... mbA...
+
+1138 cakeShape == 1 logic
+     - set tickMax
+     - set scale0
+
+1166 loop for calling makeBrush
+     - push
+     - scale
+     - rotateZ
+     - makeBrush()
+     - pop
+     - image()
+
+1229 define makeBrush()
+     - push
+     - translate to x,y,z
+     - bc = chroma.scale
+     - set alpha per brushMode
+     - loop numShapes
+          - dt
+          - strokeWeight
+          - stroke, fill
+          - if 'numbers'
+               - text at vertices
+          - if triangle
+               - beginShape
+          - if sphere or box
+               - translate to vertices
+               - sphere or box
+          - if fuzzy
+               - strokeWeight
+               - loop 10
+                    - d = unit*2
+                    - line(vertex + random, vertex+random...)
+1290      - if renegade
+          - loop numRs
+               - set rsAlpha per brushMode
+               - stroke/ fill
+               - if i = rsIndex[n]
+                    - if 'triangle'
+                              - line(
+                                   vertices[i][0][0],
+                                   vertices[i][0][1],
+                                   lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
+                                   lerp(vertices[i][0][1], vertices[i][1][1], 0.5),
+                                   )
+                    - else
+                         - if fuzzy
+                              - scale 0.8
+                              - z=-unit
+                         push
+                         translate(
+                              vertices[i][2][0],
+                              vertices[i][2][1],
+                              unit/2
+                         )
+                         box/sphere
+                         pop
+
+1321 define vertexCache()
+
+1340 define remap()
+ 
+     
+                         
+
+
+   
+variables:
+alph (ghost) 
+
+pair              mood
+-megabrite (1/16) 0000
+-dull      (2/16) 0001, 0010
+-dullish   (4/16) 0011, 0100, 0101, 0110
+-briteish  (4/16) 0111, 1000, 1001, 1010
+-brite     (5/16) 1011, 1100, 1101, 1110, 1111
+
+numShapes         
+
+cakeshape
+-0
+-1
+numRs
+cakeLength
+rzD (can make cake very long)
+brushMode
+-triangle
+  -strokeWeight
+-sphere
+-box
+-numbers
+-fuzzy
+-cakeLength
+
+
+
+
+
+
 03/01/23
 hexBrush3.1.js
 pull functions out of draw() into global
