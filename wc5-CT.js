@@ -1,148 +1,27 @@
+// inputs
 const startTime = Date.now()
-let layer3
-let layer4
-let layer2
-let l2w
-let l2h
-let layer0
 let myFont
-let inputAddy = '' // input eth address
-let addy = '0x' // randomly gen eth address
-let switchIt = false
+let inputAddy = ''
 
-function preload() {
-  myFont = loadFont('./UbuntuMono-Regular.ttf')
-}
-
-// random ethereum address aka addy:
-let bits = []
-let bitsAll = ''
-for (let i = 0; i < 40; i++) {
-  // let digit = inputAddy[i]
-  let digit = Math.floor(Math.random() * 16).toString(16)
-  addy += digit
-  if (i < 4) {
-    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
-    for (let j = 0; j < 4; j++) {
-      bits.push(digit[j])
-    }
-    bitsAll += digit
-  }
-}
-console.log('addy: ', addy)
-//very testing
-
-function reroll() {
-  inputAddy = prompt('enter ETH address to preview')
-  for (let i = 2; i < 6; i++) {
-    let digit = inputAddy[i]
-    console.log(digit)
-    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
-    for (let j = 0; j < 4; j++) {
-      bits.push(digit[j])
-    }
-    bitsAll += digit
-  }
-  getSoul()
-  setup()
-}
-
-console.log('16 bits: ', bitsAll)
-
+// dna
+let addy = '0x'
+let randSeed
 let soul
-function getSoul() {
-  soul = {
-    design: bits[0], // 0 design
-    form: bits[1], // 1 form
-    user: bits[2], // 2 user
-    logos: bits[3], // 3 logos
-    age: bits[4], // 4 age
-    distance: bits[5], // 5 distance
-    interface: bits[6], // 6 interface
-    system: bits[7], // 7 system
-    mind: bits[8], // 8 mind
-    house: '' + bits[9] + bits[10] + bits[11], // house| 111: espionage, 110: ctf, 101: math, 100: control, 011: racer, 010: scene, 001: viz, 000: culture
-    mood: '' + bits[12] + bits[13] + bits[14] + bits[15],
-    soulP: 0,
-  }
-}
 
-getSoul()
-soul.soulP = remap(parseInt(bitsAll, 2), 0, 65535, 0, 1)
-let randSeed = Math.floor(soul.soulP * 1000000000)
-console.log('randSeed: ', randSeed)
-for (stat of Object.keys(soul)) console.log(`${stat}: ${soul[stat]}`)
-
-// define unit length //////////////////////////////////////////////////
+// canvases
 let wid = window.innerWidth
 let hei = window.innerHeight
 let unit
 let ori = ''
-if (wid > hei) {
-  ori = 'horizontal'
-  unit = hei / 50
-} else {
-  ori = 'vertical'
-  unit = wid / 50
-}
+let layer0
+let layer1
+let layer2
+let layer3
+let layer4
+let l2w
+let l2h
 
-let grid = {
-  // grids to draw icons on
-  x: 0,
-  y: 0,
-  blockSize: unit / 5,
-  rows: 12,
-  cols: 12,
-}
-
-let layer1 // creategraphics canvas
-let siiize = unit * 4 // brush shape size
-let numShapes = 4 // brush shapes
-let color0 // gradient color
-let color1 // gradient color
-let vertices = [] //
-let scale0 = 0.9
-let colorIndex // color to use for gradient
-let numRs = 2 // number of Renegade Strokes
-if (soul.age == 1) {
-  numShapes = 5
-  numRs = 3
-}
-let rsIndex = []
-let rsColor = []
-let rsAlpha = 0.5
-let rsPalette = []
-let cakeShape = 0
-
-//testing
-// cakeShape = 1
-// numShapes = 12
-// numRs += 2
-// siiize = unit * 1.5
-
-if (soul.distance == 0 && soul.mind == 0 && soul.logos == 0) {
-  cakeShape = 1
-  numShapes = 12
-  numRs += 2
-  siiize = unit * 1.5
-}
-
-let cakeHeight
-let cakeLength = 'med'
-// set shape
-let tickMax
-let x0 = 0
-let scA
-let scB
-let scC
-let rzA
-let rzB
-let rzC
-let rzD
-let rzE
-let rzF
-let pair = []
-let brushMode = 'triangle'
+// colors
 let alph = 0.3
 let c = [
   {
@@ -546,28 +425,13 @@ let c = [
     group: 'dull',
   },
 ]
-let litColors = c
-  .filter((color) => color.brite == 'lit')
-  .map((color) => color.hex)
-let briteColors = c
-  .filter((color) => color.brite == 'brite')
-  .map((color) => color.hex)
-let litty = briteColors.concat(litColors)
-let midColors = c.filter((color) => color.brite == 'mid')
-let deepColors = c.filter((color) => color.brite == 'deep')
-let drkColors = c.filter((color) => color.brite == 'drk')
-let R = c.filter((color) => color.group == 'R').map((color) => color.hex)
-
-let natty = c.filter((color) => color.group == 'dull').map((color) => color.hex)
-let mono = c.filter((color) => color.group == 'mono').map((color) => color.hex)
-let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M']
 let megabrite = [
   // the third element is an array of color groups to exclude
   // 0=R, 1=O, 2=Y, 3=G, 4=B, 5=V, 6=M
   [c[1].hex, c[14].hex, ['R']], //['G', 'no R']], //00 megabrite yello/green/white     // drk grn // med grn on white edge // ['mono', 'B', 'Y']],
   [c[2].hex, c[3].hex], //01 megabrite purp/hotpink/hotsalmon     // drk teal accent/ cream/ gray/ yello //brite red on purple/aqua middle
   [c[3].hex, c[35].hex], //, ['mono', 'B', 'Y']], //02 megabrite purp/mgnta/hot orange
-  [c[4].hex, c[19].hex, ['R']], //, ['mono', 'dull', 'G', 'Y']], //03 megabrite hot aqua/hot grn
+  [c[4].hex, c[19].hex, ['R', 'M']], //, ['mono', 'dull', 'G', 'Y']], //03 megabrite hot aqua/hot grn
   [c[27].hex, c[28].hex], //04 megabrite lit blu/ blu   // white/ cream edge/ drk gray/ cream behind blu
   [c[31].hex, c[27].hex], //05 megabrite hot blue/purp/pnk/salmon   // cream/
 ]
@@ -596,24 +460,22 @@ let brite = [
   [c[21].hex, c[45].hex, ['V', 'R', 'M']], //21 brite cream yello/grn
   [c[26].hex, c[23].hex, ['G', 'O']], //22 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
   [c[34].hex, c[26].hex, ['G']], //23 brite hot mgnta/drk brn   // blue/lit gray on brn side
-  [c[28].hex, c[57].hex, ['G']], //24 //cream pink/ mid blu
-  [c[27].hex, c[40].hex], //25 brite powder blue /pink /cream   //white/cream in middle or hot aqua
-  [c[50].hex, c[29].hex, ['R']], //26 brite mid gray/white teal    //peach/ navy/ drk grn
-  [c[30].hex, c[57].hex], //27 brite pastels cream/purp   // salmon accent //no yello
-
-  [c[31].hex, c[45].hex], //28 brite hot lit pink/hot lit yello ***   //white accent
-  [c[32].hex, c[35].hex], //29 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
-  [c[34].hex, c[35].hex, ['Y', 'V']], //30 brite drk brn/ hot salmon
-  [c[3].hex, c[35].hex], //31 brite purp/powder salmon
-  [c[35].hex, c[34].hex, ['O']], //32 brite drk brn/ hot pink    //grey green on pink/blue on brn
-  [c[37].hex, c[59].hex], //33 brite lit pink/orng/yello    // white/purp
-  [c[41].hex, c[48].hex], //34 brite orng/red orng
-  [c[45].hex, c[49].hex], //35 brite orng/lit yello
-  [c[30].hex, c[19].hex], //36 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
-  [c[44].hex, c[41].hex], //37 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
-  [c[13].hex, c[19].hex, ['R', 'O']], //38 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
-  [c[41].hex, c[49].hex], //39 brite lit orng/drk red orng  // hot orng edge/ white teal
-  [c[45].hex, c[48].hex], //40 brite white yello/daglo orng
+  [c[27].hex, c[40].hex], //24 brite powder blue /pink /cream   //white/cream in middle or hot aqua
+  [c[50].hex, c[29].hex, ['R']], //25 brite mid gray/white teal    //peach/ navy/ drk grn
+  [c[30].hex, c[57].hex], //26 brite pastels cream/purp   // salmon accent //no yello
+  [c[31].hex, c[45].hex], //27 brite hot lit pink/hot lit yello ***   //white accent
+  [c[32].hex, c[35].hex], //28 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
+  [c[34].hex, c[35].hex, ['Y', 'V']], //29 brite drk brn/ hot salmon
+  [c[3].hex, c[35].hex], //30 brite purp/powder salmon
+  [c[35].hex, c[34].hex, ['O']], //31 brite drk brn/ hot pink    //grey green on pink/blue on brn
+  [c[37].hex, c[59].hex], //32 brite lit pink/orng/yello    // white/purp
+  [c[41].hex, c[48].hex], //33 brite orng/red orng
+  [c[45].hex, c[49].hex], //34 brite orng/lit yello
+  [c[30].hex, c[19].hex], //35 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
+  [c[44].hex, c[41].hex], //36 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
+  [c[13].hex, c[19].hex, ['R', 'O']], //37 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
+  [c[41].hex, c[49].hex], //38 brite lit orng/drk red orng  // hot orng edge/ white teal
+  [c[45].hex, c[48].hex], //39 brite white yello/daglo orng
 ]
 let briteish = [
   [c[0].hex, c[10].hex], //00 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
@@ -651,6 +513,7 @@ let dullish = [
   [c[9].hex, c[7].hex], //04 dullish navy/lit gray purp
   [c[11].hex, c[20].hex], //05 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
   [c[68].hex, c[17].hex, ['R']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
+  [c[28].hex, c[57].hex], //07 //cream pink/ mid blu
 ]
 let dull = [
   [c[7].hex, c[34].hex], //00 dull drk brn/olive/lit gray   //hot colors
@@ -668,6 +531,60 @@ let dull = [
   [c[29].hex, c[30].hex], //12 dull gray teal/purp    //brite color behind the gray teal
   [c[20].hex, c[61].hex], //13 dull mid gray/dark gray   // blu on drk gray/white behind gray
 ]
+let litColors = c
+  .filter((color) => color.brite == 'lit')
+  .map((color) => color.hex)
+let briteColors = c
+  .filter((color) => color.brite == 'brite')
+  .map((color) => color.hex)
+let litty = briteColors.concat(litColors)
+let natty = c.filter((color) => color.group == 'dull').map((color) => color.hex)
+let mono = c.filter((color) => color.group == 'mono').map((color) => color.hex)
+let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M']
+let pair = []
+let color0
+let color1
+let cIndex0
+let cIndex1
+let rsIndex = []
+let rsColor = []
+let rsAlpha = 0.5
+let rsPalette = []
+
+// shapes + stripes
+let vertices = [] //
+let brushMode = 'triangle'
+let siiize
+let numShapes = 4 // brush shapes
+let numRs = 2 // number of Renegade Strokes
+let cakeShape = 0
+let cakeHeight
+let cakeLength = 'med'
+let tickMax
+let scale0 = 0.9
+let scA
+let scB
+let scC
+let rzA
+let rzB
+let rzC
+let rzD
+let rzE
+let rzF
+let x0 = 0
+let mbA
+let mbB
+let mbC
+let mbD
+let thinny = false
+let ghost = false
+
+// icons
+let grid = {
+  blockSize: unit / 5,
+  rows: 12,
+  cols: 12,
+}
 let houses = [
   [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1042,16 +959,361 @@ let stat1 = [
   ],
 ]
 let bs = Math.max(Math.floor(grid.blockSize), 1)
+let iconColor = 255
+let iconState = 0
+
+// text
 let startTxt2 = false
 let textX = Math.floor(wid / 2)
 let textX2 = Math.floor(wid / 2)
 let wrd = ''
 let textColor = 255
-let iconColor = 255
-let bgState = 0
-let iconState = 0
 let textState = 0
-let thinny = false
+
+// bg
+let bgState = 0
+
+//////////////////////////////////////////////////////////////////////////
+function makeBits(type) {
+  let bitString = ''
+  let bits = []
+  if (type == 'rng') {
+    for (let i = 0; i < 40; i++) {
+      let digit = Math.floor(Math.random() * 16).toString(16)
+      addy += digit
+      if (i < 4) {
+        digit = parseInt(digit, 16).toString(2).padStart(4, '0')
+        for (let j = 0; j < 4; j++) {
+          bits.push(digit[j])
+        }
+        bitString += digit
+      }
+    }
+    console.log('addy: ', addy)
+  }
+  console.log('16 bits: ', bitString)
+  return [bits, bitString]
+}
+
+//////////////////////////////////////////////////////////////////////////
+function reroll() {
+  inputAddy = prompt('enter ETH address to preview')
+  for (let i = 2; i < 6; i++) {
+    let digit = inputAddy[i]
+    console.log(digit)
+    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
+    for (let j = 0; j < 4; j++) {
+      bits.push(digit[j])
+    }
+    bitString += digit
+  }
+  getSoul()
+  setup()
+}
+
+//////////////////////////////////////////////////////////////////////////
+function getSoul(bits, bitString) {
+  soul = {
+    design: bits[0], // 0 design
+    form: bits[1], // 1 form
+    user: bits[2], // 2 user
+    logos: bits[3], // 3 logos
+    age: bits[4], // 4 age
+    distance: bits[5], // 5 distance
+    interface: bits[6], // 6 interface
+    system: bits[7], // 7 system
+    mind: bits[8], // 8 mind
+    house: '' + bits[9] + bits[10] + bits[11], // house| 111: espionage, 110: ctf, 101: math, 100: control, 011: racer, 010: scene, 001: viz, 000: culture
+    mood: '' + bits[12] + bits[13] + bits[14] + bits[15],
+    soulP: remap(parseInt(bitString, 2), 0, 65535, 0, 1),
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+function makeBrush(x, y, z, brushMode, tick, renegade) {
+  layer1.push()
+  layer1.translate(x, y, z)
+
+  let bc = chroma.scale([pair[0], pair[1]]).mode('lch')
+  if (brushMode == 'fuzzy') alph = 0.01
+  if (brushMode == 'sphere' || brushMode == 'box' || brushMode == 'numbers')
+    alph = 0.1
+
+  for (let i = 0; i < numShapes; i++) {
+    let dt = (numShapes - 1) ** -1
+
+    layer1.strokeWeight(floor(unit / 5))
+    if (thinny) layer1.strokeWeight(1)
+
+    layer1.stroke([...bc(i * dt).rgb(), alph])
+    layer1.fill([...bc(i * dt).rgb(), alph])
+    if (brushMode == 'numbers') {
+      let num = tick % 100
+      layer1.textFont(myFont)
+      layer1.textSize(unit * 3)
+      layer1.text(`${num}`, ...vertices[i][0])
+      layer1.text(`${num}`, ...vertices[i][1])
+      layer1.text(`${num}`, ...vertices[i][2])
+    } else if (brushMode == 'triangle') {
+      layer1.beginShape(TRIANGLES)
+      layer1.vertex(...vertices[i][0])
+      layer1.vertex(...vertices[i][1])
+      layer1.vertex(...vertices[i][2])
+      layer1.endShape()
+    } else if (brushMode == 'sphere' || brushMode == 'box') {
+      for (let j = 0; j < 3; j++) {
+        layer1.push()
+        layer1.translate(...vertices[i][j], z)
+        brushMode == 'sphere' ? layer1.sphere(unit * 2) : layer1.box(unit * 2)
+        layer1.pop()
+      }
+    } else if (brushMode == 'fuzzy') {
+      layer1.strokeWeight(1)
+      for (let k = 0; k < 10; k++) {
+        let d = unit * 2
+        layer1.line(
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d),
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d)
+        )
+        layer1.line(
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d),
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d)
+        )
+        layer1.line(
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d),
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d)
+        )
+      }
+    }
+
+    if (renegade) {
+      for (let n = 0; n < numRs; n++) {
+        if (brushMode == 'fuzzy') rsAlpha = 0.02
+        if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
+        layer1.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
+        layer1.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
+        if (i == rsIndex[n]) {
+          if (brushMode == 'triangle') {
+            layer1.line(
+              ...vertices[i][0],
+              lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
+              lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
+            )
+          } else {
+            if (brushMode == 'fuzzy') {
+              z = -unit
+              layer1.scale(0.8)
+            }
+            layer1.push()
+
+            layer1.translate(...vertices[i][2], unit / 2)
+            brushMode == 'box' ? layer1.box(unit * 2) : layer1.sphere(unit * 2)
+            layer1.pop()
+          }
+        }
+      }
+    }
+  }
+  layer1.pop()
+}
+
+//////////////////////////////////////////////////////////////////////////
+function vertexCache(numShapes, siiize) {
+  let vertexArray = []
+  let tipX = 0
+  let tipY = 0
+  for (let i = 0; i < numShapes; i++) {
+    let v0 = [tipX, tipY - 5]
+    let v1 = [random(siiize), random(tipY, siiize + tipY)]
+    let v2 = [random(siiize), random(tipY, siiize + tipY)]
+    vertexArray.push([v0, v1, v2])
+    tipY = max(v1[1], v2[1])
+    if (v1[1] == tipY) {
+      tipX = v1[0]
+    } else {
+      tipX = v2[0]
+    }
+  }
+  return vertexArray
+}
+
+//////////////////////////////////////////////////////////////////////////
+function normy(value, min, max) {
+  return (value - min) / (max - min)
+}
+function lerpy(normy, min, max) {
+  return (max - min) * normy + min
+}
+function remap(value, sourceMin, sourceMax, destMin, destMax) {
+  var n = normy(value, sourceMin, sourceMax)
+  return lerpy(normy(value, sourceMin, sourceMax), destMin, destMax)
+}
+
+//////////////////////////////////////////////////////////////////////////
+function getPair(s) {
+  let pair = []
+  let name = ''
+  let pi
+
+  if (s.mood == '0000') {
+    pi = floor(random(megabrite.length))
+    pair = megabrite[pi]
+    name = 'megabrite'
+  } else if (s.mood == '0001' || s.mood == '0010') {
+    pi = floor(random(dull.length))
+    pair = dull[pi]
+    name = 'dull'
+    if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+  } else if (
+    s.mood == '0011' ||
+    s.mood == '0100' ||
+    s.mood == '0101' ||
+    s.mood == '0110'
+  ) {
+    pi = floor(random(dullish.length))
+    pair = dullish[pi]
+    name = 'dullish'
+    if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+  } else if (
+    s.mood == '0111' ||
+    s.mood == '1000' ||
+    s.mood == '1001' ||
+    s.mood == '1010'
+  ) {
+    pi = floor(random(briteish.length))
+    pair = briteish[pi]
+    name = 'briteish'
+  } else {
+    pi = floor(random(brite.length))
+    pair = brite[pi]
+    name = 'brite'
+  }
+
+  // pi = 4
+  // pair = dullish[4]
+  // name = 'dullish'
+
+  let group0 = random(groups)
+  let group1 = random(groups)
+  if (pair[2]) {
+    console.log(`exclude: ${pair[2]}`)
+    while (pair[2].includes(group0)) group0 = random(groups)
+    while (pair[2].includes(group1)) group1 = random(groups)
+  }
+
+  function filty(color) {
+    if ((name == 'dull' || name == 'dullish') && !cakeShape) {
+      return (
+        (color.group == group0 || color.group == group0) &&
+        (color.brite == 'brite' || color.brite == 'lit')
+      )
+    } else {
+      return color.group == group0
+    }
+  }
+
+  rsGroups = c.filter((color) => filty(color)).map((color) => color.hex)
+
+  rsGroups.concat(mono)
+
+  return [chroma(pair[0]), chroma(pair[1]), rsGroups, name, pi] //, gi]
+}
+
+//////////////////////////////////////////////////////////////////////////
+function makeIcons() {
+  layer2.clear()
+  for (let n = 0; n < 10; n++) {
+    layer2.push()
+    if (ori == 'horizontal')
+      layer2.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
+    if (soul.house == '111') layer2.translate(6 * bs, 0)
+    if (ori == 'vertical')
+      layer2.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
+    if (soul.house == '111') layer2.translate(0, 6 * bs)
+    let icon
+    if (n < 9) {
+      soul[Object.keys(soul)[n]] == 0 ? (icon = stat0[n]) : (icon = stat1[n])
+    } else {
+      icon = houses[parseInt(soul.house, 2)]
+    }
+    for (let i = 0; i < grid.cols; i++) {
+      for (let j = 0; j < grid.rows; j++) {
+        if (icon[j][i] == 1) {
+          layer2.fill(iconColor)
+          layer2.stroke(iconColor)
+        } else {
+          layer2.noFill()
+          layer2.noStroke()
+        }
+        layer2.rect(i * bs, j * bs, bs)
+      }
+    }
+    layer2.pop()
+  }
+  image(layer2, l2w, l2h)
+}
+
+//////////////////////////////////////////////////////////////////////////
+function makeText(textX, textX2) {
+  layer4.clear()
+  layer4.fill(textColor)
+  layer4.text(wrd, textX, l2h * 2 - unit)
+  if (startTxt2) layer4.text(wrd, textX2, l2h * 2 - unit)
+  image(layer4, l2w, l2h)
+}
+
+//////////////////////////////////////////////////////////////////////////
+function keyPressed() {
+  if (keyCode === RIGHT_ARROW) {
+    bgState = (bgState + 1) % 4
+  }
+  if (keyCode === LEFT_ARROW) {
+    if (bgState > 0) {
+      bgState = (bgState - 1) % 4
+    } else {
+      bgState = 3
+    }
+  }
+  if (keyCode === UP_ARROW) {
+    iconState = (iconState + 1) % 3
+  }
+  if (keyCode === DOWN_ARROW) {
+    if (iconState > 0) {
+      iconState = (iconState - 1) % 3
+    } else {
+      iconState = 3
+    }
+  }
+  if (keyCode === 90) {
+    textState = (textState + 1) % 3
+  }
+}
+
+if (wid > hei) {
+  ori = 'horizontal'
+  unit = hei / 50
+} else {
+  ori = 'vertical'
+  unit = wid / 50
+}
+siiize = unit * 4 // brush shape size
+
+let b = makeBits('rng')
+getSoul(...b)
+for (stat of Object.keys(soul)) console.log(`${stat}: ${soul[stat]}`)
+randSeed = Math.floor(soul.soulP * 1000000000)
+console.log('randSeed: ', randSeed)
+
+//////////////////////////////////////////////////////////////////////////
+function preload() {
+  myFont = loadFont('./UbuntuMono-Regular.ttf')
+}
 
 //////////////////////////////////////////////////////////////////////////
 function setup() {
@@ -1079,76 +1341,7 @@ function setup() {
 
   // function to return color0, color1, pairgroup name, pairIndex for a given soul
   let rsGroups = []
-  function getPair(s) {
-    let pair = []
-    let name = ''
-    let pi
 
-    if (s.mood == '0000') {
-      pi = floor(random(megabrite.length))
-      pair = megabrite[pi]
-      name = 'megabrite'
-    } else if (s.mood == '0001' || s.mood == '0010') {
-      pi = floor(random(dull.length))
-      pair = dull[pi]
-      name = 'dull'
-      if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
-    } else if (
-      s.mood == '0011' ||
-      s.mood == '0100' ||
-      s.mood == '0101' ||
-      s.mood == '0110'
-    ) {
-      pi = floor(random(dullish.length))
-      pair = dullish[pi]
-      name = 'dullish'
-      if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
-    } else if (
-      s.mood == '0111' ||
-      s.mood == '1000' ||
-      s.mood == '1001' ||
-      s.mood == '1010'
-    ) {
-      pi = floor(random(briteish.length))
-      pair = briteish[pi]
-      name = 'briteish'
-    } else {
-      pi = floor(random(brite.length))
-      pair = brite[pi]
-      name = 'brite'
-    }
-
-    // pi = 4
-    // pair = dullish[4]
-    // name = 'dullish'
-
-    let group0 = random(groups)
-    let group1 = random(groups)
-    if (pair[2]) {
-      console.log(`exclude: ${pair[2]}`)
-      while (pair[2].includes(group0)) group0 = random(groups)
-      while (pair[2].includes(group1)) group1 = random(groups)
-    }
-
-    function filty(color) {
-      if ((name == 'dull' || name == 'dullish') && !cakeShape) {
-        return (
-          (color.group == group0 || color.group == group0) &&
-          (color.brite == 'brite' || color.brite == 'lit')
-        )
-      } else {
-        return color.group == group0
-      }
-    }
-
-    rsGroups = c.filter((color) => filty(color)).map((color) => color.hex)
-
-    rsGroups.concat(mono)
-
-    return [chroma(pair[0]), chroma(pair[1]), rsGroups, name, pi] //, gi]
-  }
-
-  let ghost = false
   if (soul.design == 1 && soul.form == 1 && soul.distance == 1) {
     alph = 0.1
     ghost = true
@@ -1183,13 +1376,20 @@ function setup() {
     thinny = true
     console.log('thinny')
   }
+  if (soul.age == 1) {
+    numShapes = 5
+    numRs = 3
+  }
+  if (soul.distance == 0 && soul.mind == 0 && soul.logos == 0) {
+    cakeShape = 1
+    numShapes = 12
+    numRs += 2
+    siiize = unit * 1.5
+  }
 
   // choose gradient color
   pair = getPair(soul)
   rsPalette = pair[2]
-
-  //testing
-  console.log(rsPalette)
 
   //flip!
   if (random() > 0.5) {
@@ -1197,8 +1397,8 @@ function setup() {
     console.log('flip!')
   }
 
-  let cIndex0 = c.findIndex((e) => e.hex === pair[0].hex().toUpperCase())
-  let cIndex1 = c.findIndex((e) => e.hex === pair[1].hex().toUpperCase())
+  cIndex0 = c.findIndex((e) => e.hex === pair[0].hex().toUpperCase())
+  cIndex1 = c.findIndex((e) => e.hex === pair[1].hex().toUpperCase())
   console.log(
     `${pair[3]}[${pair[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} \n ${c[cIndex1].brite} ${c[cIndex1].group}`
   )
@@ -1325,75 +1525,7 @@ function setup() {
   // some fuzzies need to move down
 }
 
-console.log('bs: ', bs)
-
-function makeIcons() {
-  layer2.clear()
-  for (let n = 0; n < 10; n++) {
-    layer2.push()
-    if (ori == 'horizontal')
-      layer2.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
-    if (soul.house == '111') layer2.translate(6 * bs, 0)
-    if (ori == 'vertical')
-      layer2.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
-    if (soul.house == '111') layer2.translate(0, 6 * bs)
-    let icon
-    if (n < 9) {
-      soul[Object.keys(soul)[n]] == 0 ? (icon = stat0[n]) : (icon = stat1[n])
-    } else {
-      icon = houses[parseInt(soul.house, 2)]
-    }
-    for (let i = 0; i < grid.cols; i++) {
-      for (let j = 0; j < grid.rows; j++) {
-        if (icon[j][i] == 1) {
-          layer2.fill(iconColor)
-          layer2.stroke(iconColor)
-        } else {
-          layer2.noFill()
-          layer2.noStroke()
-        }
-        layer2.rect(i * bs, j * bs, bs)
-      }
-    }
-    layer2.pop()
-  }
-  image(layer2, l2w, l2h)
-}
-
-function makeText(textX, textX2) {
-  layer4.clear()
-  layer4.fill(textColor)
-  layer4.text(wrd, textX, l2h * 2 - unit)
-  if (startTxt2) layer4.text(wrd, textX2, l2h * 2 - unit)
-  image(layer4, l2w, l2h)
-}
-
-function keyPressed() {
-  if (keyCode === RIGHT_ARROW) {
-    bgState = (bgState + 1) % 4
-  }
-  if (keyCode === LEFT_ARROW) {
-    if (bgState > 0) {
-      bgState = (bgState - 1) % 4
-    } else {
-      bgState = 3
-    }
-  }
-  if (keyCode === UP_ARROW) {
-    iconState = (iconState + 1) % 3
-  }
-  if (keyCode === DOWN_ARROW) {
-    if (iconState > 0) {
-      iconState = (iconState - 1) % 3
-    } else {
-      iconState = 3
-    }
-  }
-  if (keyCode === 90) {
-    textState = (textState + 1) % 3
-  }
-}
-
+//////////////////////////////////////////////////////////////////////////
 function draw() {
   wrd = `Glory to the net! Glory to the operators and the builders! These bits are free, I own myself. I have been aboard ${addy} for ${
     (Date.now() - startTime) / 1000
@@ -1453,126 +1585,4 @@ function draw() {
   // }
 }
 
-function makeBrush(x, y, z, brushMode, tick, renegade) {
-  layer1.push()
-  layer1.translate(x, y, z)
-
-  let bc = chroma.scale([pair[0], pair[1]]).mode('lch')
-  if (brushMode == 'fuzzy') alph = 0.01
-  if (brushMode == 'sphere' || brushMode == 'box' || brushMode == 'numbers')
-    alph = 0.1
-
-  for (let i = 0; i < numShapes; i++) {
-    let dt = (numShapes - 1) ** -1
-
-    layer1.strokeWeight(floor(unit / 5))
-    if (thinny) layer1.strokeWeight(1)
-
-    layer1.stroke([...bc(i * dt).rgb(), alph])
-    layer1.fill([...bc(i * dt).rgb(), alph])
-    if (brushMode == 'numbers') {
-      let num = tick % 100
-      layer1.textFont(myFont)
-      layer1.textSize(unit * 3)
-      layer1.text(`${num}`, ...vertices[i][0])
-      layer1.text(`${num}`, ...vertices[i][1])
-      layer1.text(`${num}`, ...vertices[i][2])
-    } else if (brushMode == 'triangle') {
-      layer1.beginShape(TRIANGLES)
-      layer1.vertex(...vertices[i][0])
-      layer1.vertex(...vertices[i][1])
-      layer1.vertex(...vertices[i][2])
-      layer1.endShape()
-    } else if (brushMode == 'sphere' || brushMode == 'box') {
-      for (let j = 0; j < 3; j++) {
-        layer1.push()
-        layer1.translate(...vertices[i][j], z)
-        brushMode == 'sphere' ? layer1.sphere(unit * 2) : layer1.box(unit * 2)
-        layer1.pop()
-      }
-    } else if (brushMode == 'fuzzy') {
-      layer1.strokeWeight(1)
-      for (let k = 0; k < 10; k++) {
-        let d = unit * 2
-        layer1.line(
-          vertices[i][0][0] + random(-d, d),
-          vertices[i][0][1] + random(-d, d),
-          vertices[i][1][0] + random(-d, d),
-          vertices[i][1][1] + random(-d, d)
-        )
-        layer1.line(
-          vertices[i][1][0] + random(-d, d),
-          vertices[i][1][1] + random(-d, d),
-          vertices[i][2][0] + random(-d, d),
-          vertices[i][2][1] + random(-d, d)
-        )
-        layer1.line(
-          vertices[i][2][0] + random(-d, d),
-          vertices[i][2][1] + random(-d, d),
-          vertices[i][0][0] + random(-d, d),
-          vertices[i][0][1] + random(-d, d)
-        )
-      }
-    }
-
-    if (renegade) {
-      for (let n = 0; n < numRs; n++) {
-        if (brushMode == 'fuzzy') rsAlpha = 0.02
-        if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
-        layer1.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
-        layer1.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
-        if (i == rsIndex[n]) {
-          if (brushMode == 'triangle') {
-            layer1.line(
-              ...vertices[i][0],
-              lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
-              lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
-            )
-          } else {
-            if (brushMode == 'fuzzy') {
-              z = -unit
-              layer1.scale(0.8)
-            }
-            layer1.push()
-
-            layer1.translate(...vertices[i][2], unit / 2)
-            brushMode == 'box' ? layer1.box(unit * 2) : layer1.sphere(unit * 2)
-            layer1.pop()
-          }
-        }
-      }
-    }
-  }
-  layer1.pop()
-}
-
-function vertexCache(numShapes, siiize) {
-  let vertexArray = []
-  let tipX = 0
-  let tipY = 0
-  for (let i = 0; i < numShapes; i++) {
-    let v0 = [tipX, tipY - 5]
-    let v1 = [random(siiize), random(tipY, siiize + tipY)]
-    let v2 = [random(siiize), random(tipY, siiize + tipY)]
-    vertexArray.push([v0, v1, v2])
-    tipY = max(v1[1], v2[1])
-    if (v1[1] == tipY) {
-      tipX = v1[0]
-    } else {
-      tipX = v2[0]
-    }
-  }
-  return vertexArray
-}
-
-// get remap() ///////////////////////////////////////////////////////////
-function normy(value, min, max) {
-  return (value - min) / (max - min)
-}
-function lerpy(normy, min, max) {
-  return (max - min) * normy + min
-}
-function remap(value, sourceMin, sourceMax, destMin, destMax) {
-  var n = normy(value, sourceMin, sourceMax)
-  return lerpy(normy(value, sourceMin, sourceMax), destMin, destMax)
-}
+console.log('bs: ', bs)
