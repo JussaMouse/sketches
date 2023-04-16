@@ -3,26 +3,26 @@ const startTime = Date.now()
 let myFont
 let inputAddy = ''
 
-// dna
-let addy = '0x'
-let randSeed
-let soul
-
 // canvases
 let wid = window.innerWidth
 let hei = window.innerHeight
 let unit
 let ori = ''
-let layer0
-let layer1
-let layer2
-let layer3
-let layer4
+let layerBg
+let layerSoul
+let layerIcons
+let layerPanel
+let layerText
 let l2w
 let l2h
 
+// dna
+let addy = '0x'
+let randSeed
+let soul
+
 // colors
-let alph = 0.3
+let alph = 0.4
 let c = [
   {
     // 0
@@ -512,7 +512,7 @@ let dullish = [
   [c[6].hex, c[7].hex], //03 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
   [c[9].hex, c[7].hex], //04 dullish navy/lit gray purp
   [c[11].hex, c[20].hex], //05 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
-  [c[68].hex, c[17].hex, ['R']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
+  [c[68].hex, c[17].hex, ['R', 'M']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
   [c[28].hex, c[57].hex], //07 //cream pink/ mid blu
 ]
 let dull = [
@@ -580,11 +580,7 @@ let thinny = false
 let ghost = false
 
 // icons
-let grid = {
-  blockSize: unit / 5,
-  rows: 12,
-  cols: 12,
-}
+let grid
 let houses = [
   [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -958,7 +954,7 @@ let stat1 = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ],
 ]
-let bs = Math.max(Math.floor(grid.blockSize), 1)
+let bs
 let iconColor = 255
 let iconState = 0
 
@@ -1031,8 +1027,8 @@ function getSoul(bits, bitString) {
 
 //////////////////////////////////////////////////////////////////////////
 function makeBrush(x, y, z, brushMode, tick, renegade) {
-  layer1.push()
-  layer1.translate(x, y, z)
+  layerSoul.push()
+  layerSoul.translate(x, y, z)
 
   let bc = chroma.scale([pair[0], pair[1]]).mode('lch')
   if (brushMode == 'fuzzy') alph = 0.01
@@ -1042,48 +1038,50 @@ function makeBrush(x, y, z, brushMode, tick, renegade) {
   for (let i = 0; i < numShapes; i++) {
     let dt = (numShapes - 1) ** -1
 
-    layer1.strokeWeight(floor(unit / 5))
-    if (thinny) layer1.strokeWeight(1)
+    layerSoul.strokeWeight(floor(unit / 5))
+    if (thinny) layerSoul.strokeWeight(1)
 
-    layer1.stroke([...bc(i * dt).rgb(), alph])
-    layer1.fill([...bc(i * dt).rgb(), alph])
+    layerSoul.stroke([...bc(i * dt).rgb(), alph])
+    layerSoul.fill([...bc(i * dt).rgb(), alph])
     if (brushMode == 'numbers') {
       let num = tick % 100
-      layer1.textFont(myFont)
-      layer1.textSize(unit * 3)
-      layer1.text(`${num}`, ...vertices[i][0])
-      layer1.text(`${num}`, ...vertices[i][1])
-      layer1.text(`${num}`, ...vertices[i][2])
+      layerSoul.textFont(myFont)
+      layerSoul.textSize(unit * 3)
+      layerSoul.text(`${num}`, ...vertices[i][0])
+      layerSoul.text(`${num}`, ...vertices[i][1])
+      layerSoul.text(`${num}`, ...vertices[i][2])
     } else if (brushMode == 'triangle') {
-      layer1.beginShape(TRIANGLES)
-      layer1.vertex(...vertices[i][0])
-      layer1.vertex(...vertices[i][1])
-      layer1.vertex(...vertices[i][2])
-      layer1.endShape()
+      layerSoul.beginShape(TRIANGLES)
+      layerSoul.vertex(...vertices[i][0])
+      layerSoul.vertex(...vertices[i][1])
+      layerSoul.vertex(...vertices[i][2])
+      layerSoul.endShape()
     } else if (brushMode == 'sphere' || brushMode == 'box') {
       for (let j = 0; j < 3; j++) {
-        layer1.push()
-        layer1.translate(...vertices[i][j], z)
-        brushMode == 'sphere' ? layer1.sphere(unit * 2) : layer1.box(unit * 2)
-        layer1.pop()
+        layerSoul.push()
+        layerSoul.translate(...vertices[i][j], z)
+        brushMode == 'sphere'
+          ? layerSoul.sphere(unit * 2)
+          : layerSoul.box(unit * 2)
+        layerSoul.pop()
       }
     } else if (brushMode == 'fuzzy') {
-      layer1.strokeWeight(1)
+      layerSoul.strokeWeight(1)
       for (let k = 0; k < 10; k++) {
         let d = unit * 2
-        layer1.line(
+        layerSoul.line(
           vertices[i][0][0] + random(-d, d),
           vertices[i][0][1] + random(-d, d),
           vertices[i][1][0] + random(-d, d),
           vertices[i][1][1] + random(-d, d)
         )
-        layer1.line(
+        layerSoul.line(
           vertices[i][1][0] + random(-d, d),
           vertices[i][1][1] + random(-d, d),
           vertices[i][2][0] + random(-d, d),
           vertices[i][2][1] + random(-d, d)
         )
-        layer1.line(
+        layerSoul.line(
           vertices[i][2][0] + random(-d, d),
           vertices[i][2][1] + random(-d, d),
           vertices[i][0][0] + random(-d, d),
@@ -1096,11 +1094,13 @@ function makeBrush(x, y, z, brushMode, tick, renegade) {
       for (let n = 0; n < numRs; n++) {
         if (brushMode == 'fuzzy') rsAlpha = 0.02
         if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
-        layer1.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
-        layer1.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
+        if (brushMode == 'numbers') {
+        }
+        layerSoul.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
+        layerSoul.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
         if (i == rsIndex[n]) {
           if (brushMode == 'triangle') {
-            layer1.line(
+            layerSoul.line(
               ...vertices[i][0],
               lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
               lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
@@ -1108,19 +1108,27 @@ function makeBrush(x, y, z, brushMode, tick, renegade) {
           } else {
             if (brushMode == 'fuzzy') {
               z = -unit
-              layer1.scale(0.8)
+              layerSoul.scale(0.8)
             }
-            layer1.push()
+            layerSoul.push()
 
-            layer1.translate(...vertices[i][2], unit / 2)
-            brushMode == 'box' ? layer1.box(unit * 2) : layer1.sphere(unit * 2)
-            layer1.pop()
+            layerSoul.translate(...vertices[i][2], unit / 2)
+            if (brushMode == 'numbers') {
+              layerSoul.noStroke()
+              layerSoul.fill(chroma('white').alpha(0.05).hex())
+              layerSoul.text(`${addy[n + 2]}`, 0, 0, 0)
+            } else {
+              brushMode == 'box'
+                ? layerSoul.box(unit * 2)
+                : layerSoul.sphere(unit * 2)
+            }
+            layerSoul.pop()
           }
         }
       }
     }
   }
-  layer1.pop()
+  layerSoul.pop()
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1227,15 +1235,15 @@ function getPair(s) {
 
 //////////////////////////////////////////////////////////////////////////
 function makeIcons() {
-  layer2.clear()
+  layerIcons.clear()
   for (let n = 0; n < 10; n++) {
-    layer2.push()
+    layerIcons.push()
     if (ori == 'horizontal')
-      layer2.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
-    if (soul.house == '111') layer2.translate(6 * bs, 0)
+      layerIcons.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
+    if (soul.house == '111') layerIcons.translate(6 * bs, 0)
     if (ori == 'vertical')
-      layer2.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
-    if (soul.house == '111') layer2.translate(0, 6 * bs)
+      layerIcons.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
+    if (soul.house == '111') layerIcons.translate(0, 6 * bs)
     let icon
     if (n < 9) {
       soul[Object.keys(soul)[n]] == 0 ? (icon = stat0[n]) : (icon = stat1[n])
@@ -1245,27 +1253,27 @@ function makeIcons() {
     for (let i = 0; i < grid.cols; i++) {
       for (let j = 0; j < grid.rows; j++) {
         if (icon[j][i] == 1) {
-          layer2.fill(iconColor)
-          layer2.stroke(iconColor)
+          layerIcons.fill(iconColor)
+          layerIcons.stroke(iconColor)
         } else {
-          layer2.noFill()
-          layer2.noStroke()
+          layerIcons.noFill()
+          layerIcons.noStroke()
         }
-        layer2.rect(i * bs, j * bs, bs)
+        layerIcons.rect(i * bs, j * bs, bs)
       }
     }
-    layer2.pop()
+    layerIcons.pop()
   }
-  image(layer2, l2w, l2h)
+  image(layerIcons, l2w, l2h)
 }
 
 //////////////////////////////////////////////////////////////////////////
 function makeText(textX, textX2) {
-  layer4.clear()
-  layer4.fill(textColor)
-  layer4.text(wrd, textX, l2h * 2 - unit)
-  if (startTxt2) layer4.text(wrd, textX2, l2h * 2 - unit)
-  image(layer4, l2w, l2h)
+  layerText.clear()
+  layerText.fill(textColor)
+  layerText.text(wrd, textX, l2h * 2 - unit)
+  if (startTxt2) layerText.text(wrd, textX2, l2h * 2 - unit)
+  image(layerText, l2w, l2h)
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1295,21 +1303,6 @@ function keyPressed() {
   }
 }
 
-if (wid > hei) {
-  ori = 'horizontal'
-  unit = hei / 50
-} else {
-  ori = 'vertical'
-  unit = wid / 50
-}
-siiize = unit * 4 // brush shape size
-
-let b = makeBits('rng')
-getSoul(...b)
-for (stat of Object.keys(soul)) console.log(`${stat}: ${soul[stat]}`)
-randSeed = Math.floor(soul.soulP * 1000000000)
-console.log('randSeed: ', randSeed)
-
 //////////////////////////////////////////////////////////////////////////
 function preload() {
   myFont = loadFont('./UbuntuMono-Regular.ttf')
@@ -1317,31 +1310,54 @@ function preload() {
 
 //////////////////////////////////////////////////////////////////////////
 function setup() {
-  randomSeed(randSeed)
-  noiseSeed(randSeed)
-  createCanvas(wid, hei)
-  angleMode(DEGREES)
-  layer0 = createGraphics(wid, hei)
-  layer0.background(5)
-  // painting layer :
-  layer1 = createGraphics(wid, hei, WEBGL)
-  layer1.colorMode(RGB, 255, 255, 255, 1)
-  layer1.angleMode(DEGREES)
-  // layer1.background(5)
-  layer1.scale(scale0)
+  // set units
+  if (wid > hei) {
+    ori = 'horizontal'
+    unit = hei / 50
+  } else {
+    ori = 'vertical'
+    unit = wid / 50
+  }
   l2w = wid * 0.25
   l2h = hei * 0.25
-  layer2 = createGraphics(l2w * 2, l2h * 2)
-  layer2.colorMode(RGB, 255, 255, 255, 1)
-  layer2.angleMode(DEGREES)
-  layer3 = createGraphics(l2w * 2, l2h * 2)
-  layer4 = createGraphics(l2w * 2, l2h * 2)
-  layer4.textFont(myFont)
-  layer4.textSize(max(floor(unit / 2), 8))
+  siiize = unit * 4 // brush shape size
+  grid = {
+    blockSize: unit / 5,
+    rows: 12,
+    cols: 12,
+  }
+  bs = Math.max(Math.floor(grid.blockSize), 1)
+  console.log('bs: ', bs)
 
-  // function to return color0, color1, pairgroup name, pairIndex for a given soul
-  let rsGroups = []
+  // set dna
+  let b = makeBits('rng')
+  getSoul(...b)
+  for (stat of Object.keys(soul)) console.log(`${stat}: ${soul[stat]}`)
+  randSeed = Math.floor(soul.soulP * 1000000000)
+  console.log('randSeed: ', randSeed)
 
+  // set sketch prefs
+  createCanvas(wid, hei)
+  randomSeed(randSeed)
+  noiseSeed(randSeed)
+  angleMode(DEGREES)
+
+  // set extra canvases
+  layerBg = createGraphics(wid, hei)
+  layerBg.background(5)
+  layerPanel = createGraphics(l2w * 2, l2h * 2)
+  layerSoul = createGraphics(wid, hei, WEBGL)
+  layerSoul.colorMode(RGB, 255, 255, 255, 1)
+  layerSoul.angleMode(DEGREES)
+  layerSoul.scale(scale0)
+  layerIcons = createGraphics(l2w * 2, l2h * 2)
+  layerIcons.colorMode(RGB, 255, 255, 255, 1)
+  layerIcons.angleMode(DEGREES)
+  layerText = createGraphics(l2w * 2, l2h * 2)
+  layerText.textFont(myFont)
+  layerText.textSize(max(floor(unit / 2), 8))
+
+  // set visual traits
   if (soul.design == 1 && soul.form == 1 && soul.distance == 1) {
     alph = 0.1
     ghost = true
@@ -1352,19 +1368,12 @@ function setup() {
     soul.form == 0 &&
     soul.interface == 1 &&
     soul.house == '111'
-  ) {
+  )
     brushMode = 'box'
-  }
   if (soul.system == 0 && soul.design == 0 && soul.user == 1 && !cakeShape)
     brushMode = 'sphere'
-  if (
-    soul.age == 1 &&
-    soul.interface == 0 &&
-    soul.mood == '1111' &&
-    !cakeShape
-  ) {
+  if (soul.age == 1 && soul.interface == 0 && soul.mood == '1111' && !cakeShape)
     brushMode = 'fuzzy'
-  }
   if (brushMode == 'triangle' && soul.house == '011') cakeLength = 'long'
   if (brushMode == 'triangle' && soul.house == '001') cakeLength = 'short'
   if (soul.house == '110' && soul.mood == '1001') {
@@ -1386,6 +1395,8 @@ function setup() {
     numRs += 2
     siiize = unit * 1.5
   }
+  if (soul.mind == 0 && soul.interface == 1 && soul.house == '101')
+    brushMode = 'numbers'
 
   // choose gradient color
   pair = getPair(soul)
@@ -1400,7 +1411,7 @@ function setup() {
   cIndex0 = c.findIndex((e) => e.hex === pair[0].hex().toUpperCase())
   cIndex1 = c.findIndex((e) => e.hex === pair[1].hex().toUpperCase())
   console.log(
-    `${pair[3]}[${pair[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} \n ${c[cIndex1].brite} ${c[cIndex1].group}`
+    `${pair[3]}[${pair[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} ${c[cIndex0].hex}\n${c[cIndex1].brite} ${c[cIndex1].group} ${c[cIndex1].hex}`
   )
 
   // push vertices (x,y) for n triangles to vertices array
@@ -1432,7 +1443,7 @@ function setup() {
   // rsColor tweaks //////////////////////////////////////////////////
   // get a random rsColor index:
 
-  if (soul.form[0] == 0) {
+  if (soul.form == 0) {
     rsColor[rsci] = 'white'
   }
 
@@ -1444,44 +1455,56 @@ function setup() {
       tickMax = 1.5 * wid
       x0 = 0
     } else if (cakeLength == 'med') {
-      layer1.scale(0.85)
-      tickMax = 1.8 * wid
-      x0 = -wid * 0.15
+      layerSoul.scale(0.85)
+      tickMax = 1.78 * wid
+      x0 = -wid * 0.18
     } else {
-      layer1.scale(0.55)
+      layerSoul.scale(0.55)
       tickMax = 3 * wid
-      x0 = -wid * 0.75
+      x0 = -wid * 0.85
     }
     // sc = scale
     scA = 0.24 // amplitude {0.12 -}
-    if (soul.mood == '1111') {
-      scB = random(0.1, 0.4)
-    } else {
-      scB = random(0.85, 1)
-    } // frequency
+    scB = random(0.85, 1) // frequency
     scC = 0 // offset (degrees)
-    console.log(`scA: ${scA}/ scB: ${scB}/ scC: ${scC}`)
+
     // rz = rotateZ
     rzA = unit / 2 // amplitude
-    rzB = 0.88 // frequency
+    rzB = random(0.65, 0.93) // frequency
     rzC = randSeed % 360 // offset (degrees)
     if (soul.mood == '0000' && soul.house == '101') {
-      layer1.scale(0.7)
+      layerSoul.scale(0.7)
       rzD = unit * 4
+      console.log('fairy')
     } else {
       // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
-      rzD = unit * random(0.1, 0.8)
+      rzD = unit * random(0.33, 0.9)
     } // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
-    rzE = 0.35 // frequency
+    rzE = 0.65 // frequency
     rzF = randSeed % 180 // offset (degrees)
-    console.log(
-      `rzA: ${rzA}/ rzB: ${rzB}/ rzD: unit * ${rzD / unit}/ rzE: ${rzE}`
-    )
     // mb = makeBrush
     mbA = -0.35 * wid - siiize / 2 // x parameter 1st term
     mbB = 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
+
+    if (soul.house != '011' && soul.house != '001' && soul.mood == '1111') {
+      scB = random(0.1, 0.4)
+      tickMax = 1.88 * wid
+      scale0 = 0.8
+      x0 = -wid * 0.24
+    }
+    if (brushMode == 'fuzzy') {
+      tickMax = 1.55 * wid
+      x0 = -wid * 0.07
+      mbC = -cakeHeight / 3
+    }
+    console.log(`scA: ${scA}/ scB: ${scB}/ scC: ${scC}`)
+    console.log(
+      `rzA: ${rzA}\nrzB: ${rzB.toFixed(2)}\nrzD: unit * ${(rzD / unit).toFixed(
+        2
+      )}\nrzE: ${rzE}`
+    )
   } else if (cakeShape == 1) {
     x0 = 0
     tickMax = wid * 0.55
@@ -1502,21 +1525,22 @@ function setup() {
     mbB = 0.5 // 0.33 // 0.5 // x parameter 2nd term (times tick)
     mbC = -cakeHeight / 2 // y parameter
     mbD = 0 // z parameter
-    // layer1.rotateZ(randSeed % 100)
+    // layerSoul.rotateZ(randSeed % 100)
   }
   console.log(`cakeshape: ${cakeShape}`)
 
   // mark making /////////////////////////////////////////////////////////
   for (let tick = 0; tick < tickMax; tick++) {
-    layer1.push()
+    layerSoul.push()
 
-    layer1.scale(scale0 + scA * sin(scB * tick + scC))
-    layer1.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
+    layerSoul.scale(scale0 + scA * sin(scB * tick + scC))
+    layerSoul.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
 
+    // let rsSwitch = !(brushMode == 'numbers')
     // x, y, z, toggle renegade stripes
-    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, tick, true)
+    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, tick, true) //rsSwitch)
 
-    layer1.pop()
+    layerSoul.pop()
   }
   console.log(`numShapes: ${numShapes}`)
 
@@ -1531,26 +1555,26 @@ function draw() {
     (Date.now() - startTime) / 1000
   } s`
 
-  image(layer0, 0, 0)
+  image(layerBg, 0, 0)
 
   // background
   if (bgState == 1) {
-    layer3.clear()
-    layer3.noFill()
+    layerPanel.clear()
+    layerPanel.noFill()
   } else if (bgState == 2) {
-    layer3.fill(255)
-    layer3.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
+    layerPanel.fill(255)
+    layerPanel.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
   } else if (bgState == 3) {
-    layer3.fill('#6b6259')
-    layer3.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
+    layerPanel.fill('#6b6259')
+    layerPanel.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
   }
   if (bgState > 0) {
-    layer3.stroke(255)
-    layer3.rect(1, 1, l2w * 2 - 2, l2h * 2 - 2)
-    image(layer3, l2w, l2h)
+    layerPanel.stroke(255)
+    layerPanel.rect(1, 1, l2w * 2 - 2, l2h * 2 - 2)
+    image(layerPanel, l2w, l2h)
   }
 
-  image(layer1, 0, 0)
+  image(layerSoul, 0, 0)
 
   // icons
   if (iconState == 1) {
@@ -1584,5 +1608,3 @@ function draw() {
   //   line(wid * 0.9, 0, wid * 0.9, hei)
   // }
 }
-
-console.log('bs: ', bs)

@@ -354,8 +354,15 @@ time to move the markmaking loop to draw()
 wavecake3d
 
 04/15/23
-todo: add 'numbers' brushmode pachinko
 todo: make the rsColor code into a function
+todo: make the bg panel into a function?
+
+04/16/23
+done: add 'numbers' brushmode pachinko
+working on: spruce up RS
+            -add second hue group
+            -make function
+            spruce up transform params
 
 
 
