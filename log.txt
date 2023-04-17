@@ -364,6 +364,10 @@ working on: spruce up RS
             -make function
             spruce up transform params
 
+04/17/23
+todo: fuzzies are still too small/ short/ long sometimes
+todo: fix how the values in rsIndex are calculated
+
 
 
 

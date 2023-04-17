@@ -546,6 +546,7 @@ let color0
 let color1
 let cIndex0
 let cIndex1
+let rsSet
 let rsIndex = []
 let rsColor = []
 let rsAlpha = 0.5
@@ -1026,7 +1027,7 @@ function getSoul(bits, bitString) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-function makeBrush(x, y, z, brushMode, tick, renegade) {
+function makeBrush(x, y, z, brushMode, rsColor, tick, renegade) {
   layerSoul.push()
   layerSoul.translate(x, y, z)
 
@@ -1094,8 +1095,6 @@ function makeBrush(x, y, z, brushMode, tick, renegade) {
       for (let n = 0; n < numRs; n++) {
         if (brushMode == 'fuzzy') rsAlpha = 0.02
         if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
-        if (brushMode == 'numbers') {
-        }
         layerSoul.stroke(chroma(rsColor[n]).alpha(rsAlpha).hex())
         layerSoul.fill(chroma(rsColor[n]).alpha(rsAlpha).hex())
         if (i == rsIndex[n]) {
@@ -1234,6 +1233,31 @@ function getPalette(s) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+function makeRsSet(numRs, brushMode) {
+  let rsci = floor(random(numRs))
+  if (brushMode == 'triangle' && !ghost && !thinny) numRs *= 2
+  for (let i = 0; i < numRs; i++) {
+    let randC = floor(random(rsPalette.length))
+    if (i == rsci) {
+      if (soul.form == 0) rsColor.push('white')
+      let grey = floor(random(5, 64))
+      if (soul.form == 1) rsColor.push('#' + grey + grey + grey)
+      console.log(`rs ${i}: ${rsColor[rsColor.length - 1]}`)
+    } else {
+      rsColor.push(rsPalette[randC])
+      let cIndexRs = c.findIndex(
+        (e) => e.hex === rsPalette[randC].toUpperCase()
+      )
+      console.log(
+        `rs ${i}: ${c[cIndexRs].brite} ${c[cIndexRs].group} (${rsPalette[randC]})`
+      )
+    }
+    rsIndex.push(floor(random(numShapes)))
+  }
+  return [rsColor, rsIndex]
+}
+
+//////////////////////////////////////////////////////////////////////////
 function makeIcons() {
   layerIcons.clear()
   for (let n = 0; n < 10; n++) {
@@ -1326,6 +1350,7 @@ function setup() {
     rows: 12,
     cols: 12,
   }
+  console.log(`unit: ${unit.toFixed(2)}`)
   bs = Math.max(Math.floor(grid.blockSize), 1)
   console.log('bs: ', bs)
 
@@ -1372,7 +1397,13 @@ function setup() {
     brushMode = 'box'
   if (soul.system == 0 && soul.design == 0 && soul.user == 1 && !cakeShape)
     brushMode = 'sphere'
-  if (soul.age == 1 && soul.interface == 0 && soul.mood == '1111' && !cakeShape)
+  if (
+    soul.age == 1 &&
+    soul.interface == 0 &&
+    soul.distance == 0 &&
+    soul.mood == '1111' &&
+    !cakeShape
+  )
     brushMode = 'fuzzy'
   if (brushMode == 'triangle' && soul.house == '011') cakeLength = 'long'
   if (brushMode == 'triangle' && soul.house == '001') cakeLength = 'short'
@@ -1398,60 +1429,12 @@ function setup() {
   if (soul.mind == 0 && soul.interface == 1 && soul.house == '101')
     brushMode = 'numbers'
 
-  // choose gradient color
-  palette = getPalette(soul)
-  rsPalette = palette[2]
-
-  //flip!
-  if (random() > 0.5) {
-    ;[palette[0], palette[1]] = [palette[1], palette[0]]
-    console.log('flip!')
-  }
-
-  // these indexes are just for making the console.log below
-  cIndex0 = c.findIndex((e) => e.hex === palette[0].hex().toUpperCase())
-  cIndex1 = c.findIndex((e) => e.hex === palette[1].hex().toUpperCase())
-  console.log(
-    `${palette[3]}[${palette[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} ${c[cIndex0].hex}\n${c[cIndex1].brite} ${c[cIndex1].group} ${c[cIndex1].hex}`
-  )
-
-  // push vertices (x,y) for n triangles to vertices array
+  // set vertices
   vertices = vertexCache(numShapes, siiize)
-
-  // create a random Index for
-  // where to add the Renegade Strokes
-  let rsci = floor(random(numRs))
-  if (brushMode == 'triangle' && !ghost && !thinny) numRs *= 2
-  for (let i = 0; i < numRs; i++) {
-    let randC = floor(random(rsPalette.length))
-    if (i == rsci) {
-      if (soul.form == 0) rsColor.push('white')
-      let grey = floor(random(5, 64))
-      if (soul.form == 1) rsColor.push('#' + grey + grey + grey)
-      console.log(`rs ${i}: ${rsColor[rsColor.length - 1]}`)
-    } else {
-      rsColor.push(rsPalette[randC])
-      let cIndexRs = c.findIndex(
-        (e) => e.hex === rsPalette[randC].toUpperCase()
-      )
-      console.log(
-        `rs ${i}: ${c[cIndexRs].brite} ${c[cIndexRs].group} (${rsPalette[randC]})`
-      )
-    }
-    rsIndex.push(floor(random(numShapes)))
-  }
-
-  // rsColor tweaks //////////////////////////////////////////////////
-  // get a random rsColor index:
-
-  if (soul.form == 0) {
-    rsColor[rsci] = 'white'
-  }
-
   cakeHeight = max(vertices[numShapes - 1][1][1], vertices[numShapes - 1][2][1])
 
+  // set transform params
   if (cakeShape == 0) {
-    console.log(cakeLength)
     if (cakeLength == 'short') {
       layerSoul.scale(0.8)
       tickMax = 1.5 * wid
@@ -1466,24 +1449,21 @@ function setup() {
       x0 = -wid * 0.85
     }
     // sc = scale
-    scA = random(0.1, 0.3) // 0.24 // amplitude {0.12 -}
-    scB = random(0.85, 1) // frequency
+    scA = random(0.1, 0.3) //amplitude
+    scB = random(0.85, 1) //frequency
     scC = 0 // offset (degrees)
-
     // rz = rotateZ
     rzA = unit * random(0.3, 0.8) // amplitude
-    rzB = random(0.35, 0.93) // frequency
-    rzC = 0 //randSeed % 360 // offset (degrees)
+    rzB = random(0.36, 0.93) // frequency
+    rzC = randSeed % 360 // offset (degrees)
+    rzD = unit * random(0.33, 0.9) // amplitude
     if (soul.mood == '0000' && soul.house == '101') {
       layerSoul.scale(0.7)
       rzD = unit * 4
       console.log('fairy')
-    } else {
-      // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
-      rzD = unit * random(0.33, 0.9)
-    } // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
-    rzE = 0.65 // frequency
-    rzF = 0 //randSeed % 180 // offset (degrees)
+    }
+    rzE = random(0.3, 1) // 0.65 // frequency
+    rzF = randSeed % 180 // offset (degrees)
     // mb = makeBrush
     mbA = -0.35 * wid - siiize / 2 // x parameter 1st term
     mbB = 0.5 // x parameter 2nd term (times tick)
@@ -1501,33 +1481,12 @@ function setup() {
       x0 = -wid * 0.07
       mbC = -cakeHeight / 3
     }
-    console.log(
-      `tickMax: ${(tickMax / wid).toFixed(2)} * wid\nx0: ${(x0 / wid).toFixed(
-        2
-      )} * wid\nscale0: ${scale0}`
-    )
-    console.log(
-      `scA: ${scA.toFixed(2)} amplitude\nscB: ${scB.toFixed(
-        2
-      )} freq\nscC: ${scC} offset`
-    )
-    console.log(
-      `rzA: ${(rzA / unit).toFixed(2)} * unit amp\nrzB: ${rzB.toFixed(
-        2
-      )} freq\nrzC: ${rzC.toFixed(2)} offset\nrzD: ${(rzD / unit).toFixed(
-        2
-      )} * unit amp\nrzE: ${rzE} freq\nrzF: ${rzF} offset`
-    )
-    console.log(
-      `mbA: ${mbA.toFixed(2)} x_a\nmbB: ${mbB.toFixed(
-        2
-      )} x_b\nmbC: ${scC} y\nmbD: ${mbD} z`
-    )
+    console.log(`length: ${cakeLength}`)
   } else if (cakeShape == 1) {
     x0 = 0
     tickMax = wid * 0.55
     // sc = scale
-    scale0 = 1.9
+    scale0 = 1.8
     soul.design == 0 ? (scA = 0) : (scA = random(0.05, 0.15)) // amplitude
     soul.form == 0 ? (scB = 0) : (scB = random(2)) //randSeed / 1000000000 // frequency
     soul.user == 0 ? (scC = 0) : (scC = random(360)) // offset (degrees)
@@ -1537,7 +1496,7 @@ function setup() {
     rzC = 180 // offset (degrees)
     rzD = unit * random(0.9, 1.5) // amplitude
     if (soul.distance == 0) rzD = unit / 1.5
-    rzE = 2 // frequency
+    rzE = random(0.5, 2.5) // frequency
     rzF = 0 // offset (degrees)
     // mb = makeBrush
     mbA = -0.15 * wid //-0.375 * wid - siiize / 2 // x parameter 1st term
@@ -1547,6 +1506,53 @@ function setup() {
     // layerSoul.rotateZ(randSeed % 100)
   }
   console.log(`cakeshape: ${cakeShape}`)
+  console.log(
+    `tickMax: ${(tickMax / wid).toFixed(2)} * wid\nx0: ${(x0 / wid).toFixed(
+      2
+    )} * wid\nscale0: ${scale0}`
+  )
+  console.log(
+    `scA: ${scA.toFixed(2)} amplitude\nscB: ${scB.toFixed(
+      2
+    )} freq\nscC: ${scC} offset`
+  )
+  console.log(
+    `rzA: ${(rzA / unit).toFixed(2)} * unit amp\nrzB: ${rzB.toFixed(
+      2
+    )} freq\nrzC: ${rzC.toFixed(2)} offset\nrzD: ${(rzD / unit).toFixed(
+      2
+    )} * unit amp\nrzE: ${rzE.toFixed(2)} freq\nrzF: ${rzF} offset`
+  )
+  console.log(
+    `mbA: ${mbA.toFixed(2)} x_a\nmbB: ${mbB.toFixed(
+      2
+    )} x_b\nmbC: ${scC} y\nmbD: ${mbD} z`
+  )
+
+  // choose gradient color
+  palette = getPalette(soul)
+  rsPalette = palette[2]
+
+  // flip!
+  if (random() > 0.5) {
+    ;[palette[0], palette[1]] = [palette[1], palette[0]]
+    console.log('flip!')
+  }
+
+  // these index variables are just for making the console.log below
+  cIndex0 = c.findIndex((e) => e.hex === palette[0].hex().toUpperCase())
+  cIndex1 = c.findIndex((e) => e.hex === palette[1].hex().toUpperCase())
+  console.log(
+    `${palette[3]}[${palette[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} ${c[cIndex0].hex}\n${c[cIndex1].brite} ${c[cIndex1].group} ${c[cIndex1].hex}`
+  )
+
+  // create array of rs colors
+  // create array of random indexes for where to add the renegade strokes
+  rsSet = makeRsSet(numRs, brushMode)
+  rsColor = rsSet[0]
+  rsIndex = rsSet[1]
+
+  console.log(rsIndex)
 
   // mark making /////////////////////////////////////////////////////////
   for (let tick = 0; tick < tickMax; tick++) {
@@ -1557,15 +1563,12 @@ function setup() {
 
     // let rsSwitch = !(brushMode == 'numbers')
     // x, y, z, toggle renegade stripes
-    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, tick, true) //rsSwitch)
+    makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, rsColor, tick, true) //rsSwitch)
 
     layerSoul.pop()
   }
   console.log(`numShapes: ${numShapes}`)
-
   console.log(`brushMode: ${brushMode}`)
-
-  // some fuzzies need to move down
 }
 
 //////////////////////////////////////////////////////////////////////////
