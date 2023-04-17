@@ -541,7 +541,7 @@ let litty = briteColors.concat(litColors)
 let natty = c.filter((color) => color.group == 'dull').map((color) => color.hex)
 let mono = c.filter((color) => color.group == 'mono').map((color) => color.hex)
 let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M']
-let pair = []
+let palette = []
 let color0
 let color1
 let cIndex0
@@ -1030,7 +1030,7 @@ function makeBrush(x, y, z, brushMode, tick, renegade) {
   layerSoul.push()
   layerSoul.translate(x, y, z)
 
-  let bc = chroma.scale([pair[0], pair[1]]).mode('lch')
+  let bc = chroma.scale([palette[0], palette[1]]).mode('lch')
   if (brushMode == 'fuzzy') alph = 0.01
   if (brushMode == 'sphere' || brushMode == 'box' || brushMode == 'numbers')
     alph = 0.1
@@ -1164,20 +1164,20 @@ function remap(value, sourceMin, sourceMax, destMin, destMax) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-function getPair(s) {
-  let pair = []
+function getPalette(s) {
+  let palette = []
   let name = ''
   let pi
 
   if (s.mood == '0000') {
     pi = floor(random(megabrite.length))
-    pair = megabrite[pi]
+    palette = megabrite[pi]
     name = 'megabrite'
   } else if (s.mood == '0001' || s.mood == '0010') {
     pi = floor(random(dull.length))
-    pair = dull[pi]
+    palette = dull[pi]
     name = 'dull'
-    if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+    if (cakeShape == 1) palette = megabrite[floor(random(megabrite.length))]
   } else if (
     s.mood == '0011' ||
     s.mood == '0100' ||
@@ -1185,9 +1185,9 @@ function getPair(s) {
     s.mood == '0110'
   ) {
     pi = floor(random(dullish.length))
-    pair = dullish[pi]
+    palette = dullish[pi]
     name = 'dullish'
-    if (cakeShape == 1) pair = megabrite[floor(random(megabrite.length))]
+    if (cakeShape == 1) palette = megabrite[floor(random(megabrite.length))]
   } else if (
     s.mood == '0111' ||
     s.mood == '1000' ||
@@ -1195,11 +1195,11 @@ function getPair(s) {
     s.mood == '1010'
   ) {
     pi = floor(random(briteish.length))
-    pair = briteish[pi]
+    palette = briteish[pi]
     name = 'briteish'
   } else {
     pi = floor(random(brite.length))
-    pair = brite[pi]
+    palette = brite[pi]
     name = 'brite'
   }
 
@@ -1209,10 +1209,10 @@ function getPair(s) {
 
   let group0 = random(groups)
   let group1 = random(groups)
-  if (pair[2]) {
-    console.log(`exclude: ${pair[2]}`)
-    while (pair[2].includes(group0)) group0 = random(groups)
-    while (pair[2].includes(group1)) group1 = random(groups)
+  if (palette[2]) {
+    console.log(`exclude: ${palette[2]}`)
+    while (palette[2].includes(group0)) group0 = random(groups)
+    while (palette[2].includes(group1)) group1 = random(groups)
   }
 
   function filty(color) {
@@ -1230,7 +1230,7 @@ function getPair(s) {
 
   rsGroups.concat(mono)
 
-  return [chroma(pair[0]), chroma(pair[1]), rsGroups, name, pi] //, gi]
+  return [chroma(palette[0]), chroma(palette[1]), rsGroups, name, pi] //, gi]
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1399,19 +1399,20 @@ function setup() {
     brushMode = 'numbers'
 
   // choose gradient color
-  pair = getPair(soul)
-  rsPalette = pair[2]
+  palette = getPalette(soul)
+  rsPalette = palette[2]
 
   //flip!
   if (random() > 0.5) {
-    ;[pair[0], pair[1]] = [pair[1], pair[0]]
+    ;[palette[0], palette[1]] = [palette[1], palette[0]]
     console.log('flip!')
   }
 
-  cIndex0 = c.findIndex((e) => e.hex === pair[0].hex().toUpperCase())
-  cIndex1 = c.findIndex((e) => e.hex === pair[1].hex().toUpperCase())
+  // these indexes are just for making the console.log below
+  cIndex0 = c.findIndex((e) => e.hex === palette[0].hex().toUpperCase())
+  cIndex1 = c.findIndex((e) => e.hex === palette[1].hex().toUpperCase())
   console.log(
-    `${pair[3]}[${pair[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} ${c[cIndex0].hex}\n${c[cIndex1].brite} ${c[cIndex1].group} ${c[cIndex1].hex}`
+    `${palette[3]}[${palette[4]}]: \n${c[cIndex0].brite} ${c[cIndex0].group} ${c[cIndex0].hex}\n${c[cIndex1].brite} ${c[cIndex1].group} ${c[cIndex1].hex}`
   )
 
   // push vertices (x,y) for n triangles to vertices array
@@ -1452,26 +1453,27 @@ function setup() {
   if (cakeShape == 0) {
     console.log(cakeLength)
     if (cakeLength == 'short') {
+      layerSoul.scale(0.8)
       tickMax = 1.5 * wid
       x0 = 0
     } else if (cakeLength == 'med') {
-      layerSoul.scale(0.85)
-      tickMax = 1.78 * wid
-      x0 = -wid * 0.18
+      layerSoul.scale(0.65)
+      tickMax = 1.98 * wid
+      x0 = -wid * 0.28
     } else {
       layerSoul.scale(0.55)
       tickMax = 3 * wid
       x0 = -wid * 0.85
     }
     // sc = scale
-    scA = 0.24 // amplitude {0.12 -}
+    scA = random(0.1, 0.3) // 0.24 // amplitude {0.12 -}
     scB = random(0.85, 1) // frequency
     scC = 0 // offset (degrees)
 
     // rz = rotateZ
-    rzA = unit / 2 // amplitude
-    rzB = random(0.65, 0.93) // frequency
-    rzC = randSeed % 360 // offset (degrees)
+    rzA = unit * random(0.3, 0.8) // amplitude
+    rzB = random(0.35, 0.93) // frequency
+    rzC = 0 //randSeed % 360 // offset (degrees)
     if (soul.mood == '0000' && soul.house == '101') {
       layerSoul.scale(0.7)
       rzD = unit * 4
@@ -1481,7 +1483,7 @@ function setup() {
       rzD = unit * random(0.33, 0.9)
     } // amplitude //0.1. 0.25, 0.5... 2.5... 10+ is really crazy
     rzE = 0.65 // frequency
-    rzF = randSeed % 180 // offset (degrees)
+    rzF = 0 //randSeed % 180 // offset (degrees)
     // mb = makeBrush
     mbA = -0.35 * wid - siiize / 2 // x parameter 1st term
     mbB = 0.5 // x parameter 2nd term (times tick)
@@ -1499,11 +1501,27 @@ function setup() {
       x0 = -wid * 0.07
       mbC = -cakeHeight / 3
     }
-    console.log(`scA: ${scA}/ scB: ${scB}/ scC: ${scC}`)
     console.log(
-      `rzA: ${rzA}\nrzB: ${rzB.toFixed(2)}\nrzD: unit * ${(rzD / unit).toFixed(
+      `tickMax: ${(tickMax / wid).toFixed(2)} * wid\nx0: ${(x0 / wid).toFixed(
         2
-      )}\nrzE: ${rzE}`
+      )} * wid\nscale0: ${scale0}`
+    )
+    console.log(
+      `scA: ${scA.toFixed(2)} amplitude\nscB: ${scB.toFixed(
+        2
+      )} freq\nscC: ${scC} offset`
+    )
+    console.log(
+      `rzA: ${(rzA / unit).toFixed(2)} * unit amp\nrzB: ${rzB.toFixed(
+        2
+      )} freq\nrzC: ${rzC.toFixed(2)} offset\nrzD: ${(rzD / unit).toFixed(
+        2
+      )} * unit amp\nrzE: ${rzE} freq\nrzF: ${rzF} offset`
+    )
+    console.log(
+      `mbA: ${mbA.toFixed(2)} x_a\nmbB: ${mbB.toFixed(
+        2
+      )} x_b\nmbC: ${scC} y\nmbD: ${mbD} z`
     )
   } else if (cakeShape == 1) {
     x0 = 0
@@ -1517,7 +1535,8 @@ function setup() {
     soul.age == 0 ? (rzA = unit / 10) : (rzA = unit * random(0.5, 2)) // amplitude
     rzB = 1.2 // frequency
     rzC = 180 // offset (degrees)
-    soul.distance == 0 ? (rzD = unit / 1.5) : (rzD = unit * random(0.9, 1.5)) // amplitude
+    rzD = unit * random(0.9, 1.5) // amplitude
+    if (soul.distance == 0) rzD = unit / 1.5
     rzE = 2 // frequency
     rzF = 0 // offset (degrees)
     // mb = makeBrush
