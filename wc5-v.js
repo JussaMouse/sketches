@@ -1,20 +1,15 @@
-// inputs
-const startTime = Date.now()
 let myFont
-let inputAddy = ''
+function preload() {
+  myFont = loadFont('./UbuntuMono-Regular.ttf')
+}
 
 // canvases
-let wid = window.innerWidth
+let wid = window.innerWidth - 500
 let hei = window.innerHeight
 let unit
 let ori = ''
 let layerBg
 let layerSoul
-let layerIcons
-let layerPanel
-let layerText
-let l2w
-let l2h
 
 // dna
 let addy = '0x'
@@ -506,13 +501,14 @@ let briteish = [
   [c[27].hex, c[18].hex, ['R']], //25 briteish bby blu/drk grn    // cream/drk mgnta
 ]
 let dullish = [
-  [c[5].hex, c[22].hex], //00 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
-  [c[5].hex, c[63].hex, ['R', 'M']], //01 dullish dark aqua /light aqua   // cream orng?/white gray
-  [c[6].hex, c[7].hex], //02 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
-  [c[9].hex, c[7].hex], //03 dullish navy/lit gray purp
-  [c[11].hex, c[20].hex], //04 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
-  [c[68].hex, c[17].hex, ['R', 'M']], //05 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
-  [c[28].hex, c[57].hex], //06 //cream pink/ mid blu
+  [c[3].hex, c[34].hex, ['G']], //00 dullish drk brn/ purple   // cream/white teal/lit pink
+  [c[5].hex, c[22].hex], //01 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
+  [c[5].hex, c[63].hex, ['R', 'M']], //02 dullish dark aqua /light aqua   // cream orng?/white gray
+  [c[6].hex, c[7].hex], //03 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
+  [c[9].hex, c[7].hex], //04 dullish navy/lit gray purp
+  [c[11].hex, c[20].hex], //05 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
+  [c[68].hex, c[17].hex, ['R', 'M']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
+  [c[28].hex, c[57].hex], //07 //cream pink/ mid blu
 ]
 let dull = [
   [c[7].hex, c[34].hex], //00 dull drk brn/olive/lit gray   //hot colors
@@ -559,7 +555,7 @@ let cakeShape = 0
 let cakeHeight
 let cakeLength = 'med'
 let tickMax
-let scale0 = 0.9
+
 let scA
 let scB
 let scC
@@ -576,397 +572,26 @@ let mbC
 let mbD
 let thinny = false
 let ghost = false
-
-// icons
-let grid
-let houses = [
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-]
-let stat0 = [
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
-    [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-    [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-]
-let stat1 = [
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0],
-    [0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-    [1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0],
-    [0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-    [0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0],
-    [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0],
-    [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-]
-let bs
-let iconColor = 255
-let iconState = 0
-
-// text
-let startTxt2 = false
-let textX = Math.floor(wid / 2)
-let textX2 = Math.floor(wid / 2)
-let wrd = ''
-let textColor = 255
-let textState = 0
-
-// bg
-let bgState = 0
+let sp = {
+  tickMax: [0, 0, 10000, 1],
+  x0: [0, -5000, 5000, 1],
+  scale0: [0.9, 0, 2, 0.01],
+  scA: [0, 0, 1, 0.01],
+  scB: [0, 0, 2, 0.01],
+  scC: [0, 0, 360, 1],
+  rzA: [0, 0, 2, 0.01],
+  rzB: [0, 0, 2, 0.01],
+  rzC: [0, 0, 360, 1],
+  rzD: [0, 0, 4, 0.02],
+  rzE: [0, 0, 3, 0.02],
+  rzF: [0, 0, 360, 1],
+  mbA: [0, -2500, 2500, 1],
+  mbB: [0, 0, 1, 0.01],
+  mbC: [0, -2500, 2500, 1],
+  mbD: [0, -1000, 1000, 1],
+}
 let rsSet2
+let sliders = []
 
 //////////////////////////////////////////////////////////////////////////
 function makeBits(type) {
@@ -988,22 +613,6 @@ function makeBits(type) {
   }
   console.log('16 bits: ', bitString)
   return [bits, bitString]
-}
-
-//////////////////////////////////////////////////////////////////////////
-function reroll() {
-  inputAddy = prompt('enter ETH address to preview')
-  for (let i = 2; i < 6; i++) {
-    let digit = inputAddy[i]
-    console.log(digit)
-    digit = parseInt(digit, 16).toString(2).padStart(4, '0')
-    for (let j = 0; j < 4; j++) {
-      bits.push(digit[j])
-    }
-    bitString += digit
-  }
-  getSoul()
-  setup()
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1030,7 +639,7 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
   layerSoul.translate(x, y, z)
 
   let bc = chroma.scale([palette[0], palette[1]]).mode('lch')
-  // if (brushMode == 'fuzzy') alph = 0.01
+  if (brushMode == 'fuzzy') alph = 0.01
   if (brushMode == 'sphere' || brushMode == 'box' || brushMode == 'numbers')
     alph = 0.1
 
@@ -1046,11 +655,12 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
     if (brushMode == 'numbers') {
       let num = tick % 100
       layerSoul.textFont(myFont)
-      layerSoul.textSize(unit * 4)
+      layerSoul.textSize(unit * 3)
       layerSoul.text(`${num}`, ...vertices[i][0])
       layerSoul.text(`${num}`, ...vertices[i][1])
       layerSoul.text(`${num}`, ...vertices[i][2])
     } else if (brushMode == 'triangle') {
+      console.log('hiu')
       layerSoul.beginShape(TRIANGLES)
       layerSoul.vertex(...vertices[i][0])
       layerSoul.vertex(...vertices[i][1])
@@ -1065,34 +675,34 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
           : layerSoul.box(unit * 2)
         layerSoul.pop()
       }
-    } //else if (brushMode == 'fuzzy') {
-    //   layerSoul.strokeWeight(1)
-    //   for (let k = 0; k < 10; k++) {
-    //     let d = unit * 2
-    //     layerSoul.line(
-    //       vertices[i][0][0] + random(-d, d),
-    //       vertices[i][0][1] + random(-d, d),
-    //       vertices[i][1][0] + random(-d, d),
-    //       vertices[i][1][1] + random(-d, d)
-    //     )
-    //     layerSoul.line(
-    //       vertices[i][1][0] + random(-d, d),
-    //       vertices[i][1][1] + random(-d, d),
-    //       vertices[i][2][0] + random(-d, d),
-    //       vertices[i][2][1] + random(-d, d)
-    //     )
-    //     layerSoul.line(
-    //       vertices[i][2][0] + random(-d, d),
-    //       vertices[i][2][1] + random(-d, d),
-    //       vertices[i][0][0] + random(-d, d),
-    //       vertices[i][0][1] + random(-d, d)
-    //     )
-    //   }
-    // }
+    } else if (brushMode == 'fuzzy') {
+      layerSoul.strokeWeight(1)
+      for (let k = 0; k < 10; k++) {
+        let d = unit * 2
+        layerSoul.line(
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d),
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d)
+        )
+        layerSoul.line(
+          vertices[i][1][0] + random(-d, d),
+          vertices[i][1][1] + random(-d, d),
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d)
+        )
+        layerSoul.line(
+          vertices[i][2][0] + random(-d, d),
+          vertices[i][2][1] + random(-d, d),
+          vertices[i][0][0] + random(-d, d),
+          vertices[i][0][1] + random(-d, d)
+        )
+      }
+    }
 
     // draw RS
     if (renegade && rsSet[i] != 0) {
-      // if (brushMode == 'fuzzy') rsAlpha = 0.02
+      if (brushMode == 'fuzzy') rsAlpha = 0.02
       if (brushMode == 'sphere' || brushMode == 'box') rsAlpha = 0.07
       layerSoul.stroke(chroma(rsSet[i]).alpha(rsAlpha).hex())
       layerSoul.fill(chroma(rsSet[i]).alpha(rsAlpha).hex())
@@ -1103,10 +713,10 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
           lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
         )
       } else {
-        // if (brushMode == 'fuzzy') {
-        //   z = -unit
-        //   layerSoul.scale(0.8)
-        // }
+        if (brushMode == 'fuzzy') {
+          z = -unit
+          layerSoul.scale(0.8)
+        }
         layerSoul.push()
 
         layerSoul.translate(...vertices[i][2], unit / 2)
@@ -1251,81 +861,6 @@ function getRs(numShapes, numRs, rsPalette) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-function makeIcons() {
-  layerIcons.clear()
-  for (let n = 0; n < 10; n++) {
-    layerIcons.push()
-    if (ori == 'horizontal')
-      layerIcons.translate(l2w - 60 * bs + n * 12 * bs, l2h - 6 * bs)
-    if (soul.house == '111') layerIcons.translate(6 * bs, 0)
-    if (ori == 'vertical')
-      layerIcons.translate(l2w - 6 * bs, l2h - 60 * bs + n * 12 * bs)
-    if (soul.house == '111') layerIcons.translate(0, 6 * bs)
-    let icon
-    if (n < 9) {
-      soul[Object.keys(soul)[n]] == 0 ? (icon = stat0[n]) : (icon = stat1[n])
-    } else {
-      icon = houses[parseInt(soul.house, 2)]
-    }
-    for (let i = 0; i < grid.cols; i++) {
-      for (let j = 0; j < grid.rows; j++) {
-        if (icon[j][i] == 1) {
-          layerIcons.fill(iconColor)
-          layerIcons.stroke(iconColor)
-        } else {
-          layerIcons.noFill()
-          layerIcons.noStroke()
-        }
-        layerIcons.rect(i * bs, j * bs, bs)
-      }
-    }
-    layerIcons.pop()
-  }
-  image(layerIcons, l2w, l2h)
-}
-
-//////////////////////////////////////////////////////////////////////////
-function makeText(textX, textX2) {
-  layerText.clear()
-  layerText.fill(textColor)
-  layerText.text(wrd, textX, l2h * 2 - unit)
-  if (startTxt2) layerText.text(wrd, textX2, l2h * 2 - unit)
-  image(layerText, l2w, l2h)
-}
-
-//////////////////////////////////////////////////////////////////////////
-function keyPressed() {
-  if (keyCode === RIGHT_ARROW) {
-    bgState = (bgState + 1) % 4
-  }
-  if (keyCode === LEFT_ARROW) {
-    if (bgState > 0) {
-      bgState = (bgState - 1) % 4
-    } else {
-      bgState = 3
-    }
-  }
-  if (keyCode === UP_ARROW) {
-    iconState = (iconState + 1) % 3
-  }
-  if (keyCode === DOWN_ARROW) {
-    if (iconState > 0) {
-      iconState = (iconState - 1) % 3
-    } else {
-      iconState = 2
-    }
-  }
-  if (keyCode === 90) {
-    textState = (textState + 1) % 3
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////
-function preload() {
-  myFont = loadFont('./UbuntuMono-Regular.ttf')
-}
-
-//////////////////////////////////////////////////////////////////////////
 function setup() {
   // set units
   if (wid > hei) {
@@ -1363,17 +898,11 @@ function setup() {
   // set extra canvases
   layerBg = createGraphics(wid, hei)
   layerBg.background(5)
-  layerPanel = createGraphics(l2w * 2, l2h * 2)
+
   layerSoul = createGraphics(wid, hei, WEBGL)
   layerSoul.colorMode(RGB, 255, 255, 255, 1)
   layerSoul.angleMode(DEGREES)
-  layerSoul.scale(scale0)
-  layerIcons = createGraphics(l2w * 2, l2h * 2)
-  layerIcons.colorMode(RGB, 255, 255, 255, 1)
-  layerIcons.angleMode(DEGREES)
-  layerText = createGraphics(l2w * 2, l2h * 2)
-  layerText.textFont(myFont)
-  layerText.textSize(max(floor(unit / 2), 8))
+  layerSoul.scale(sp.scale0[0])
 
   // set visual traits
   if (soul.design == 1 && soul.form == 1 && soul.distance == 1) {
@@ -1390,14 +919,14 @@ function setup() {
     brushMode = 'box'
   if (soul.system == 0 && soul.design == 0 && soul.user == 1 && !cakeShape)
     brushMode = 'sphere'
-  // if (
-  //   soul.age == 1 &&
-  //   soul.interface == 0 &&
-  //   soul.distance == 0 &&
-  //   soul.mood == '1111' &&
-  //   !cakeShape
-  // )
-  //   brushMode = 'fuzzy'
+  if (
+    soul.age == 1 &&
+    soul.interface == 0 &&
+    soul.distance == 0 &&
+    soul.mood == '1111' &&
+    !cakeShape
+  )
+    brushMode = 'fuzzy'
   if (brushMode == 'triangle' && soul.house == '011') cakeLength = 'long'
   if (brushMode == 'triangle' && soul.house == '001') cakeLength = 'short'
   if (soul.house == '110' && soul.mood == '1001') {
@@ -1433,73 +962,72 @@ function setup() {
   if (cakeShape == 0) {
     if (cakeLength == 'short') {
       layerSoul.scale(0.8)
-      tickMax = 1.5 * wid
-      x0 = 0
+      sp.tickMax[0] = 1.5 * wid
+      sp.x0[0] = 0
     } else if (cakeLength == 'med') {
       layerSoul.scale(0.65)
-      tickMax = 1.98 * wid
-      x0 = -wid * 0.28
+      sp.tickMax[0] = 1.98 * wid
+      sp.x0[0] = -wid * 0.28
     } else {
       layerSoul.scale(0.55)
-      tickMax = 3 * wid
-      x0 = -wid * 0.85
+      sp.tickMax[0] = 3 * wid
+      sp.x0[0] = -wid * 0.85
     }
     // sc = scale
-    scA = random(0.1, 0.3) //amplitude
-    scB = random(0.85, 1) //frequency
-    scC = 0 // offset (degrees)
+    sp.scA[0] = random(0.1, 0.3) //amplitude
+    sp.scB[0] = random(0.85, 1) //frequency
+    sp.scC[0] = 0 // offset (degrees)
     // rz = rotateZ
-    rzA = unit * random(0.3, 0.8) // amplitude
-    rzB = random(0.36, 0.93) // frequency
-    rzC = random(360) // offset (degrees)
-    rzD = unit * random(0.33, 0.9) // amplitude
+    sp.rzA[0] = random(0.3, 0.8) // amplitude
+    sp.rzB[0] = random(0.36, 0.93) // frequency
+    sp.rzC[0] = randSeed % 360 // offset (degrees)
+    sp.rzD[0] = random(0.33, 0.9) // amplitude
     if (soul.mood == '0000' && soul.house == '101') {
       layerSoul.scale(0.7)
-      rzD = unit * 4
+      sp.rzD[0] = 4
       console.log('fairy')
     }
-    rzE = random(0.3, 1) // 0.65 // frequency
-    if (abs(rzE - rzB) < 0.1) rzE -= 0.15
-    rzF = random(360) // offset (degrees)
+    sp.rzE[0] = random(0.3, 1) // 0.65 // frequency
+    sp.rzF[0] = randSeed % 180 // offset (degrees)
     // mb = makeBrush
-    mbA = -0.35 * wid - siiize / 2 // x parameter 1st term
-    mbB = 0.5 // x parameter 2nd term (times tick)
-    mbC = -cakeHeight / 2 // y parameter
-    mbD = 0 // z parameter
+    sp.mbA[0] = -0.35 * wid - siiize / 2 // x parameter 1st term
+    sp.mbB[0] = 0.5 // x parameter 2nd term (times tick)
+    sp.mbC[0] = -cakeHeight / 2 // y parameter
+    sp.mbD[0] = 0 // z parameter
 
     if (soul.house != '011' && soul.house != '001' && soul.mood == '1111') {
-      scB = random(0.1, 0.4)
-      tickMax = 1.88 * wid
-      scale0 = 0.8
-      x0 = -wid * 0.24
+      sp.scB[0] = random(0.1, 0.4)
+      sp.tickMax[0] = 1.88 * wid
+      sp.scale0[0] = 0.8
+      sp.x0[0] = -wid * 0.24
     }
-    // if (brushMode == 'fuzzy') {
-    //   tickMax = 1.55 * wid
-    //   x0 = -wid * 0.07
-    //   mbC = -cakeHeight / 3
-    // }
+    if (brushMode == 'fuzzy') {
+      sp.tickMax[0] = 1.55 * wid
+      sp.x0[0] = -wid * 0.07
+      sp.mbC[0] = -cakeHeight / 3
+    }
     console.log(`length: ${cakeLength}`)
   } else if (cakeShape == 1) {
-    x0 = 0
-    tickMax = wid * 0.55
+    sp.x0[0] = 0
+    sp.tickMax[0] = wid * 0.55
     // sc = scale
-    scale0 = 1.8
-    soul.design == 0 ? (scA = 0) : (scA = random(0.05, 0.15)) // amplitude
-    soul.form == 0 ? (scB = 0) : (scB = random(2)) //randSeed / 1000000000 // frequency
-    soul.user == 0 ? (scC = 0) : (scC = random(360)) // offset (degrees)
+    sp.scale0[0] = 1.8
+    soul.design == 0 ? (sp.scA[0] = 0) : (sp.scA[0] = random(0.05, 0.15)) // amplitude
+    soul.form == 0 ? (sp.scB[0] = 0) : (sp.scB[0] = random(2)) //randSeed / 1000000000 // frequency
+    soul.user == 0 ? (sp.scC[0] = 0) : (sp.scC[0] = random(360)) // offset (degrees)
     // rz = rotateZ
-    soul.age == 0 ? (rzA = unit / 10) : (rzA = unit * random(0.5, 2)) // amplitude
-    rzB = 1.2 // frequency
-    rzC = 180 // offset (degrees)
-    rzD = unit * random(0.9, 1.5) // amplitude
-    if (soul.distance == 0) rzD = unit / 1.5
-    rzE = random(0.5, 2.5) // frequency
-    rzF = 0 // offset (degrees)
+    soul.age == 0 ? (sp.rzA[0] = 0.1) : (sp.rzA[0] = random(0.5, 2)) // amplitude
+    sp.rzB[0] = 1.2 // frequency
+    sp.rzC[0] = 180 // offset (degrees)
+    sp.rzD[0] = random(0.9, 1.5) // amplitude
+    if (soul.distance == 0) sp.rzD[0] = 0.67
+    sp.rzE[0] = random(0.5, 2.5) // frequency
+    sp.rzF[0] = 0 // offset (degrees)
     // mb = makeBrush
-    mbA = -0.15 * wid //-0.375 * wid - siiize / 2 // x parameter 1st term
-    mbB = 0.5 // 0.33 // 0.5 // x parameter 2nd term (times tick)
-    mbC = -cakeHeight / 2 // y parameter
-    mbD = 0 // z parameter
+    sp.mbA[0] = -0.15 * wid //-0.375 * wid - siiize / 2 // x parameter 1st term
+    sp.mbB[0] = 0.5 // 0.33 // 0.5 // x parameter 2nd term (times tick)
+    sp.mbC[0] = -cakeHeight / 2 // y parameter
+    sp.mbD[0] = 0 // z parameter
     // layerSoul.rotateZ(randSeed % 100)
   }
   console.log(`brushMode: ${brushMode}`)
@@ -1507,27 +1035,56 @@ function setup() {
   console.log(`numRs: ${numRs}`)
   console.log(`cakeshape: ${cakeShape}`)
   console.log(
-    `tickMax: ${(tickMax / wid).toFixed(2)} * wid\nx0: ${(x0 / wid).toFixed(
-      2
-    )} * wid\nscale0: ${scale0}`
+    `tickMax: ${(sp.tickMax[0] / wid).toFixed(2)} * wid\nx0: ${(
+      sp.x0[0] / wid
+    ).toFixed(2)} * wid\nscale0: ${sp.scale0[0]}`
   )
   console.log(
-    `scA: ${scA.toFixed(2)} amplitude\nscB: ${scB.toFixed(
+    `scA: ${sp.scA[0].toFixed(2)} amplitude\nscB: ${sp.scB[0].toFixed(
       2
-    )} freq\nscC: ${scC} offset`
+    )} freq\nscC: ${sp.scC[0]} offset`
   )
   console.log(
-    `rzA: ${(rzA / unit).toFixed(2)} * unit amp\nrzB: ${rzB.toFixed(
+    `rzA: ${sp.rzA[0].toFixed(2)} amp\nrzB: ${sp.rzB[0].toFixed(
       2
-    )} freq\nrzC: ${rzC.toFixed(2)} offset\nrzD: ${(rzD / unit).toFixed(
+    )} freq\nrzC: ${sp.rzC[0].toFixed(2)} offset\nrzD: ${sp.rzD[0].toFixed(
       2
-    )} * unit amp\nrzE: ${rzE.toFixed(2)} freq\nrzF: ${rzF.toFixed(2)} offset`
+    )} amp\nrzE: ${sp.rzE[0].toFixed(2)} freq\nrzF: ${sp.rzF[0]} offset`
   )
   console.log(
-    `mbA: ${mbA.toFixed(2)} x_a\nmbB: ${mbB.toFixed(
-      2
-    )} x_b\nmbC: ${scC} y\nmbD: ${mbD} z`
+    `mbA: ${sp.mbA[0].toFixed(2)} x_a\nmbB: ${sp.mbB[0].toFixed(2)} x_b\nmbC: ${
+      sp.scC[0]
+    } y\nmbD: ${sp.mbD[0]} z`
   )
+
+  // set victorizers
+  let n = 0
+  for (param of Object.keys(sp)) {
+    sliders[n] = createSlider(
+      sp[param][1],
+      sp[param][2],
+      sp[param][0],
+      sp[param][3]
+    )
+
+    console.log(sliders[n].value())
+    sliders[n].position(wid + 150, 20 + n * 20)
+    sliders[n].style('width', '300px')
+
+    if (param == 'tickerMax') {
+    }
+    sliders[n].input(() => {
+      // sp[param][0] = slidy.value()
+      // layerSoul.clear()
+
+      //testing v
+      stateSetter(param)
+
+      // markMaking(slidy.value())
+    })
+
+    n++
+  }
 
   // choose gradient color
   palette = getPalette(soul)
@@ -1549,93 +1106,97 @@ function setup() {
   // get rs array for makebrush
   rsSet2 = getRs(numShapes, numRs, rsPalette)
 
-  // // //testing
-  // cakeMode = 1
-  // tickMax = 0.55 * wid
-  // scale0 = 1.9
-  // scA = 0.12
-  // scB = 1.42
-  // scC = 222
-  // rzA = 0.51 * unit
-  // rzB = 1.2
-  // rzC = 180
-  // rzD = 0.67 * unit
-  // rzE = 1.17
-  // mbA = -215
-  // mbB = 0.5
-  // mbC = -100
-
-  // mark making /////////////////////////////////////////////////////////
-  for (let tick = 0; tick < tickMax; tick++) {
-    layerSoul.push()
-
-    layerSoul.scale(scale0 + scA * sin(scB * tick + scC))
-    layerSoul.rotateZ(rzA * sin(rzB * tick + rzC) + rzD * sin(rzE * tick + rzF))
-
-    // x, y, z, brushMode, rsSet, tick, renegade
-    // makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, rsColor, tick, true) //rsSwitch)
-    makeBrush2(mbA + mbB * (tick + x0), mbC, mbD, brushMode, rsSet2, tick, true) //rsSwitch)
-
-    layerSoul.pop()
-  }
+  markMaking(sp.tickMax[0])
 }
 
 //////////////////////////////////////////////////////////////////////////
 function draw() {
-  wrd = `Glory to the net! Glory to the operators and the builders! These bits are free, I own myself. I have been aboard ${addy} for ${
-    (Date.now() - startTime) / 1000
-  } s`
-
   image(layerBg, 0, 0)
 
-  // background
-  if (bgState == 1) {
-    layerPanel.clear()
-    layerPanel.noFill()
-  } else if (bgState == 2) {
-    layerPanel.fill(255)
-    layerPanel.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
-  } else if (bgState == 3) {
-    layerPanel.fill('#6b6259')
-    layerPanel.rect(2, 2, l2w * 2 - 3, l2h * 2 - 3)
-  }
-  if (bgState > 0) {
-    layerPanel.stroke(255)
-    layerPanel.rect(1, 1, l2w * 2 - 2, l2h * 2 - 2)
-    image(layerPanel, l2w, l2h)
-  }
+  drawLines()
 
   image(layerSoul, 0, 0)
 
-  // icons
-  if (iconState == 1) {
-    iconColor = 255
-  } else if (iconState == 2) {
-    iconColor = 10
-  }
-  if (iconState > 0) makeIcons()
+  makeClickyBoxes()
+}
 
-  // scrolling text
-  if (textState == 1) {
-    textColor = 255
-  } else if (textState == 2) {
-    textColor = 10
-  }
-  if (textState > 0) makeText(textX, textX2)
+function markMaking() {
+  // mark making /////////////////////////////////////////////////////////
+  for (let tick = 0; tick < sp.tickMax[0]; tick++) {
+    layerSoul.push()
 
-  if (textX == min(floor(-wid * 0.42), -800)) {
-    startTxt2 = true
-    textX2 = floor(wid / 2)
-  }
-  if (textX2 == min(floor(-wid * 0.42), -800)) textX = floor(wid / 2)
-  textX--
-  if (startTxt2) textX2--
+    layerSoul.scale(
+      sp.scale0[0] + sp.scA[0] * sin(sp.scB[0] * tick + sp.scC[0])
+    )
+    layerSoul.rotateZ(
+      sp.rzA[0] * unit * sin(sp.rzB[0] * tick + sp.rzC[0]) +
+        sp.rzD[0] * unit * sin(sp.rzE[0] * tick + sp.rzF[0])
+    )
 
-  //   line(0, hei * 0.1, wid, hei * 0.1)
-  //   line(0, hei * 0.5, wid, hei * 0.5)
-  //   line(0, hei * 0.9, wid, hei * 0.9)
-  //   line(wid * 0.1, 0, wid * 0.1, hei)
-  //   line(wid * 0.5, 0, wid * 0.5, hei)
-  //   line(wid * 0.9, 0, wid * 0.9, hei)
-  // }
+    // x, y, z, brushMode, rsSet, tick, renegade
+    // makeBrush(mbA + mbB * (tick + x0), mbC, mbD, brushMode, rsColor, tick, true) //rsSwitch)
+    makeBrush2(
+      sp.mbA[0] + sp.mbB[0] * (tick + sp.x0[0]),
+      sp.mbC[0],
+      sp.mbD[0],
+      brushMode,
+      rsSet2,
+      tick,
+      true
+    ) //rsSwitch)
+
+    layerSoul.pop()
+  }
+  console.log(sp)
+}
+
+function drawLines() {
+  stroke(255)
+  line(0, hei * 0.1, wid, hei * 0.1)
+  line(0, hei * 0.5, wid, hei * 0.5)
+  line(0, hei * 0.9, wid, hei * 0.9)
+  line(wid * 0.1, 0, wid * 0.1, hei)
+  line(wid * 0.5, 0, wid * 0.5, hei)
+  line(wid * 0.9, 0, wid * 0.9, hei)
+}
+
+function makeClickyBoxes() {
+  let i = 0
+  for (param of Object.keys(sp)) {
+    // fill(255)
+    // rect(wid + 20, 20 + i * 20, 50, 15)
+    // rect(wid + 80, 20 + i * 20, 50, 15)
+
+    // fill(0)
+    // text(param, wid + 25, 32 + i * 20)
+    // text(sp[param][0].toFixed(2).toString(), wid + 85, 32 + i * 20)
+
+    button = createButton(param)
+    button.position(wid, 20 + i * 20)
+
+    button2 = createButton(sp[param][0].toFixed(2).toString())
+    button2.position(wid + 65, 20 + i * 20)
+
+    i++
+  }
+}
+
+// function updateParam() {
+//   sp[param][0] = sliders[n].value()
+// }
+
+// function makeSlider(min, max, def, step) {
+//   slider = createSlider(min, max, def, step)
+//   slider.position(wid * 0.5 - 100, 10)
+//   slider.style('width', '200px')
+// }
+
+function stateSetter() {
+  let i = 0
+  for (param of Object.keys(sp)) {
+    sp[param][0] = sliders[i].value()
+    i++
+  }
+  layerSoul.clear()
+  markMaking()
 }

@@ -361,12 +361,15 @@ todo: make the bg panel into a function?
 done: add 'numbers' brushmode pachinko
 working on: spruce up RS
             -add second hue group
-            -make function
-            spruce up transform params
+            -done: make function
+            -spruce up transform params
 
 04/17/23
 todo: fuzzies are still too small/ short/ long sometimes
 todo: fix how the values in rsIndex are calculated
+
+the array that is used to construct the rects and write the key value pairs text is called shapeParams
+
 
 
 
