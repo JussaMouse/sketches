@@ -420,111 +420,99 @@ let c = [
     group: 'dull',
   },
 ]
-let megabrite = [
+let p = [
   // the third element is an array of color groups to exclude
-  // 0=R, 1=O, 2=Y, 3=G, 4=B, 5=V, 6=M
   [c[1].hex, c[14].hex, ['R']], //['G', 'no R']], //00 megabrite yello/green/white     // drk grn // med grn on white edge // ['mono', 'B', 'Y']],
   [c[2].hex, c[3].hex], //01 megabrite purp/hotpink/hotsalmon     // drk teal accent/ cream/ gray/ yello //brite red on purple/aqua middle
   [c[3].hex, c[35].hex], //, ['mono', 'B', 'Y']], //02 megabrite purp/mgnta/hot orange
   [c[4].hex, c[19].hex, ['R', 'M']], //, ['mono', 'dull', 'G', 'Y']], //03 megabrite hot aqua/hot grn
   [c[27].hex, c[28].hex], //04 megabrite lit blu/ blu   // white/ cream edge/ drk gray/ cream behind blu
   [c[31].hex, c[27].hex], //05 megabrite hot blue/purp/pnk/salmon   // cream/
-]
-let brite = [
-  [c[0].hex, c[1].hex], //00 brite white/lit blu/drk blu    // salmon/brn/orng/drk green/bby blu on the navy side accent
-  [c[1].hex, c[23].hex], //01 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent //no drk grn
-  [c[1].hex, c[52].hex], //02 brite hot aqua/ white   //gray/cream/blk
-  [c[1].hex, c[28].hex], //03 brite aqua/white    // drk teal/brn?/ accent
-  [c[3].hex, c[33].hex], //04 brite orng /purp    // hot aqua/salmon/white teal
-  [c[3].hex, c[23].hex], //05 brite lit blu ray/purp/mgnta
-  [c[3].hex, c[11].hex, ['R', 'M']], //06 brite aqua/ blu/mgnta   //hot aqua behind mgnta/ salmon on purple/ blk on white teal
-  [c[3].hex, c[39].hex, ['G']], //07 brite drk red brn/ purp     //drk grn accent // white/ cream
-  [c[4].hex, c[30].hex], //08 brite purp gray/hot grn   // hot aqua accent on the purple side
-  [c[4].hex, c[5].hex, ['R', 'M']], //09 brite drk grn/hot grn    // no aqua accent/ tan/ salmon
-  [c[7].hex, c[52].hex], //10 brite gray/hot aqua   // navy/peach accent //pink cream + mustard on the grey side/salmon on aqua //lit yello behind gray
-  [c[9].hex, c[45].hex], //11 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello //mgnta or aqua on navy/marrigold on yello
-  [c[10].hex, c[62].hex], //12 brite peach/pink/purp/baby blu     //hot teal/ navy on the blue side/white/ yello on pink
-  [c[10].hex, c[11].hex], //13 brite hot aqua/bby blu //mid orng
-  [c[11].hex, c[68].hex, ['R']], //14 brite lit aqua/ gray aqua
-  [c[11].hex, c[27].hex], //15 brite lit gray aqua/bby blu    // navy/drk teal/cream/brn/ hot salmon over the blue side
-  [c[14].hex, c[15].hex], //16 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind  // hot pink+aqua on peach side
-  [c[68].hex, c[52].hex], //17 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
-  [c[17].hex, c[37].hex], //18 brite drk purp/pink/yello
-  [c[16].hex, c[22].hex, ['R', 'M']], //19 brite gray bby blu/lit aqua  // hot pink/ med gray/ cream accent //tan accent
-  // [c[16].hex, c[66].hex, ['R', 'M']], //20 brite lit aqua/ gray drk purp    // brn on teal side/thin salmon lines middle
-  [c[21].hex, c[45].hex, ['V', 'R', 'M']], //20 brite cream yello/grn
-  [c[26].hex, c[23].hex, ['G', 'O']], //21 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
-  [c[34].hex, c[26].hex, ['G']], //22 brite hot mgnta/drk brn   // blue/lit gray on brn side
-  [c[27].hex, c[40].hex], //23 brite powder blue /pink /cream   //white/cream in middle or hot aqua
-  [c[50].hex, c[29].hex, ['R']], //24 brite mid gray/white teal    //peach/ navy/ drk grn
-  [c[30].hex, c[57].hex], //25 brite pastels cream/purp   // salmon accent //no yello
-  [c[31].hex, c[45].hex], //26 brite hot lit pink/hot lit yello ***   //white accent
-  [c[32].hex, c[35].hex], //27 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
-  [c[34].hex, c[35].hex, ['Y', 'V']], //28 brite drk brn/ hot salmon
-  [c[3].hex, c[35].hex], //29 brite purp/powder salmon
-  [c[35].hex, c[34].hex, ['O']], //30 brite drk brn/ hot pink    //grey green on pink/blue on brn
-  [c[37].hex, c[59].hex], //31 brite lit pink/orng/yello    // white/purp
-  [c[41].hex, c[48].hex], //32 brite orng/red orng
-  [c[45].hex, c[49].hex], //33 brite orng/lit yello
-  [c[30].hex, c[19].hex], //34 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
-  [c[44].hex, c[41].hex], //35 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
-  [c[13].hex, c[19].hex, ['R', 'O']], //36 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
-  [c[41].hex, c[49].hex], //37 brite lit orng/drk red orng  // hot orng edge/ white teal
-  [c[45].hex, c[48].hex], //38 brite white yello/daglo orng
-]
-let briteish = [
-  [c[0].hex, c[10].hex], //00 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
-  [c[0].hex, c[27].hex], //01 briteish baby blu/ dark aqua    //drk grn/hot teal/ brn
-  [c[1].hex, c[6].hex, ['R', 'M']], //02 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent //navy mgnta?
-  [c[1].hex, c[12].hex], //03 briteish drk navy/ gray blu/ white    // tan on navy/ cream/ blk/ bby blu
-  [c[3].hex, c[65].hex], //04 briteish drk red brn/ purp    //gray/hot colors accent
-  [c[5].hex, c[28].hex], //05 briteish drk teal/ baby blu   // tan/ peach or white teal edge on bby blu/ ? behind drk teal/ salmon on blu
-  [c[5].hex, c[23].hex], //06 briteish drk teal/lit gray blu  // cream/hot blu accent
-  [c[7].hex, c[57].hex], //07 briteish pastel pink/grn/blu    // brn/blk/cream
-  [c[8].hex, c[41].hex, ['G']], //08 briteish lit gray blu/purp/drk red
-  [c[1].hex, c[32].hex, ['O']], //09 briteish white blu/drk mgnta
-  [c[10].hex, c[20].hex, ['R']], //10 briteish lit gray blu/gray teal/blk teal
-  [c[12].hex, c[27].hex], //11 briteish lit blu/drk blu
-  [c[12].hex, c[13].hex, ['R', 'M']], //12 briteish navy/teal   //hot aqua/cream accent
-  [c[12].hex, c[63].hex], //13 briteish navy/aqua   // peach/merrigold/navy
-  [c[16].hex, c[17].hex], //14 briteish hot aqua/drk purp   // merrigold? accent
-  [c[52].hex, c[17].hex, ['R']], //15 briteish drk purp/hot aqua   // white behind purp/ blu on the aqua edge/ yello on purp // gray, cream, purp, brn
-  [c[34].hex, c[16].hex], //16 briteish lit aqua/drk brn
-  [c[18].hex, c[19].hex, ['R']], //17 briteish drk grn/ aqua   // brn/blk/cream
-  [c[56].hex, c[28].hex, ['Y', 'R']], //18 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue //no aqua on purp side
-  // [c[28].hex, c[66].hex], //19 briteish sky blue/gray purp    //wine/drk gray teal/lit lavender //c[59].hex on blu side/ cream behind gray purp
-  [c[45].hex, c[32].hex], //19 briteish cream yello/drk mgnta   // hot aqua on yello side //hot salmon on yello/ yello on  mgnta
-  [c[35].hex, c[41].hex], //20 briteish drk red/hot salmon
-  [c[44].hex, c[38].hex, ['Y']], //21 briteish merrigold/ lit chrcl    //blk/hot pink/ hot blu/ hot teal
-  [c[12].hex, c[16].hex], //22 briteish navy/ lit teal  //
-  [c[10].hex, c[18].hex], //23 briteish lit blu/drk aqua // purp/ cream
-  [c[27].hex, c[18].hex, ['R']], //24 briteish bby blu/drk grn    // cream/drk mgnta
-]
-let dullish = [
-  [c[3].hex, c[34].hex, ['G']], //00 dullish drk brn/ purple   // cream/white teal/lit pink
-  [c[5].hex, c[22].hex], //01 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
-  [c[5].hex, c[63].hex, ['R', 'M']], //02 dullish dark aqua /light aqua   // cream orng?/white gray
-  [c[6].hex, c[7].hex], //03 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
-  [c[9].hex, c[7].hex], //04 dullish navy/lit gray purp
-  [c[11].hex, c[20].hex], //05 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
-  [c[68].hex, c[17].hex, ['R', 'M']], //06 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
-  [c[28].hex, c[57].hex], //07 //cream pink/ mid blu
-]
-let dull = [
-  [c[7].hex, c[34].hex], //00 dull drk brn/olive/lit gray   //hot colors
-  [c[7].hex, c[55].hex], //01 dull lit gray teal/gray teal    // merrigold behind
-  [c[7].hex, c[17].hex], //02 dull lit gray/purp    // navy, bby blu, salmon
-  [c[7].hex, c[20].hex], //03 dull drk olive/lit gray blu
-  [c[7].hex, c[61].hex], //04 dull slate /bluegray    // pink/ teal //hot yello/ drk blu //drk purp
-  [c[7].hex, c[39].hex], //05 dull blue/ purp
-  [c[12].hex, c[23].hex], //06 dull navy/lit gray   // cream/ pink/ purp on the gray edge //no drk red
-  [c[61].hex, c[17].hex], //07 dull mid gray/drk purp
-  [c[20].hex, c[21].hex, ['M', 'R']], //08 dull blk grn/grn     // hot aqua/white // no red
-  [c[23].hex, c[24].hex], //09 dull light gray/ gray green    // wine/ gray/ white
-  // [c[66].hex, c[23].hex], //10 dull gray purp/ lit gray
-  [c[50].hex, c[23].hex], //10 dull lit gray/ lit brn gray
-  [c[29].hex, c[30].hex], //11 dull gray teal/purp    //brite color behind the gray teal
-  [c[20].hex, c[61].hex], //12 dull mid gray/dark gray   // blu on drk gray/white behind gray
+  [c[0].hex, c[1].hex], //06 brite white/lit blu/drk blu    // salmon/brn/orng/drk green/bby blu on the navy side accent
+  [c[1].hex, c[23].hex], //07 brite lit lavender/ white     // navy/drk mgnta/ drk gray accent //no drk grn
+  [c[1].hex, c[52].hex], //08 brite hot aqua/ white   //gray/cream/blk
+  [c[1].hex, c[28].hex], //09 brite aqua/white    // drk teal/brn?/ accent
+  [c[3].hex, c[33].hex], //10 brite orng /purp    // hot aqua/salmon/white teal
+  [c[3].hex, c[23].hex], //11 brite lit blu ray/purp/mgnta
+  [c[3].hex, c[11].hex, ['R', 'M']], //12 brite aqua/ blu/mgnta   //hot aqua behind mgnta/ salmon on purple/ blk on white teal
+  [c[3].hex, c[39].hex, ['G']], //13 brite drk red brn/ purp     //drk grn accent // white/ cream
+  [c[4].hex, c[30].hex], //14 brite purp gray/hot grn   // hot aqua accent on the purple side
+  [c[4].hex, c[5].hex, ['R', 'M']], //15 brite drk grn/hot grn    // no aqua accent/ tan/ salmon
+  [c[7].hex, c[52].hex], //16 brite gray/hot aqua   // navy/peach accent //pink cream + mustard on the grey side/salmon on aqua //lit yello behind gray
+  [c[9].hex, c[45].hex], //17 brite navy/grn/cream yello    //orng over yello/ brn    //navy/ cream yello //mgnta or aqua on navy/marrigold on yello
+  [c[10].hex, c[62].hex], //18 brite peach/pink/purp/baby blu     //hot teal/ navy on the blue side/white/ yello on pink
+  [c[10].hex, c[11].hex], //19 brite hot aqua/bby blu //mid orng
+  [c[11].hex, c[68].hex, ['R']], //20 brite lit aqua/ gray aqua
+  [c[11].hex, c[27].hex], //21 brite lit gray aqua/bby blu    // navy/drk teal/cream/brn/ hot salmon over the blue side
+  [c[14].hex, c[15].hex], //22 brite peachy salmon/canary   // drk teal/ sky blu/ pink accent   // gray/ pink behind yello/ brown behind  // hot pink+aqua on peach side
+  [c[68].hex, c[52].hex], //23 brite teal gray/hot aqua  //hot aqua on gray side/wine on aqua side/ hot salmon
+  [c[17].hex, c[37].hex], //24 brite drk purp/pink/yello
+  [c[16].hex, c[22].hex, ['R', 'M']], //25 brite gray bby blu/lit aqua  // hot pink/ med gray/ cream accent //tan accent
+  [c[21].hex, c[45].hex, ['V', 'R', 'M']], //26 brite cream yello/grn
+  [c[26].hex, c[23].hex, ['G', 'O']], //27 brite hot mgnta/lit gray bby blu   //blk navy on either side/ orange or yello on pink
+  [c[34].hex, c[26].hex, ['G']], //28 brite hot mgnta/drk brn   // blue/lit gray on brn side
+  [c[27].hex, c[40].hex], //29 brite powder blue /pink /cream   //white/cream in middle or hot aqua
+  [c[50].hex, c[29].hex, ['R']], //30 brite mid gray/white teal    //peach/ navy/ drk grn
+  [c[30].hex, c[57].hex], //31 brite pastels cream/purp   // salmon accent //no yello
+  [c[31].hex, c[45].hex], //32 brite hot lit pink/hot lit yello ***   //white accent
+  [c[32].hex, c[35].hex], //33 brite drk mgnta/hot salmon   // bby blu/ white behind purp/ slate teal
+  [c[34].hex, c[35].hex, ['Y', 'V']], //34 brite drk brn/ hot salmon
+  [c[3].hex, c[35].hex], //35 brite purp/powder salmon
+  [c[35].hex, c[34].hex, ['O']], //36 brite drk brn/ hot pink    //grey green on pink/blue on brn
+  [c[37].hex, c[59].hex], //37 brite lit pink/orng/yello    // white/purp
+  [c[41].hex, c[48].hex], //38 brite orng/red orng
+  [c[45].hex, c[49].hex], //39 brite orng/lit yello
+  [c[30].hex, c[19].hex], //40 brite drk gray purp/hot teal    // hot orng/hot teal/pink accent //yello behind middle/ white on teal edge
+  [c[44].hex, c[41].hex], //41 brite drk red/merrigold   // mgnta/ drk teal //cream/white/mid gray
+  [c[13].hex, c[19].hex, ['R', 'O']], //42 brite teal gray/hot teal    // hot salmon on aqua side/ no brn/ no red
+  [c[41].hex, c[49].hex], //43 brite lit orng/drk red orng  // hot orng edge/ white teal
+  [c[45].hex, c[48].hex], //44 brite white yello/daglo orng
+  [c[0].hex, c[10].hex], //45 briteish baby blu/ dark aqua   // navy/ cream orng on drk blu
+  [c[0].hex, c[27].hex], //46 briteish baby blu/ dark aqua    //drk grn/hot teal/ brn
+  [c[1].hex, c[6].hex, ['R', 'M']], //47 briteish drk aqua/ white   //purp mud gray/blk/hot orng accent //navy mgnta?
+  [c[1].hex, c[12].hex], //48 briteish drk navy/ gray blu/ white    // tan on navy/ cream/ blk/ bby blu
+  [c[3].hex, c[65].hex], //49 briteish drk red brn/ purp    //gray/hot colors accent
+  [c[5].hex, c[28].hex], //50 briteish drk teal/ baby blu   // tan/ peach or white teal edge on bby blu/ ? behind drk teal/ salmon on blu
+  [c[5].hex, c[23].hex], //51 briteish drk teal/lit gray blu  // cream/hot blu accent
+  [c[7].hex, c[57].hex], //52 briteish pastel pink/grn/blu    // brn/blk/cream
+  [c[8].hex, c[41].hex, ['G']], //53 briteish lit gray blu/purp/drk red
+  [c[1].hex, c[32].hex, ['O']], //54 briteish white blu/drk mgnta
+  [c[10].hex, c[20].hex, ['R']], //55 briteish lit gray blu/gray teal/blk teal
+  [c[12].hex, c[27].hex], //56 briteish lit blu/drk blu
+  [c[12].hex, c[13].hex, ['R', 'M']], //57 briteish navy/teal   //hot aqua/cream accent
+  [c[12].hex, c[63].hex], //58 briteish navy/aqua   // peach/merrigold/navy
+  [c[16].hex, c[17].hex], //59 briteish hot aqua/drk purp   // merrigold? accent
+  [c[52].hex, c[17].hex, ['R']], //60 briteish drk purp/hot aqua   // white behind purp/ blu on the aqua edge/ yello on purp // gray, cream, purp, brn
+  [c[34].hex, c[16].hex], //61 briteish lit aqua/drk brn
+  [c[18].hex, c[19].hex, ['R']], //62 briteish drk grn/ aqua   // brn/blk/cream
+  [c[56].hex, c[28].hex, ['Y', 'R']], //63 briteish gray purp/ aqua   // lit teal/cream accent/ peach on blue //no aqua on purp side
+  [c[45].hex, c[32].hex], //64 briteish cream yello/drk mgnta   // hot aqua on yello side //hot salmon on yello/ yello on  mgnta
+  [c[35].hex, c[41].hex], //65 briteish drk red/hot salmon
+  [c[44].hex, c[38].hex, ['Y']], //66 briteish merrigold/ lit chrcl    //blk/hot pink/ hot blu/ hot teal
+  [c[12].hex, c[16].hex], //67 briteish navy/ lit teal  //
+  [c[10].hex, c[18].hex], //68 briteish lit blu/drk aqua // purp/ cream
+  [c[27].hex, c[18].hex, ['R']], //69 briteish bby blu/drk grn    // cream/drk mgnta
+  [c[3].hex, c[34].hex, ['G']], //70 dullish drk brn/ purple   // cream/white teal/lit pink
+  [c[5].hex, c[22].hex], //71 dullish drk grn/gray blu    //drk red accent  //hot pink/mgnta/gray
+  [c[5].hex, c[63].hex, ['R', 'M']], //72 dullish dark aqua /light aqua   // cream orng?/white gray
+  [c[6].hex, c[7].hex], //73 dullish drk teal/lit gray    //mgnta on teal side/orng on gray side/aqua middle
+  [c[9].hex, c[7].hex], //74 dullish navy/lit gray purp
+  [c[11].hex, c[20].hex], //75 dullish blk teal/lit gray aqua   // yello/powder purp/ blk
+  [c[68].hex, c[17].hex, ['R', 'M']], //76 dullish drk purp/gray aqua   //white behind the purple accent //hot salmon over both sides
+  [c[28].hex, c[57].hex], //77 //cream pink/ mid blu
+  [c[7].hex, c[34].hex], //78 dull drk brn/olive/lit gray   //hot colors
+  [c[7].hex, c[55].hex], //79 dull lit gray teal/gray teal    // merrigold behind
+  [c[7].hex, c[17].hex], //80 dull lit gray/purp    // navy, bby blu, salmon
+  [c[7].hex, c[20].hex], //81 dull drk olive/lit gray blu
+  [c[7].hex, c[61].hex], //82 dull slate /bluegray    // pink/ teal //hot yello/ drk blu //drk purp
+  [c[7].hex, c[39].hex], //83 dull blue/ purp
+  [c[12].hex, c[23].hex], //84 dull navy/lit gray   // cream/ pink/ purp on the gray edge //no drk red
+  [c[61].hex, c[17].hex], //85 dull mid gray/drk purp
+  [c[20].hex, c[21].hex, ['M', 'R']], //86 dull blk grn/grn     // hot aqua/white // no red
+  [c[23].hex, c[24].hex], //87 dull light gray/ gray green    // wine/ gray/ white
+  [c[50].hex, c[23].hex], //88 dull lit gray/ lit brn gray
+  [c[29].hex, c[30].hex], //89 dull gray teal/purp    //brite color behind the gray teal
+  [c[20].hex, c[61].hex], //90 dull mid gray/dark gray   // blu on drk gray/white behind gray
 ]
 let litColors = c
   .filter((color) => color.brite == 'lit')
@@ -535,7 +523,7 @@ let briteColors = c
 let litty = briteColors.concat(litColors)
 let natty = c.filter((color) => color.group == 'dull').map((color) => color.hex)
 let mono = c.filter((color) => color.group == 'mono').map((color) => color.hex)
-let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M']
+let groups = ['R', 'O', 'Y', 'G', 'B', 'V', 'M', 'mono']
 let palette = []
 let color0
 let color1
@@ -554,22 +542,6 @@ let numRs = 2 // number of Renegade Strokes
 let cakeShape = 0
 let cakeHeight
 let cakeLength = 'med'
-let tickMax
-
-let scA
-let scB
-let scC
-let rzA
-let rzB
-let rzC
-let rzD
-let rzE
-let rzF
-let x0 = 0
-let mbA
-let mbB
-let mbC
-let mbD
 let thinny = false
 let ghost = false
 let sp = {
@@ -671,8 +643,8 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
         layerSoul.push()
         layerSoul.translate(...vertices[i][j], z)
         brushMode == 'sphere'
-          ? layerSoul.sphere(unit * 5)
-          : layerSoul.box(unit * 5)
+          ? layerSoul.sphere(unit * 4)
+          : layerSoul.box(unit * 4)
         layerSoul.pop()
       }
     } else if (brushMode == 'fuzzy') {
@@ -712,6 +684,11 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
           lerp(vertices[i][0][0], vertices[i][1][0], 0.5),
           lerp(vertices[i][0][1], vertices[i][1][1], 0.5)
         )
+        layerSoul.line(
+          ...vertices[i][0],
+          lerp(vertices[i][0][0], vertices[i][2][0], 0.5),
+          lerp(vertices[i][0][1], vertices[i][2][1], 0.5)
+        )
       } else {
         if (brushMode == 'fuzzy') {
           z = -unit
@@ -725,10 +702,10 @@ function makeBrush2(x, y, z, brushMode, rsSet, tick, renegade) {
           layerSoul.fill(chroma('white').alpha(0.05).hex())
           layerSoul.text(`${addy[i + 2]}`, 0, 0, 0)
         } else {
-          z = -unit * 5
+          z = unit
           brushMode == 'box'
-            ? layerSoul.box(unit * 5)
-            : layerSoul.sphere(unit * 5)
+            ? layerSoul.box(unit * 4)
+            : layerSoul.sphere(unit * 4)
         }
         layerSoul.pop()
       }
@@ -770,78 +747,48 @@ function remap(value, sourceMin, sourceMax, destMin, destMax) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-function getPalette(s) {
-  let palette = []
-  let name = ''
-  let pi
-
-  if (s.mood == '0000') {
-    pi = floor(random(megabrite.length))
-    palette = megabrite[pi]
-    name = 'megabrite'
-  } else if (s.mood == '0001' || s.mood == '0010') {
-    pi = floor(random(dull.length))
-    palette = dull[pi]
-    name = 'dull'
-    if (cakeShape == 1) palette = megabrite[floor(random(megabrite.length))]
-  } else if (
-    s.mood == '0011' ||
-    s.mood == '0100' ||
-    s.mood == '0101' ||
-    s.mood == '0110'
-  ) {
-    pi = floor(random(dullish.length))
-    palette = dullish[pi]
-    name = 'dullish'
-    if (cakeShape == 1) palette = megabrite[floor(random(megabrite.length))]
-  } else if (
-    s.mood == '0111' ||
-    s.mood == '1000' ||
-    s.mood == '1001' ||
-    s.mood == '1010'
-  ) {
-    pi = floor(random(briteish.length))
-    palette = briteish[pi]
-    name = 'briteish'
-  } else {
-    pi = floor(random(brite.length))
-    palette = brite[pi]
-    name = 'brite'
+function getPalette2(bits, p, c) {
+  // returns [pair color 0, pair color 1, pair index, rsColorPool]
+  // determine gradient pair
+  let pBits = ''
+  for (let i = 9; i < 16; i++) {
+    pBits += bits[i]
   }
+  let pi = parseInt(pBits, 2) % 91
 
-  // pi = 4
-  // pair = dullish[4]
-  // name = 'dullish'
-
-  let group0 = random(groups)
-  let group1 = random(groups)
-  if (palette[2]) {
-    console.log(`exclude: ${palette[2]}`)
-    while (palette[2].includes(group0)) group0 = random(groups)
-    while (palette[2].includes(group1)) group1 = random(groups)
+  // determine rs color groups
+  let rsBits0 = '' + bits[0] + bits[1] + bits[2]
+  let rsBits1 = '' + bits[3] + bits[4] + bits[5]
+  let gi0 = parseInt(rsBits0, 2)
+  let gi1 = parseInt(rsBits1, 2)
+  if (p[pi][2]) {
+    console.log(`exclude: ${p[pi][2]}`)
+    while (p[pi][2].includes(groups[gi0])) gi0 = (gi0 + 1) % 8
+    while (p[pi][2].includes(groups[gi1])) gi1 = (gi1 + 1) % 8
   }
-  console.log('group 0: ', group0)
-  console.log('group 1: ', group1)
+  console.log('group 0: ', groups[gi0])
+  console.log('group 1: ', groups[gi1])
 
+  // adjust rs colors for dull/ dullish gradient pairs
   function filty(color) {
-    if ((name == 'dull' || name == 'dullish') && cakeShape == 0) {
+    if (pi > 69) {
       return (
-        (color.group == group0 || color.group == group1) &&
+        (color.group == groups[gi0] || color.group == groups[gi1]) &&
         (color.brite == 'brite' || color.brite == 'lit')
       )
     }
-    return color.group == group0 || color.group == group1
+    return color.group == groups[gi0] || color.group == groups[gi1]
   }
 
-  rsGroups = c.filter((color) => filty(color)).map((color) => color.hex)
+  let rsColorPool = c.filter((color) => filty(color)).map((color) => color.hex)
 
-  rsGroups.concat(mono)
+  rsColorPool.concat(mono)
 
-  return [chroma(palette[0]), chroma(palette[1]), rsGroups, name, pi] //, gi]
+  return [chroma(p[pi][0]), chroma(p[pi][1]), pi, rsColorPool]
 }
 
 //////////////////////////////////////////////////////////////////////////
-function getRs(numShapes, numRs, rsPalette) {
+function getRs(numShapes, numRs, rsColorPool) {
   // check that numShapes > numRs
   if (numShapes < numRs)
     console.log('**ERROR: numRs MUST BE SMALLER THAN numShapes**')
@@ -852,7 +799,7 @@ function getRs(numShapes, numRs, rsPalette) {
     do {
       randI = floor(random(rsSet.length))
     } while (rsSet[randI] != 0)
-    rsSet[randI] = random(rsPalette)
+    rsSet[randI] = random(rsColorPool)
     let colour = c.findIndex((e) => e.hex === rsSet[randI].toUpperCase())
     console.log(
       `rs ${i}: ${c[colour].brite} ${c[colour].group} ${c[colour].hex}`
@@ -932,7 +879,7 @@ function setup() {
   if (brushMode == 'triangle' && soul.house == '001') cakeLength = 'short'
   if (soul.house == '110' && soul.mood == '1001') {
     numShapes = 2
-    siiize = unit * 16
+    siiize = unit * 12
     numRs = 1
   }
   if (soul.mind == 1 && soul.system == 1 && soul.user == 0) {
@@ -969,13 +916,13 @@ function setup() {
     if (cakeLength == 'short') {
       // layerSoul.scale(0.8)
       sp.scale0[0] = 0.8
-      sp.tickMax[0] = 1.4
+      sp.tickMax[0] = 1.55
       sp.x0[0] = 0
     } else if (cakeLength == 'med') {
       // layerSoul.scale(0.65)
       sp.scale0[0] = 0.57
-      sp.tickMax[0] = 1.98
-      sp.x0[0] = -0.25
+      sp.tickMax[0] = 2.15
+      sp.x0[0] = -0.35
       if (brushMode == 'sphere' || brushMode == 'numbers') {
         sp.scale0[0] = 0.45
         sp.tickMax[0] = 2.45
@@ -1026,15 +973,15 @@ function setup() {
     }
     if (brushMode == 'numbers') {
       sp.x0[0] = -0.54
-      sp.scale0[0] = 0.5
+      sp.scale0[0] = 0.4
     }
     console.log(`length: ${cakeLength}`)
   } else if (cakeShape == 1) {
-    sp.x0[0] = -0.25
+    sp.x0[0] = -0.3
     sp.tickMax[0] = 1.1
     // sc = scale
     sp.scale0[0] = 1.1
-    if (cakeShape == 'sphere') sp.scale0[0] = 0.85
+    if (cakeShape == 'sphere') sp.scale0[0] = 0.65
     soul.design == 0 ? (sp.scA[0] = 0) : (sp.scA[0] = random(0.05, 0.15)) // amplitude
     soul.form == 0 ? (sp.scB[0] = 0) : (sp.scB[0] = random(2)) //randSeed / 1000000000 // frequency
     soul.user == 0 ? (sp.scC[0] = 0) : (sp.scC[0] = random(360)) // offset (degrees)
@@ -1109,8 +1056,8 @@ function setup() {
   }
 
   // choose gradient color
-  palette = getPalette(soul)
-  rsPalette = palette[2]
+  palette = getPalette2(b[0], p, c) // [color 0, color1, p index, rsColorPool]
+  rsPalette = palette[3]
 
   // flip!
   if (random() > 0.5) {
@@ -1128,14 +1075,14 @@ function setup() {
   // get rs array for makebrush
   rsSet2 = getRs(numShapes, numRs, rsPalette)
 
-  markMaking(sp.tickMax[0] * width)
+  markMaking()
 }
 
 //////////////////////////////////////////////////////////////////////////
 function draw() {
   image(layerBg, 0, 0)
 
-  drawLines()
+  // drawLines()
 
   image(layerSoul, 0, 0)
 
@@ -1216,16 +1163,6 @@ function makeClickyBoxes() {
     i++
   }
 }
-
-// function updateParam() {
-//   sp[param][0] = sliders[n].value()
-// }
-
-// function makeSlider(min, max, def, step) {
-//   slider = createSlider(min, max, def, step)
-//   slider.position(wid * 0.5 - 100, 10)
-//   slider.style('width', '200px')
-// }
 
 function stateSetter() {
   let i = 0
